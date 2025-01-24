@@ -6,17 +6,17 @@
 ## Subject
 ```gdscript
 var subject := Subject.new()
-var sub := _subject.subscribe(func(_unit: Unit): print("Hello, World!"))
+var subscription := subject.subscribe(func(_unit: Unit): print("Hello, World!"))
 
 # On next (emit)
-_subject.on_next(Unit.default)
+subject.on_next(Unit.default)
 
 # Unsubscribe
-sub.dispose()
-_subject.on_next(Unit.default)
+subscription.dispose()
+subject.on_next(Unit.default)
 
 # Dispose subject
-_subject.dispose()
+subject.dispose()
 ```
 ```console
 Hello, world!
