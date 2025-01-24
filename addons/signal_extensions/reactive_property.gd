@@ -68,3 +68,9 @@ func add_to(obj: Variant) -> ReactiveProperty:
 	else:
 		push_error("Invalid obj types")
 		return self
+
+func wait_value_changed() -> Variant:
+	if _is_disposed:
+		return null
+
+	return await _value_changed

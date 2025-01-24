@@ -33,3 +33,16 @@ func test_unit() -> void:
 
 	subject.on_next(Unit.default)
 	assert_int(_result_int).is_equal(1)
+
+func test_subject_await() -> void:
+	_result_int = 0
+	var subject := Subject.new()
+	subject.subscribe(func(i: int) -> void:
+		_result_int = i
+	)
+
+	subject.on_next.call_deferred(10)
+	var result: int = await subject.wait_on_next()
+	assert_int(result).is_equal(10)
+
+	await get_tree().process_frame
