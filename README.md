@@ -1,12 +1,12 @@
 # Signal Extensions for Godot 4
 ## Installation
-- Copy `addons/signal_extensions/` directory to the `/addons/` directory in your project
+- Copy `/addons/signal_extensions/` directory to the `/addons/` directory in your project
 - Enable `SignalExtensions` plugin in `Project Settings > Plugins`
 
 ## Subject
 ```gdscript
 var subject := Subject.new()
-var subscription := subject.subscribe(func(_unit: Unit): print("Hello, World!"))
+var subscription := subject.subscribe(func(_x): print("Hello, World!"))
 
 # On next (emit)
 subject.on_next(Unit.default)
