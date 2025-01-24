@@ -48,6 +48,12 @@ for d in bag:
     d.dispose()
 ```
 
+- Subject is awaitable like Signal:
+
+```gdscript
+var result: int = await subject.wait()
+```
+
 ## Reactive Property
 ```gdscript
 var health := ReactiveProperty.new(100.0)
@@ -66,4 +72,4 @@ health.dispose()
 50
 ```
 
-- ReactiveProperty also has `add_to` method.
+- ReactiveProperty alos has `add_to` and `wait` methods.
