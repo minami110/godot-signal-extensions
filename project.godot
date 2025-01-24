@@ -21,6 +21,10 @@ gdscript/warnings/exclude_addons=false
 
 enabled=PackedStringArray("res://addons/signal_extensions/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
 
+[gdunit4]
+
+ui/toolbar/run_overall=true
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
