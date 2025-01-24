@@ -54,7 +54,7 @@ func add_to(obj: Variant) -> Subject:
 		push_error("Invalid obj types")
 		return self
 
-func wait_on_next() -> Variant:
+func wait() -> Variant:
 	if _is_disposed:
 		return null
 

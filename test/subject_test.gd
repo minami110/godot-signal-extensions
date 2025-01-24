@@ -42,7 +42,7 @@ func test_subject_await() -> void:
 	)
 
 	subject.on_next.call_deferred(10)
-	var result: int = await subject.wait_on_next()
+	var result: int = await subject.wait()
 	assert_int(result).is_equal(10)
 
 	await get_tree().process_frame

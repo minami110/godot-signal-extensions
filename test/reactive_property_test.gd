@@ -31,7 +31,7 @@ func test_rp_await() -> void:
 	var callable := func() -> void:
 		rp.value = 2
 	callable.call_deferred()
-	var result: int = await rp.wait_value_changed()
+	var result: int = await rp.wait()
 	assert_int(result).is_equal(2)
 
 	await get_tree().process_frame

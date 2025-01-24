@@ -72,4 +72,4 @@ health.dispose()
 50
 ```
 
-- ReactiveProperty alos has `add_to` and `wait` methods.
+- ReactiveProperty also has `add_to` and `wait` methods.
