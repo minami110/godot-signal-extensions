@@ -22,6 +22,13 @@ func take(count: int) -> Observable:
 	else:
 		return _Take.new(self, count)
 
+func where(predicate: Callable) -> Observable:
+	if self is _Where:
+		var p: Callable = self._predicate
+		return _Where.new(self._source, func(x): return p.call(x) and predicate.call(x))
+	else:
+		return _Where.new(self, predicate)
+
 @warning_ignore("unused_parameter")
 func _subscribe_core(observer: Callable) -> Disposable:
 	return Disposable.empty
