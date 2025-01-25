@@ -1,10 +1,8 @@
 extends GdUnitTestSuite
 
-# warning-ignore-all:unused_parameter
-# warning-ignore-all:unused_variable
-# warning-ignore-all:return_value_discarded
-
-const __source := 'res://addons/signal_extensions/subject.gd'
+@warning_ignore("unused_parameter")
+@warning_ignore("unused_variable")
+@warning_ignore("return_value_discarded")
 
 var _result_int: int
 

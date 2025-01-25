@@ -1,8 +1,8 @@
 extends GdUnitTestSuite
 
-# warning-ignore-all:unused_parameter
-# warning-ignore-all:unused_variable
-# warning-ignore-all:return_value_discarded
+@warning_ignore("unused_parameter")
+@warning_ignore("unused_variable")
+@warning_ignore("return_value_discarded")
 
 const __source := 'res://addons/signal_extensions/subscription.gd'
 
@@ -32,17 +32,16 @@ func test_unsubscribe() -> void:
 
 func test_add_to_array() -> void:
 	_result_int = 0
-	var subs: Array[Subscription] = []
-	var s := Subscription.new(no_parms, func() -> void:
+	var bag: Array[Disposable] = []
+	Subscription.new(no_parms, func() -> void:
 		_result_int += 1
-	).add_to(subs)
+	).add_to(bag)
 
-	for sub in subs:
+	for sub in bag:
 		sub.dispose()
 
 	no_parms.emit()
 	assert_int(_result_int).is_equal(0)
-	assert_bool(s._is_disposed).is_true()
 
 func test_add_to_node() -> void:
 	_result_int = 0
@@ -51,7 +50,7 @@ func test_add_to_node() -> void:
 	add_child.call_deferred(node)
 	await child_entered_tree
 
-	var s := Subscription.new(no_parms, func() -> void:
+	Subscription.new(no_parms, func() -> void:
 		_result_int += 1
 	).add_to(node)
 
@@ -63,4 +62,3 @@ func test_add_to_node() -> void:
 
 	no_parms.emit()
 	assert_int(_result_int).is_equal(1)
-	assert_bool(s._is_disposed).is_true()

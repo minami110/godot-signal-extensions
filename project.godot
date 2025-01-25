@@ -13,9 +13,17 @@ config_version=5
 config/name="godot-signal-extensions"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 
+[debug]
+
+gdscript/warnings/exclude_addons=false
+
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gdUnit4/plugin.cfg", "res://addons/signal_extensions/plugin.cfg")
+enabled=PackedStringArray("res://addons/signal_extensions/plugin.cfg", "res://addons/gdUnit4/plugin.cfg")
+
+[gdunit4]
+
+ui/toolbar/run_overall=true
 
 [rendering]
 

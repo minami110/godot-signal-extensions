@@ -1,22 +1,22 @@
 # Signal Extensions for Godot 4
 ## Installation
-- Copy `addons/signal_extensions/` directory to the `/addons/` directory in your project
+- Copy `/addons/signal_extensions/` directory to the `/addons/` directory in your project
 - Enable `SignalExtensions` plugin in `Project Settings > Plugins`
 
 ## Subject
 ```gdscript
 var subject := Subject.new()
-var sub := _subject.subscribe(func(_unit: Unit): print("Hello, World!"))
+var subscription := subject.subscribe(func(_x): print("Hello, World!"))
 
 # On next (emit)
-_subject.on_next(Unit.default)
+subject.on_next(Unit.default)
 
 # Unsubscribe
-sub.dispose()
-_subject.on_next(Unit.default)
+subscription.dispose()
+subject.on_next(Unit.default)
 
 # Dispose subject
-_subject.dispose()
+subject.dispose()
 ```
 ```console
 Hello, world!
@@ -73,3 +73,42 @@ health.dispose()
 ```
 
 - ReactiveProperty also has `add_to` and `wait` methods.
+
+## Operators
+### Skip
+```gdscript
+subject.skip(2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+3
+```
+
+### Take
+```gdscript
+subject.take(2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+1
+2
+```
+
+### Where
+```gdscript
+subject.where(func(x): return x >= 2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+2
+3
+```
