@@ -35,3 +35,28 @@ func test_rp_await() -> void:
 	assert_int(result).is_equal(2)
 
 	await get_tree().process_frame
+
+func test_dispose() -> void:
+	_result_int = 0
+
+	var rp := ReactiveProperty.new(1)
+	var d := rp.subscribe(func(i: int) -> void:
+		_result_int = i
+	)
+	rp.dispose()
+	rp = ReactiveProperty.new(2)
+
+	rp.value = 3
+	assert_int(_result_int).is_equal(1)
+
+	d.dispose()
+	d = rp.subscribe(func(i: int) -> void:
+		_result_int = i
+	)
+	d.dispose()
+	d = null
+	assert_int(_result_int).is_equal(3)
+
+	rp.dispose()
+	rp.value = 4
+	assert_int(_result_int).is_equal(3)

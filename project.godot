@@ -24,6 +24,7 @@ enabled=PackedStringArray("res://addons/signal_extensions/plugin.cfg", "res://ad
 [gdunit4]
 
 ui/toolbar/run_overall=true
+report/godot/push_error=true
 
 [rendering]
 

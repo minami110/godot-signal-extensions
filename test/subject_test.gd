@@ -44,3 +44,25 @@ func test_subject_await() -> void:
 	assert_int(result).is_equal(10)
 
 	await get_tree().process_frame
+
+func test_dispose() -> void:
+	_result_int = 0
+
+	var subject := Subject.new()
+	var d := subject.subscribe(func(i: int) -> void:
+		_result_int = i
+	)
+	subject.dispose()
+	subject = Subject.new()
+
+	subject.on_next(10)
+	assert_int(_result_int).is_equal(0)
+
+	d.dispose()
+	d = subject.subscribe(func(i: int) -> void:
+		_result_int = i
+	)
+	d.dispose()
+	subject.dispose()
+	subject.on_next(10)
+	assert_int(_result_int).is_equal(0)
