@@ -1,4 +1,6 @@
 # Signal Extensions for Godot 4
+Godot light-weight signal extensions inspired by [Cysharp/R3](https://github.com/Cysharp/R3)
+
 ## Installation
 - Copy `/addons/signal_extensions/` directory to the `/addons/` directory in your project
 - Enable `SignalExtensions` plugin in `Project Settings > Plugins`
