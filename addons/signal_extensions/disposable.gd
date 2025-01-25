@@ -43,7 +43,7 @@ func add_to(obj: Variant) -> Disposable:
 	push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
 	return self
 
-static func Combine(
+static func combine(
 	d0: Disposable,
 	d1: Disposable,
 	d2: Disposable = Disposable.empty,

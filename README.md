@@ -1,11 +1,13 @@
 # Signal Extensions for Godot 4
-Godot light-weight signal extensions inspired by [Cysharp/R3](https://github.com/Cysharp/R3)
+This library extends GDScript's [Signal](https://docs.godotengine.org/en/stable/classes/class_signal.html) and [Callable](https://docs.godotengine.org/en/stable/classes/class_callable.html) classes, influenced by [Cysharp/R3](https://github.com/Cysharp/R3).<br>
+The main purpose of this library is to make it easier to unsubscribe from Godot signals. However, it is not intended to fully replicate R3.<br>
+Additionally, several simple operators are implemented.
 
 ## Installation
-- Copy `/addons/signal_extensions/` directory to the `/addons/` directory in your project
+- Copy `addons/signal_extensions/` directory to the `addons/` directory in your project
 - Enable `SignalExtensions` plugin in `Project Settings > Plugins`
 
-## Subject
+## Subjects and ReactiveProperty
 ```gdscript
 var subject := Subject.new()
 var subscription := subject.subscribe(func(_x): print("Hello, World!"))
@@ -24,39 +26,6 @@ subject.dispose()
 Hello, world!
 ```
 
-- You can use `add_to` method for dispose if your script extends Node class:
-
-```gdscript
-extends Node
-
-@onready var _subject := Subject.new()
-
-func _ready() -> void:
-    # Will dispose subject when node exiting
-    _subject.add_to(self)
-
-    # Will dispose subscription when node exiting
-    _subject.subscribe(func(_unit: Unit): pass ).add_to(self)
-```
-
-- Also `add_to` supported for `Array` class:
-
-```gdscript
-var bag := []
-subject.add_to(bag)
-subject.subscribe(func(_unit: Unit): pass ).add_to(bag)
-
-for d in bag:
-    d.dispose()
-```
-
-- Subject is awaitable like Signal:
-
-```gdscript
-var result: int = await subject.wait()
-```
-
-## Reactive Property
 ```gdscript
 var health := ReactiveProperty.new(100.0)
 
@@ -74,7 +43,53 @@ health.dispose()
 50
 ```
 
-- ReactiveProperty also has `add_to` and `wait` methods.
+Only the `on_next()` (value setter) is implemented.<br>
+Unsubscribing from both the source and the subscriber can be done using `dispose()`.
+
+
+```gdscript
+var r1: int = await subject.wait()
+var r2: float = await rp.wait()
+```
+
+Additionally, both classes behave the same as GDScript’s Signal await when the `wait()` function is called.
+
+## Disposable
+```gdscript
+extends Node
+
+@onready var _subject := Subject.new()
+
+func _ready() -> void:
+    # Will dispose subject when node exiting
+    _subject.add_to(self)
+
+    # Will dispose subscription when node exiting
+    _subject.subscribe(func(_unit: Unit): pass ).add_to(self)
+```
+
+If the class being used inherits from the [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) class, calling `add_to(self)` will associate the dispose method with the [tree_exiting](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-signal-tree-exiting) signal.
+
+```gdscript
+var bag: Array[Disposable] = []
+subject.add_to(bag)
+subject.subscribe(func(_unit: Unit): pass ).add_to(bag)
+
+for d in bag:
+    d.dispose()
+```
+
+The argument for `add_to()` can also accept an `Array[Disposable]`.
+
+```gdscript
+var d1 := rp.subscribe(func(x): print(x))
+var d2 := rp.subscribe(func(x): print(x))
+
+var disposable := Disposable.combine(d1, d2)
+disposable.dispose()
+```
+
+By using the `Disposable.combine()`, it is possible to combine multiple Disposable objects.
 
 ## Operators
 ### Skip
