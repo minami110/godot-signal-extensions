@@ -23,19 +23,18 @@ func test_take_skip() -> void:
 
 func test_skip_take() -> void:
 	_result_int = 0
-	var subject := Subject.new()
-	var d := subject.skip(2).take(2).subscribe(func(i: int) -> void:
+	var rp := ReactiveProperty.new(10)
+	var d := rp.skip(2).take(2).subscribe(func(i: int) -> void:
 		_result_int = i
 	)
+	assert_int(_result_int).is_equal(0)
 
-	subject.on_next(10)
+	rp.value = 20
 	assert_int(_result_int).is_equal(0)
-	subject.on_next(20)
-	assert_int(_result_int).is_equal(0)
-	subject.on_next(30)
+	rp.value = 30
 	assert_int(_result_int).is_equal(30)
 	d.dispose()
-	subject.on_next(40)
+	rp.value = 40
 	assert_int(_result_int).is_equal(30)
 
 func test_where_skip() -> void:

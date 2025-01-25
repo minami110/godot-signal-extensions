@@ -73,3 +73,42 @@ health.dispose()
 ```
 
 - ReactiveProperty also has `add_to` and `wait` methods.
+
+## Operators
+### Skip
+```gdscript
+subject.skip(2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+3
+```
+
+### Take
+```gdscript
+subject.take(2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+1
+2
+```
+
+### Where
+```gdscript
+subject.where(func(x): return x >= 2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+2
+3
+```
