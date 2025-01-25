@@ -1,8 +1,8 @@
 class_name Subscription extends Disposable
 
 
-var _signal: Signal
-var _callable: Callable
+var _signal: Signal = Signal()
+var _callable: Callable = Callable()
 
 func _init(sig: Signal, callable: Callable) -> void:
 	if sig.is_null():
@@ -22,10 +22,17 @@ func _init(sig: Signal, callable: Callable) -> void:
 	_callable = callable
 
 func dispose() -> void:
-	if not _signal:
+	# Note: Signal().is_null() == true
+	if _signal.is_null():
 		return
 
-	if _signal != null and not _signal.is_null() and _signal.is_connected(_callable):
+	# シグナルを所有しているオーナー (Subject / ReactiveProperty) がもう削除されているかを確認
+	if not is_instance_id_valid(_signal.get_object_id()):
+		_signal = Signal()
+		_callable = Callable()
+		return
+
+	if _signal.is_connected(_callable):
 		_signal.disconnect(_callable)
 
 	_signal = Signal()
