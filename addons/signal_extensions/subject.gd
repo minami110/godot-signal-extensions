@@ -29,7 +29,7 @@ func dispose() -> void:
 
 	self.set_block_signals(true)
 
-## Wait for the next value emitted.
+## Wait for the next value emitted.[br]
 ## Usage:
 ## [codeblock]
 ## var value := await subject.wait()

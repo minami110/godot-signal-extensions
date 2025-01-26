@@ -21,6 +21,28 @@ func test_rp() -> void:
 	rp.value = 3
 	assert_int(_result_int).is_equal(2)
 
+func test_rp_equality() -> void:
+	_result_int = 0
+	var rp := ReactiveProperty.new(1)
+	rp.subscribe(func(new_value: int) -> void:
+		_result_int += new_value
+	)
+	rp.value = 1
+	assert_int(_result_int).is_equal(1)
+	rp.value = 2
+	assert_int(_result_int).is_equal(3)
+
+func test_rp_equality_disabled() -> void:
+	_result_int = 0
+	var rp := ReactiveProperty.new(1, false)
+	rp.subscribe(func(new_value: int) -> void:
+		_result_int += new_value
+	)
+	rp.value = 1
+	assert_int(_result_int).is_equal(2)
+	rp.value = 2
+	assert_int(_result_int).is_equal(4)
+
 func test_rp_await() -> void:
 	_result_int = 0
 	var rp := ReactiveProperty.new(1)

@@ -4,6 +4,12 @@ var _value: Variant
 var _check_equality: bool
 signal _value_changed(new_value: Variant)
 
+## Create a new reactive property.[br]
+## Usage:
+## [codeblock]
+## var rp1 := ReactiveProperty.new(1)
+## var rp2 := ReactiveProperty.new(1, false) # Disable equality check
+## [/codeblock]
 func _init(initial_value: Variant, check_equality := true) -> void:
 	_value = initial_value
 	_check_equality = check_equality
@@ -43,7 +49,7 @@ func dispose() -> void:
 
 	self.set_block_signals(true)
 
-## Wait for the next value changed.
+## Wait for the next value changed.[br]
 ## Usage:
 ## [codeblock]
 ## var value := await rp.wait()
