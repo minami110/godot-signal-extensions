@@ -1,6 +1,6 @@
 class_name Subject extends Observable
 
-signal _on_next(new_value: Variant)
+signal _on_next(value: Variant)
 
 func _to_string() -> String:
 	return "<Subject#%d>" % self.get_instance_id()

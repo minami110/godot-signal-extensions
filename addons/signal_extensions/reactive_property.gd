@@ -2,7 +2,7 @@ class_name ReactiveProperty extends Observable
 
 var _value: Variant
 var _check_equality: bool
-signal _value_changed(new_value: Variant)
+signal _on_next(value: Variant)
 
 func _to_string() -> String:
 	return "%s:<ReactiveProperty#%d>" % [_value, self.get_instance_id()]
@@ -32,7 +32,7 @@ func _set_value(new_value: Variant) -> void:
 	_value = new_value
 
 	if not self.is_blocking_signals():
-		_value_changed.emit(new_value)
+		_on_next.emit(new_value)
 
 ## The current value of the property.
 var value: Variant: get = _get_value, set = _set_value
@@ -42,7 +42,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 		return Disposable.empty
 	else:
 		observer.call(_value)
-		return Subscription.new(_value_changed, observer)
+		return Subscription.new(_on_next, observer)
 
 ## Dispose of the property.
 func dispose() -> void:
@@ -50,13 +50,14 @@ func dispose() -> void:
 		return
 
 	# Disconnect all signals
-	var connections := self.get_signal_connection_list(&"_value_changed")
+	var connections := self.get_signal_connection_list(&"_on_next")
 	for c in connections:
-		_value_changed.disconnect(c.callable as Callable)
+		_on_next.disconnect(c.callable as Callable)
 
 	self.set_block_signals(true)
 
 ## Wait for the next value changed.[br]
+## [b]Note:[/b] If disposed, it will return null[br]
 ## Usage:
 ## [codeblock]
 ## var value := await rp.wait()
@@ -65,4 +66,4 @@ func wait() -> Variant:
 	if self.is_blocking_signals():
 		return null
 
-	return await _value_changed
+	return await _on_next
