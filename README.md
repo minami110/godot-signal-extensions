@@ -23,7 +23,10 @@ func _ready() -> void:
 	var d1 := health.subscribe(_update_label)
 
 	# Subscribe reactive property with operator
-	var d2 := health.where(func(x): return x <= 0.0).take(1).subscribe(func(_x): print("Dead"))
+	var d2 := health \
+		.where(func(x): return x <= 0.0) \
+		.take(1) \
+		.subscribe(func(_x): print("Dead"))
 
 	# Dispose when this node exiting tree
 	Disposable.combine(health, d1, d2).add_to(self)
