@@ -4,17 +4,43 @@ The main purpose of this plugin is to make it easier to unsubscribe from Godot s
 Additionally, several simple operators are implemented.
 
 ## Installation
-### Asset Library
+### from Asset Library
 You can install the plugin by searching for "Signal Extensions" in the AssetLib tab within the editor.
 
-### GitHub
+### from GitHub
 Download the latest .zip file from the [Releases](https://github.com/minami110/godot-signal-extensions/releases) page of this repository.<br>
 After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.<br>
 Launch the editor and enable "Signal Extensions" from `Project Settings > Plugins`.
 
-## Basic usages
+## Sample Code
+```gdscript
+extends Node2D
 
-## Subject and ReactiveProperty
+@onready var health := ReactiveProperty.new(100.0)
+
+func _ready() -> void:
+	# Subscribe reactive property
+	var d1 := health.subscribe(_update_label)
+
+	# Subscribe reactive property with operator
+	var d2 := health.where(func(x): return x <= 0.0).take(1).subscribe(func(_x): print("Dead"))
+
+	# Dispose when this node exiting tree
+	Disposable.combine(health, d1, d2).add_to(self)
+
+func _update_label(value: float) -> void:
+	print("Health: %s" % value)
+
+func take_damage(damage: float) -> void:
+	# Update reactive property value
+	health.value -= damage
+```
+
+This is a sample code of a simple player class that can be written using this plugin.<br>
+It implements the minimum functionality of `Subject` and `ReactiveProperty`, and allows the use of several basic operators.<br>
+Unsubscribing and stopping the stream can be done via the `dispose()` method, and in the case of classes inheriting from [Node](https://docs.godotengine.org/en/stable/classes/class_node.html), you can reduce the amount of code by using the `add_to()` method.
+
+## Subject
 ```gdscript
 var subject := Subject.new()
 var subscription := subject.subscribe(func(_x): print("Hello, World!"))
@@ -24,7 +50,7 @@ subject.on_next(Unit.default)
 
 # Unsubscribe
 subscription.dispose()
-subject.on_next(Unit.default)
+subject.on_next() # no arg == Unit.default
 
 # Dispose subject
 subject.dispose()
@@ -33,8 +59,12 @@ subject.dispose()
 Hello, world!
 ```
 
+## ReactiveProperty
 ```gdscript
 var health := ReactiveProperty.new(100.0)
+
+# Gets the value
+print(health.value)
 
 # Subscribe to health changes
 health.subscribe(func(x: float): print(x))
@@ -47,19 +77,21 @@ health.dispose()
 ```
 ```console
 100
+100
 50
 ```
 
 Only the `on_next()` (value setter) is implemented.<br>
 Unsubscribing from both the source and the subscriber can be done using `dispose()`.
 
+## Awaitable
 
 ```gdscript
 var r1: int = await subject.wait()
 var r2: float = await rp.wait()
 ```
 
-Additionally, both classes behave the same as GDScript’s Signal await when the `wait()` function is called.
+`Subject` and `ReactiveProperty` behave the same as GDScript’s Signal await when the `wait()` function is called.
 
 ## Disposable
 ```gdscript
