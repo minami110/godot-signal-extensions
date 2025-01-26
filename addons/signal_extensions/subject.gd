@@ -2,6 +2,12 @@ class_name Subject extends Observable
 
 signal _on_next(new_value: Variant)
 
+func _to_string() -> String:
+	return "<Subject#%d>" % self.get_instance_id()
+
+## Notifies all subscribed callables with the value.[br]
+## If the [param value] is not provided, it will emit [member Unit.default].[br]
+## [b]Note:[/b] If disposed, it will not emit any value.
 func on_next(value: Variant = null) -> void:
 	if self.is_blocking_signals():
 		return
@@ -30,6 +36,7 @@ func dispose() -> void:
 	self.set_block_signals(true)
 
 ## Wait for the next value emitted.[br]
+## [b]Note:[/b] If disposed, it will return null[br]
 ## Usage:
 ## [codeblock]
 ## var value := await subject.wait()

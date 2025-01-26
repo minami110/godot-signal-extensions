@@ -4,6 +4,9 @@ var _value: Variant
 var _check_equality: bool
 signal _value_changed(new_value: Variant)
 
+func _to_string() -> String:
+	return "%s:<ReactiveProperty#%d>" % [_value, self.get_instance_id()]
+
 ## Create a new reactive property.[br]
 ## Usage:
 ## [codeblock]
