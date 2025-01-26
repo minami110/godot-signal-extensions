@@ -1,11 +1,19 @@
 # Signal Extensions for Godot 4
-This library extends GDScript's [Signal](https://docs.godotengine.org/en/stable/classes/class_signal.html) and [Callable](https://docs.godotengine.org/en/stable/classes/class_callable.html) classes, influenced by [Cysharp/R3](https://github.com/Cysharp/R3).<br>
-The main purpose of this library is to make it easier to unsubscribe from Godot signals. However, it is not intended to fully replicate R3.<br>
+This plugin extends GDScript's [Signal](https://docs.godotengine.org/en/stable/classes/class_signal.html) and [Callable](https://docs.godotengine.org/en/stable/classes/class_callable.html) classes, influenced by [Cysharp/R3](https://github.com/Cysharp/R3).<br>
+The main purpose of this plugin is to make it easier to unsubscribe from Godot signals. However, it is not intended to fully replicate R3.<br>
 Additionally, several simple operators are implemented.
 
 ## Installation
-- Copy `addons/signal_extensions/` directory to the `addons/` directory in your project
-- Enable `SignalExtensions` plugin in `Project Settings > Plugins`
+### Asset Library
+You can install the plugin by searching for "Signal Extensions" in the AssetLib tab within the editor.
+
+### GitHub
+Download the latest .zip file from the [Releases](https://github.com/minami110/godot-signal-extensions/releases) page of this repository.<br>
+After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.<br>
+Launch the editor and enable "Signal Extensions" from `Project Settings > Plugins`.
+
+## Basic usages
+- pass
 
 ## Subjects and ReactiveProperty
 ```gdscript
