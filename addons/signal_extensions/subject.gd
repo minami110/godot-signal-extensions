@@ -1,35 +1,34 @@
 class_name Subject extends Observable
 
-var _is_disposed: bool = false
-signal _signal(new_value: Variant)
+signal _on_next(new_value: Variant)
 
 func on_next(value: Variant) -> void:
-	if _is_disposed:
+	if self.is_blocking_signals():
 		return
 
-	_signal.emit(value)
+	_on_next.emit(value)
 
 ## Subscribe to changes in the property.
 func _subscribe_core(observer: Callable) -> Disposable:
-	if _is_disposed:
+	if self.is_blocking_signals():
 		return Disposable.empty
 	else:
-		return Subscription.new(_signal, observer)
+		return Subscription.new(_on_next, observer)
 
 ## Dispose of the property.
 func dispose() -> void:
-	if _is_disposed:
+	if self.is_blocking_signals():
 		return
 
-	_is_disposed = true
-
 	# Disconnect all signals
-	var connections := _signal.get_connections()
+	var connections := self.get_signal_connection_list(&"_on_next")
 	for c in connections:
-		_signal.disconnect(c.callable as Callable)
+		_on_next.disconnect(c.callable as Callable)
+
+	self.set_block_signals(true)
 
 func wait() -> Variant:
-	if _is_disposed:
+	if self.is_blocking_signals():
 		return null
 
-	return await _signal
+	return await _on_next
