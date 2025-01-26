@@ -5,7 +5,7 @@ var _check_equality: bool
 signal _on_next(value: Variant)
 
 func _to_string() -> String:
-	return "%s:<ReactiveProperty#%d>" % [_value, self.get_instance_id()]
+	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
 
 ## Create a new reactive property.[br]
 ## Usage:
@@ -16,7 +16,7 @@ func _to_string() -> String:
 func _init(initial_value: Variant, check_equality := true) -> void:
 	if initial_value == null:
 		push_error("initial_value should not be null.")
-		self.set_block_signals(true)
+		set_block_signals(true)
 		return
 
 	_value = initial_value
@@ -31,14 +31,14 @@ func _set_value(new_value: Variant) -> void:
 
 	_value = new_value
 
-	if not self.is_blocking_signals():
+	if not is_blocking_signals():
 		_on_next.emit(new_value)
 
 ## The current value of the property.
 var value: Variant: get = _get_value, set = _set_value
 
 func _subscribe_core(observer: Callable) -> Disposable:
-	if self.is_blocking_signals():
+	if is_blocking_signals():
 		return Disposable.empty
 	else:
 		observer.call(_value)
@@ -46,15 +46,15 @@ func _subscribe_core(observer: Callable) -> Disposable:
 
 ## Dispose of the property.
 func dispose() -> void:
-	if self.is_blocking_signals():
+	if is_blocking_signals():
 		return
 
 	# Disconnect all signals
-	var connections := self.get_signal_connection_list(&"_on_next")
+	var connections := get_signal_connection_list(&"_on_next")
 	for c in connections:
 		_on_next.disconnect(c.callable as Callable)
 
-	self.set_block_signals(true)
+	set_block_signals(true)
 
 ## Wait for the next value changed.[br]
 ## [b]Note:[/b] If disposed, it will return null[br]
@@ -63,7 +63,7 @@ func dispose() -> void:
 ## var value := await rp.wait()
 ## [/codeblock]
 func wait() -> Variant:
-	if self.is_blocking_signals():
+	if is_blocking_signals():
 		return null
 
 	return await _on_next
