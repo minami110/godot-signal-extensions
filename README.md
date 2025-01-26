@@ -133,8 +133,14 @@ disposable.dispose()
 
 By using the `Disposable.combine()`, it is possible to combine multiple Disposable objects.
 
+## Factories
+## from_signal
+```gdscript
+Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
+```
+
 ## Operators
-### Skip
+### skip
 ```gdscript
 subject.skip(2).subscribe(func(x): print(x))
 
@@ -146,7 +152,7 @@ subject.on_next(3)
 3
 ```
 
-### Take
+### take
 ```gdscript
 subject.take(2).subscribe(func(x): print(x))
 
@@ -159,7 +165,7 @@ subject.on_next(3)
 2
 ```
 
-### Where
+### where
 ```gdscript
 subject.where(func(x): return x >= 2).subscribe(func(x): print(x))
 

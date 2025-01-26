@@ -6,4 +6,4 @@ func _init() -> void:
 	pass
 
 func _to_string() -> String:
-	return "()"
+	return "<Unit#%d>" % get_instance_id()
