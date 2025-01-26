@@ -11,6 +11,11 @@ signal _value_changed(new_value: Variant)
 ## var rp2 := ReactiveProperty.new(1, false) # Disable equality check
 ## [/codeblock]
 func _init(initial_value: Variant, check_equality := true) -> void:
+	if initial_value == null:
+		push_error("initial_value should not be null.")
+		self.set_block_signals(true)
+		return
+
 	_value = initial_value
 	_check_equality = check_equality
 
@@ -18,14 +23,13 @@ func _get_value() -> Variant:
 	return _value
 
 func _set_value(new_value: Variant) -> void:
-	if self.is_blocking_signals():
-		return
-
 	if _check_equality and _value == new_value:
 		return
 
 	_value = new_value
-	_value_changed.emit(new_value)
+
+	if not self.is_blocking_signals():
+		_value_changed.emit(new_value)
 
 ## The current value of the property.
 var value: Variant: get = _get_value, set = _set_value
