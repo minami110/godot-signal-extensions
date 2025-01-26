@@ -5,8 +5,8 @@ var _signal: Signal = Signal()
 var _callable: Callable = Callable()
 
 func _init(sig: Signal, callable: Callable) -> void:
-	# Note: Signal().is_null() == true
-	if sig.is_null():
+	# Note: Signal.is_zero() == Signal.is_null()
+	if not sig:
 		push_error("Signal is null")
 		return
 
@@ -29,11 +29,10 @@ func _init(sig: Signal, callable: Callable) -> void:
 	_callable = callable
 
 func dispose() -> void:
-	# Note: Signal().is_null() == true
-	if _signal.is_null():
+	if not _signal:
 		return
 
-	# Already freed signal's owner
+	# Check freed signal's owner
 	if not is_instance_id_valid(_signal.get_object_id()):
 		_signal = Signal()
 		_callable = Callable()

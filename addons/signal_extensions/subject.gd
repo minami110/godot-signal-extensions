@@ -2,20 +2,22 @@ class_name Subject extends Observable
 
 signal _on_next(new_value: Variant)
 
-func on_next(value: Variant) -> void:
+func on_next(value: Variant = null) -> void:
 	if self.is_blocking_signals():
 		return
 
-	_on_next.emit(value)
+	if value == null:
+		_on_next.emit(Unit.default)
+	else:
+		_on_next.emit(value)
 
-## Subscribe to changes in the property.
 func _subscribe_core(observer: Callable) -> Disposable:
 	if self.is_blocking_signals():
 		return Disposable.empty
 	else:
 		return Subscription.new(_on_next, observer)
 
-## Dispose of the property.
+## Dispose the subject.
 func dispose() -> void:
 	if self.is_blocking_signals():
 		return
@@ -27,6 +29,11 @@ func dispose() -> void:
 
 	self.set_block_signals(true)
 
+## Wait for the next value emitted.
+## Usage:
+## [codeblock]
+## var value := await subject.wait()
+## [/codeblock]
 func wait() -> Variant:
 	if self.is_blocking_signals():
 		return null
