@@ -51,6 +51,8 @@ static func combine(
 
 	if d2 is _EmptyDisposable and d3 is _EmptyDisposable:
 		return _CombinedDisposable2.new(d0, d1)
+	elif d2 is _EmptyDisposable:
+		return _CombinedDisposable3.new(d0, d1, d3)
 	elif d3 is _EmptyDisposable:
 		return _CombinedDisposable3.new(d0, d1, d2)
 	else:

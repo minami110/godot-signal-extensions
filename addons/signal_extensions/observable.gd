@@ -1,9 +1,16 @@
 class_name Observable extends Disposable
 
 
+## Subscribes to the observable.
 func subscribe(observer: Callable) -> Disposable:
 	return _subscribe_core(observer)
 
+## Factories
+static func from_signal(sig: Signal) -> Observable:
+	return _FromSignal.new(sig)
+
+## Operators
+## Skip the first `count` elements of the observable.
 func skip(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
 
@@ -13,6 +20,7 @@ func skip(count: int) -> Observable:
 	else:
 		return _Skip.new(self, count)
 
+## Take the first `count` elements of the observable.
 func take(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
 
@@ -22,6 +30,7 @@ func take(count: int) -> Observable:
 	else:
 		return _Take.new(self, count)
 
+## Filters the observable.
 func where(predicate: Callable) -> Observable:
 	if self is _Where:
 		var old: Callable = self._predicate
