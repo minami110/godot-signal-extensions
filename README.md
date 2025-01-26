@@ -13,7 +13,6 @@ After extracting it, copy the `addons/signal_extensions/` directory into the `ad
 Launch the editor and enable "Signal Extensions" from `Project Settings > Plugins`.
 
 ## Basic usages
-- pass
 
 ## Subject and ReactiveProperty
 ```gdscript
