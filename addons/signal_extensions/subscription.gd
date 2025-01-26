@@ -1,6 +1,5 @@
 class_name Subscription extends Disposable
 
-
 var _signal: Signal = Signal()
 var _callable: Callable = Callable()
 

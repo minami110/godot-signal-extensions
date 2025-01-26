@@ -23,7 +23,10 @@ func _ready() -> void:
 	var d1 := health.subscribe(_update_label)
 
 	# Subscribe reactive property with operator
-	var d2 := health.where(func(x): return x <= 0.0).take(1).subscribe(func(_x): print("Dead"))
+	var d2 := health \
+		.where(func(x): return x <= 0.0) \
+		.take(1) \
+		.subscribe(func(_x): print("Dead"))
 
 	# Dispose when this node exiting tree
 	Disposable.combine(health, d1, d2).add_to(self)
@@ -130,8 +133,14 @@ disposable.dispose()
 
 By using the `Disposable.combine()`, it is possible to combine multiple Disposable objects.
 
+## Factories
+## from_signal
+```gdscript
+Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
+```
+
 ## Operators
-### Skip
+### skip
 ```gdscript
 subject.skip(2).subscribe(func(x): print(x))
 
@@ -143,7 +152,7 @@ subject.on_next(3)
 3
 ```
 
-### Take
+### take
 ```gdscript
 subject.take(2).subscribe(func(x): print(x))
 
@@ -156,7 +165,7 @@ subject.on_next(3)
 2
 ```
 
-### Where
+### where
 ```gdscript
 subject.where(func(x): return x >= 2).subscribe(func(x): print(x))
 

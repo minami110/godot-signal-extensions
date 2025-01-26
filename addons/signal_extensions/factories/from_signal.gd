@@ -1,13 +1,15 @@
 class_name _FromSignal extends Observable
 
-signal _wrapped_signal(value: Variant)
-var _is_disposed: bool = false
+signal _on_next(value: Variant)
 var _source_signal := Signal()
 var _source_signal_arg_count: int
 
 func _init(sig: Signal) -> void:
 	# Check empty signal
-	assert(not sig.is_null())
+	if not sig:
+		push_error("Signal is null")
+		set_block_signals(true)
+		return
 
 	# Check signal's argument count
 	var signal_info := sig.get_object().get_signal_list().filter(func(info):
@@ -17,34 +19,34 @@ func _init(sig: Signal) -> void:
 	var sig_arg_count: int = signal_info[0]["args"].size()
 
 	# Only 0 or 1 argument is allowed
-	assert(sig_arg_count <= 1)
+	if sig_arg_count >= 2:
+		push_error("signal should have 0 or 1 argument. %s has %d arguments" % [sig.get_name(), sig_arg_count])
+		set_block_signals(true)
+		return
+
 	_source_signal_arg_count = sig_arg_count
 	_source_signal = sig
 
 	# When the signal has no argument, wrap it with a signal that emits Unit
 	if _source_signal_arg_count == 0:
-		_source_signal.connect(func(): _wrapped_signal.emit(Unit.default))
+		_source_signal.connect(func() -> void: _on_next.emit(Unit.default))
 	else:
-		_source_signal.connect(func(x: Variant): _wrapped_signal.emit(x))
+		_source_signal.connect(func(x: Variant) -> void: _on_next.emit(x))
 
 func _subscribe_core(observer: Callable) -> Disposable:
-	if _is_disposed or _source_signal.is_null():
+	if not _source_signal:
 		return Disposable.empty
 	else:
-		return Subscription.new(_wrapped_signal, observer)
+		return Subscription.new(_on_next, observer)
 
 func dispose() -> void:
-	if _is_disposed:
-		return
-
-	_is_disposed = true
-	if _source_signal.is_null():
+	if not _source_signal:
 		return
 
 	# Disconnect all signals
-	var connections := _wrapped_signal.get_connections()
+	var connections := get_signal_connection_list(&"_on_next")
 	for c in connections:
-		_wrapped_signal.disconnect(c.callable as Callable)
+		_on_next.disconnect(c.callable as Callable)
 
 	# Disconnect this instance callable from the source signal
 	if is_instance_id_valid(_source_signal.get_object_id()):
@@ -54,9 +56,4 @@ func dispose() -> void:
 				_source_signal.disconnect(callable)
 
 	_source_signal = Signal()
-
-func wait() -> Variant:
-	if _is_disposed:
-		return null
-
-	return await _wrapped_signal
+	set_block_signals(true)
