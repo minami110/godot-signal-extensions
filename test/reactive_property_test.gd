@@ -15,11 +15,16 @@ func test_rp() -> void:
 		_result_int = new_value
 	)
 	assert_int(_result_int).is_equal(1)
+	assert_int(rp.value).is_equal(1)
+
 	rp.value = 2
 	assert_int(_result_int).is_equal(2)
+	assert_int(rp.value).is_equal(2)
+
 	rp.dispose()
 	rp.value = 3
 	assert_int(_result_int).is_equal(2)
+	assert_int(rp.value).is_equal(3)
 
 func test_rp_equality() -> void:
 	_result_int = 0
