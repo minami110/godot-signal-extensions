@@ -15,7 +15,7 @@ Launch the editor and enable "Signal Extensions" from `Project Settings > Plugin
 ## Basic usages
 - pass
 
-## Subjects and ReactiveProperty
+## Subject and ReactiveProperty
 ```gdscript
 var subject := Subject.new()
 var subscription := subject.subscribe(func(_x): print("Hello, World!"))
