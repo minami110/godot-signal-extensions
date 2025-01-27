@@ -130,6 +130,26 @@ The argument for `add_to()` can also accept an `Array[Disposable]`.
 Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
 ```
 
+This converts Godot signals to `Observable` ones. It only supports signals with 0 or 1 arguments. If the signal has 0 arguments, it is converted to `Unit`.
+
+## merge
+```gdscript
+var s1 := Subject.new()
+var s2 := Subject.new()
+var s3 := Subject.new()
+
+Observable.merge([s1, s2, s3]).subscribe(func(x): print(x))
+
+s1.on_next("foo")
+s2.on_next("bar")
+s3.on_next("baz")
+```
+```console
+foo
+bar
+baz
+```
+
 ## Operators
 ### skip
 ```gdscript
