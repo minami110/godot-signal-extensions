@@ -2,6 +2,7 @@
 * text=auto eol=lf
 
 # Export Ignores
+/.github/ export-ignore
 /test/ export-ignore
 /.gitignore export-ignore
 /.gitattributes export-ignore
