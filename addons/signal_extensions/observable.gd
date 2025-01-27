@@ -15,6 +15,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 static func from_signal(sig: Signal) -> Observable:
 	return _FromSignal.new(sig)
 
+## Merges multiple observables into a single observable.
 static func merge(sources: Array[Observable]) -> Observable:
 	return _Merge.new(sources)
 
