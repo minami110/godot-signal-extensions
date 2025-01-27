@@ -5,11 +5,23 @@ class_name Observable extends Disposable
 func subscribe(observer: Callable) -> Disposable:
 	return _subscribe_core(observer)
 
-## Factories
+@warning_ignore("unused_parameter")
+func _subscribe_core(observer: Callable) -> Disposable:
+	return Disposable.empty
+
+#region Factories
+
+## Creates an observable from a signal.
 static func from_signal(sig: Signal) -> Observable:
 	return _FromSignal.new(sig)
 
-## Operators
+static func merge(sources: Array[Observable]) -> Observable:
+	return _Merge.new(sources)
+
+#endregion
+
+#region Operators
+
 ## Skip the first `count` elements of the observable.
 func skip(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
@@ -39,6 +51,4 @@ func where(predicate: Callable) -> Observable:
 	else:
 		return _Where.new(self, predicate)
 
-@warning_ignore("unused_parameter")
-func _subscribe_core(observer: Callable) -> Disposable:
-	return Disposable.empty
+#endregion
