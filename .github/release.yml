@@ -1,0 +1,13 @@
+# .github/release.yml
+
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: New Features
+      labels:
+        - enhancement
+    - title: Other Changes
+      labels:
+        - "*"
