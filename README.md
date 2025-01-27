@@ -5,7 +5,7 @@ Additionally, several simple operators are implemented.
 
 ## Installation
 ### from Asset Library
-You can install the plugin by searching for "Signal Extensions" in the AssetLib tab within the editor.
+You can install the plugin by searching for "[Signal Extensions](https://godotengine.org/asset-library/asset/3661)" in the AssetLib tab within the editor.
 
 ### from GitHub
 Download the latest .zip file from the [Releases](https://github.com/minami110/godot-signal-extensions/releases) page of this repository.<br>
