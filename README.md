@@ -29,7 +29,8 @@ func _ready() -> void:
 		.subscribe(func(_x): print("Dead"))
 
 	# Dispose when this node exiting tree
-	Disposable.combine(health, d1, d2).add_to(self)
+	for d in [health, d1, d2]:
+		d.add_to(self)
 
 func _update_label(value: float) -> void:
 	print("Health: %s" % value)
@@ -123,20 +124,30 @@ for d in bag:
 
 The argument for `add_to()` can also accept an `Array[Disposable]`.
 
-```gdscript
-var d1 := rp.subscribe(func(x): print(x))
-var d2 := rp.subscribe(func(x): print(x))
-
-var disposable := Disposable.combine(d1, d2)
-disposable.dispose()
-```
-
-By using the `Disposable.combine()`, it is possible to combine multiple Disposable objects.
-
 ## Factories
 ## from_signal
 ```gdscript
 Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
+```
+
+This converts Godot signals to `Observable` ones. It only supports signals with 0 or 1 arguments. If the signal has 0 arguments, it is converted to `Unit`.
+
+## merge
+```gdscript
+var s1 := Subject.new()
+var s2 := Subject.new()
+var s3 := Subject.new()
+
+Observable.merge([s1, s2, s3]).subscribe(func(x): print(x))
+
+s1.on_next("foo")
+s2.on_next("bar")
+s3.on_next("baz")
+```
+```console
+foo
+bar
+baz
 ```
 
 ## Operators
