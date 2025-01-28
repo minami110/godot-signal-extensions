@@ -38,13 +38,14 @@ func test_two_subscribers() -> void:
 	var result2 := []
 
 	var subject := Subject.new()
-	var where := subject.where(func(x): return x > 1)
+	var where1 := subject.where(func(x): return x >= 30)
+	var _where2 := where1.where(func(x): return x < 30)
 
 	# two subscribers
-	where.subscribe(func(x): result1.push_back(x))
-	where.subscribe(func(x): result2.push_back(x))
+	where1.subscribe(func(x): result1.push_back(x))
+	where1.subscribe(func(x): result2.push_back(x))
 
-	subject.on_next(1)
-	subject.on_next(2)
-	assert_array(result1, true).is_equal([2])
-	assert_array(result2, true).is_equal([2])
+	subject.on_next(29)
+	subject.on_next(30)
+	assert_array(result1, true).is_equal([30])
+	assert_array(result2, true).is_equal([30])

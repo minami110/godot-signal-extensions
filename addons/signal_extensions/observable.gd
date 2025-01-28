@@ -71,8 +71,7 @@ func take(count: int) -> Observable:
 func where(predicate: Callable) -> Observable:
 	if self is _Where:
 		var old: Callable = self._predicate
-		self._predicate = func(x): return old.call(x) and predicate.call(x)
-		return self
+		return _Where.new(self, func(x): return old.call(x) and predicate.call(x))
 	else:
 		return _Where.new(self, predicate)
 
