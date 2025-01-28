@@ -23,6 +23,14 @@ static func merge(sources: Array[Observable]) -> Observable:
 
 #region Operators
 
+func select(selector: Callable) -> Observable:
+	if self is _Select:
+		var old: Callable = self._selector
+		self._selector = func(x): return selector.call(old.call(x))
+		return self
+	else:
+		return _Select.new(self, selector)
+
 func skip_while(predicate: Callable) -> Observable:
 	if self is _SkipWhile:
 		var old: Callable = self._predicate
