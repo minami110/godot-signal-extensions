@@ -16,7 +16,26 @@ func test_standard() -> void:
 func test_two_subscribers() -> void:
 	var result1 := []
 	var result2 := []
+	var result3 := []
 
 	var subject := Subject.new()
-	var take1 := subject.take(2)
-	var take2 := take1.take(3)
+	var take1 := subject.take(1)
+	var take2 := take1.take(1)
+
+	take1.subscribe(func(x): result1.push_back(x))
+	take1.subscribe(func(x): result2.push_back(x))
+
+	subject.on_next(1)
+	subject.on_next(2)
+	assert_array(result1, true).is_equal([1])
+	assert_array(result2, true).is_equal([1])
+
+	take2.subscribe(func(x): result3.push_back(x))
+
+	subject.on_next(1)
+	subject.on_next(2)
+	subject.on_next(3)
+
+	assert_array(result1, true).is_equal([1])
+	assert_array(result2, true).is_equal([1])
+	assert_array(result3, true).is_equal([1, 2])
