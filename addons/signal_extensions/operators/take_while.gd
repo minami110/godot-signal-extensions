@@ -10,6 +10,9 @@ func _init(source: Observable, predicate: Callable) -> void:
 	_predicate = predicate
 
 func _subscribe_core(observer: Callable) -> Disposable:
+	assert(observer.is_valid(), "take_while.subscribe observer is not valid.")
+	assert(observer.get_argument_count() == 1, "take_while.subscribe observer must have exactly one argument")
+
 	_observer = observer
 	return _source.subscribe(func(value: Variant) -> void: _on_next_core(value))
 
