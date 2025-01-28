@@ -15,7 +15,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	assert(observer.get_argument_count() == 1, "skip_while.subscribe observer must have exactly one argument")
 
 	var o := _SkipWhileObserver.new(observer, _predicate)
-	return _source.subscribe(func(x: Variant) -> void: o._on_next_core(x))
+	return _source.subscribe(func(value: Variant) -> void: o._on_next_core(value))
 
 class _SkipWhileObserver extends RefCounted:
 	var _observer: Callable
