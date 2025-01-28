@@ -5,14 +5,17 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 var _result_int: int
+static var _result_static_int: int
 
-static func print_int(i: int) -> void:
-	print(i)
+static func update_static_result_int(i: int) -> void:
+	_result_static_int = i
 
 func test_static_method_bind() -> void:
+	_result_static_int = 0
 	var subject := Subject.new()
-	subject.subscribe(print_int)
+	subject.subscribe(update_static_result_int)
 	subject.on_next(10)
+	assert_int(_result_static_int).is_equal(10)
 
 func test_take_skip() -> void:
 	_result_int = 0

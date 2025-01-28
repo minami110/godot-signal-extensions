@@ -21,6 +21,9 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	if is_blocking_signals():
 		return Disposable.empty
 	else:
+		assert(observer.is_valid(), "Subject.subscribe observer is not valid.")
+		assert(observer.get_argument_count() == 1, "Subject.subscribe observer must have exactly one argument")
+
 		return Subscription.new(_on_next, observer)
 
 ## Dispose the subject.
