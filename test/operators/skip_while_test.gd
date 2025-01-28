@@ -18,19 +18,21 @@ func test_standard() -> void:
 func test_two_subscribers() -> void:
 	var result1 := []
 	var result2 := []
-	var subject := Subject.new()
-	var skip_while := subject.skip_while(func(x): return x <= 2)
+	var result3 := []
 
-	skip_while.subscribe(func(x): result1.push_back(x))
+	var subject := Subject.new()
+	var skip_while1 := subject.skip_while(func(x): return x <= 2)
+	var skip_while2 := skip_while1.skip_while(func(x): return x >= 4)
+
+	skip_while1.subscribe(func(x): result1.push_back(x))
 
 	subject.on_next(1)
 	subject.on_next(3)
 	subject.on_next(1)
 
 	assert_array(result1, true).is_equal([3, 1])
-	assert_array(result2, true).is_equal([])
 
-	skip_while.subscribe(func(x): result2.push_back(x))
+	skip_while1.subscribe(func(x): result2.push_back(x))
 
 	subject.on_next(1)
 	subject.on_next(3)
@@ -38,3 +40,12 @@ func test_two_subscribers() -> void:
 
 	assert_array(result1, true).is_equal([3, 1, 1, 3, 1])
 	assert_array(result2, true).is_equal([3, 1])
+
+	skip_while2.subscribe(func(x): result3.push_back(x))
+
+	subject.on_next(1)
+	subject.on_next(3)
+
+	assert_array(result1, true).is_equal([3, 1, 1, 3, 1, 1, 3])
+	assert_array(result2, true).is_equal([3, 1, 1, 3])
+	assert_array(result3, true).is_equal([3])

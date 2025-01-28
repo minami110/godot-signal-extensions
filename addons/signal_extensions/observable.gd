@@ -30,10 +30,8 @@ func select(selector: Callable) -> Observable:
 		return _Select.new(self, selector)
 
 func skip_while(predicate: Callable) -> Observable:
-	if self is _SkipWhile:
-		return _SkipWhile.new(self._source, func(x): return self._predicate.call(x) and predicate.call(x))
-	else:
-		return _SkipWhile.new(self, predicate)
+	# Note: no needed combine skip_while and skip_while
+	return _SkipWhile.new(self, predicate)
 
 ## Skip the first `count` elements of the observable.
 func skip(count: int) -> Observable:
@@ -46,7 +44,7 @@ func skip(count: int) -> Observable:
 
 func take_while(predicate: Callable) -> Observable:
 	if self is _TakeWhile:
-		return _TakeWhile.new(self._source, func(x): return self._predicate.call(x) and predicate.call(x))
+		return _TakeWhile.new(self._source, func(x): return self._predicate.call(x) or predicate.call(x))
 	else:
 		return _TakeWhile.new(self, predicate)
 
