@@ -6,6 +6,14 @@ extends GdUnitTestSuite
 
 var _result_int: int
 
+static func print_int(i: int) -> void:
+	print(i)
+
+func test_static_method_bind() -> void:
+	var subject := Subject.new()
+	subject.subscribe(print_int)
+	subject.on_next(10)
+
 func test_take_skip() -> void:
 	_result_int = 0
 	var subject := Subject.new()
