@@ -57,6 +57,12 @@ func take(count: int) -> Observable:
 	else:
 		return _Take.new(self, count)
 
+## Throttles the observable.
+func throttle_last(time_sec: float) -> Observable:
+	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
+
+	return _ThrottleLast.new(self, time_sec)
+
 ## Filters the observable.
 func where(predicate: Callable) -> Observable:
 	if self is _Where:
