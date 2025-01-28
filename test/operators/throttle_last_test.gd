@@ -12,7 +12,7 @@ func test_standard() -> void:
 
 	# 1
 	subject.on_next(1)
-	await _wait_time(0.2)
+	await _wait_time(0.11)
 
 
 	# 5 (制限時間が更新される)
@@ -26,6 +26,6 @@ func test_standard() -> void:
 	await _wait_time(0.05)
 
 	subject.on_next(5)
-	await _wait_time(0.2)
+	await _wait_time(0.11)
 
 	assert_array(result, true).is_equal([1, 5])

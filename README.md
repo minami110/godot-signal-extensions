@@ -143,69 +143,98 @@ var s3 := Subject.new()
 
 Observable \
 	.merge([s1, s2, s3]) \
-	.subscribe(func(x): print(x))
+	.subscribe(func(x): arr.push_back(x))
 
 s1.on_next("foo")
 s2.on_next("bar")
 s3.on_next("baz")
 ```
-```console
-foo
-bar
-baz
+```
+["foo", "bar", "baz"]
 ```
 
 ## Operators
 ### select
 ```gdscript
-subject.select(func(x): return x * 2).subscribe(func(x): print(x))
+subject.select(func(x): return x * 2).subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
 ```
-```console
-2
-4
+```
+[2, 4]
 ```
 
 ### skip
 ```gdscript
-subject.skip(2).subscribe(func(x): print(x))
+subject.skip(2).subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
 subject.on_next(3)
+subject.on_next(1)
 ```
-```console
-3
+```
+[3, 1]
 ```
 
 ### skip_while
+```gdscript
+subject.skip_while(funx(x): return x <= 1).subscribe(func(x): arr.push_back(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(1)
+```
+```
+[2, 1]
+```
 
 ### take
 ```gdscript
-subject.take(2).subscribe(func(x): print(x))
+subject.take(2).subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
 subject.on_next(3)
 ```
-```console
-1
-2
+```
+[1, 2]
 ```
 
 ### take_while
+```gdscript
+subject.take_while(func(x): return x <= 1).subscribe(func(x): arr.push_back(x))
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(1)
+```
+```
+[1]
+```
+
+### throttle_last
+```gdscript
+subject.throttle_last(0.1).subscribe(func(x): arr.push_back(x))
+
+subject.on_next(1)
+await get_tree().create_timer(0.05).timeout
+subject.on_next(2)
+await get_tree().create_timer(0.11).timeout
+```
+```
+[2]
+```
 
 ### where
 ```gdscript
-subject.where(func(x): return x >= 2).subscribe(func(x): print(x))
+subject.where(func(x): return x >= 2).subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
 subject.on_next(3)
 ```
-```console
-2
-3
+```
+[2, 3]
 ```
