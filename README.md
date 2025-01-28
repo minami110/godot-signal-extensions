@@ -44,7 +44,8 @@ This is a sample code of a simple player class that can be written using this pl
 It implements the minimum functionality of `Subject` and `ReactiveProperty`, and allows the use of several basic operators.<br>
 Unsubscribing and stopping the stream can be done via the `dispose()` method, and in the case of classes inheriting from [Node](https://docs.godotengine.org/en/stable/classes/class_node.html), you can reduce the amount of code by using the `add_to()` method.
 
-## Subject
+## Subject and Reactive Property
+### Subject
 ```gdscript
 var subject := Subject.new()
 var subscription := subject.subscribe(func(_x): print("Hello, World!"))
@@ -63,7 +64,10 @@ subject.dispose()
 Hello, world!
 ```
 
-## ReactiveProperty
+Only the `on_next()` is implemented.<br>
+Unsubscribing from both the source and the subscriber can be done using `dispose()`.
+
+### ReactiveProperty
 ```gdscript
 var health := ReactiveProperty.new(100.0)
 
@@ -71,7 +75,7 @@ var health := ReactiveProperty.new(100.0)
 print(health.value)
 
 # Subscribe to health changes
-health.subscribe(func(x: float): print(x))
+health.subscribe(func(x): print(x))
 
 # Update health
 health.value = 50.0
@@ -85,10 +89,7 @@ health.dispose()
 50
 ```
 
-Only the `on_next()` (value setter) is implemented.<br>
-Unsubscribing from both the source and the subscriber can be done using `dispose()`.
-
-## Awaitable
+### Await Subjects and ReactivePropety
 
 ```gdscript
 var r1: int = await subject.wait()
@@ -97,7 +98,7 @@ var r2: float = await rp.wait()
 
 `Subject` and `ReactiveProperty` behave the same as GDScript’s Signal await when the `wait()` function is called.
 
-## Disposable
+### Disposable
 ```gdscript
 extends Node
 
@@ -108,7 +109,7 @@ func _ready() -> void:
     _subject.add_to(self)
 
     # Will dispose subscription when node exiting
-    _subject.subscribe(func(_unit: Unit): pass ).add_to(self)
+    _subject.subscribe(func(x): print(x)).add_to(self)
 ```
 
 If the class being used inherits from the [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) class, calling `add_to(self)` will associate the dispose method with the [tree_exiting](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-signal-tree-exiting) signal.
@@ -116,7 +117,7 @@ If the class being used inherits from the [Node](https://docs.godotengine.org/en
 ```gdscript
 var bag: Array[Disposable] = []
 subject.add_to(bag)
-subject.subscribe(func(_unit: Unit): pass ).add_to(bag)
+subject.subscribe(func(x): print(x)).add_to(bag)
 
 for d in bag:
     d.dispose()
@@ -124,21 +125,25 @@ for d in bag:
 
 The argument for `add_to()` can also accept an `Array[Disposable]`.
 
-## Factories
-## from_signal
+## Other observables (factory methods)
+### from_signal
 ```gdscript
-Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
+Observable \
+	.from_signal($Button.pressed)\
+	.subscribe(func(_x): print("pressed"))
 ```
 
 This converts Godot signals to `Observable` ones. It only supports signals with 0 or 1 arguments. If the signal has 0 arguments, it is converted to `Unit`.
 
-## merge
+### merge
 ```gdscript
 var s1 := Subject.new()
 var s2 := Subject.new()
 var s3 := Subject.new()
 
-Observable.merge([s1, s2, s3]).subscribe(func(x): print(x))
+Observable \
+	.merge([s1, s2, s3]) \
+	.subscribe(func(x): print(x))
 
 s1.on_next("foo")
 s2.on_next("bar")
@@ -151,6 +156,18 @@ baz
 ```
 
 ## Operators
+### select
+```gdscript
+subject.select(func(x): return x * 2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+```
+```console
+2
+4
+```
+
 ### skip
 ```gdscript
 subject.skip(2).subscribe(func(x): print(x))
@@ -162,6 +179,8 @@ subject.on_next(3)
 ```console
 3
 ```
+
+### skip_while
 
 ### take
 ```gdscript
@@ -175,6 +194,8 @@ subject.on_next(3)
 1
 2
 ```
+
+### take_while
 
 ### where
 ```gdscript
