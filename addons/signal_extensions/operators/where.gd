@@ -5,7 +5,9 @@ var _predicate: Callable
 var _observer: Callable
 
 func _init(source: Observable, predicate: Callable) -> void:
+	assert(predicate.is_valid(), "where.predicate is not valid.")
 	assert(predicate.get_argument_count() == 1, "where.predicate must have exactly one argument")
+
 	_source = source
 	_predicate = predicate
 

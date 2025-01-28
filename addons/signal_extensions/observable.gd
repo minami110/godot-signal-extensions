@@ -23,6 +23,14 @@ static func merge(sources: Array[Observable]) -> Observable:
 
 #region Operators
 
+func skip_while(predicate: Callable) -> Observable:
+	if self is _SkipWhile:
+		var old: Callable = self._predicate
+		self._predicate = func(x): return old.call(x) and predicate.call(x)
+		return self
+	else:
+		return _SkipWhile.new(self, predicate)
+
 ## Skip the first `count` elements of the observable.
 func skip(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
