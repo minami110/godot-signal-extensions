@@ -1,21 +1,22 @@
 extends GdUnitTestSuite
 
-@warning_ignore("unused_parameter")
-@warning_ignore("unused_variable")
-@warning_ignore("return_value_discarded")
 
-var _result_int: int
-
-func test_take() -> void:
-	_result_int = 0
+func test_standard() -> void:
+	var result := []
 	var subject := Subject.new()
-	subject.take(2).subscribe(func(i: int) -> void:
-		_result_int = i
-	)
+	subject \
+		.take(2) \
+		.subscribe(func(x): result.push_back(x))
 
 	subject.on_next(10)
-	assert_int(_result_int).is_equal(10)
 	subject.on_next(20)
-	assert_int(_result_int).is_equal(20)
 	subject.on_next(30)
-	assert_int(_result_int).is_equal(20)
+	assert_array(result, true).is_equal([10, 20])
+
+func test_two_subscribers() -> void:
+	var result1 := []
+	var result2 := []
+
+	var subject := Subject.new()
+	var take1 := subject.take(2)
+	var take2 := take1.take(3)

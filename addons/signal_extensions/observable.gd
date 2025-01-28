@@ -44,7 +44,7 @@ func skip(count: int) -> Observable:
 
 func take_while(predicate: Callable) -> Observable:
 	if self is _TakeWhile:
-		return _TakeWhile.new(self._source, func(x): return self._predicate.call(x) or predicate.call(x))
+		return _TakeWhile.new(self._source, func(x): return self._predicate.call(x) and predicate.call(x))
 	else:
 		return _TakeWhile.new(self, predicate)
 

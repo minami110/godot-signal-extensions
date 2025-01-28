@@ -21,7 +21,7 @@ func test_two_subscribers() -> void:
 
 	var subject := Subject.new()
 	var take_while1 := subject.take_while(func(x): return x < 4)
-	var take_while2 := subject.take_while(func(x): return x > 2)
+	var take_while2 := take_while1.take_while(func(x): return x > 2)
 
 	take_while1.subscribe(func(x): result1.push_back(x))
 
