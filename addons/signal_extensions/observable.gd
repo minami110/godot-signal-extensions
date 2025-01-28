@@ -25,6 +25,12 @@ static func merge(sources: Array[Observable]) -> Observable:
 
 #region Operators
 
+## Only emit an item from an [Observable] if a particular [param time_sec] has passed without it emitting another item.
+func debounce(time_sec: float) -> Observable:
+	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
+
+	return _Debounce.new(self, time_sec)
+
 ## Transform the items emitted by an [Observable] by applying a [param selector] to each item.
 func select(selector: Callable) -> Observable:
 	if self is _Select:
@@ -62,7 +68,7 @@ func take(count: int) -> Observable:
 	else:
 		return _Take.new(self, count)
 
-## Only emit an item from an [Observable] if a particular [param time_sec] has passed without it emitting another item.
+## Emit the most recent items emitted by an [Observable] within [param time_sec] intervals
 func throttle_last(time_sec: float) -> Observable:
 	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
 
