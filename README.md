@@ -75,7 +75,7 @@ var health := ReactiveProperty.new(100.0)
 print(health.value)
 
 # Subscribe to health changes
-health.subscribe(func(x: float): print(x))
+health.subscribe(func(x): print(x))
 
 # Update health
 health.value = 50.0
@@ -109,7 +109,7 @@ func _ready() -> void:
     _subject.add_to(self)
 
     # Will dispose subscription when node exiting
-    _subject.subscribe(func(_unit: Unit): pass ).add_to(self)
+    _subject.subscribe(func(x): print(x)).add_to(self)
 ```
 
 If the class being used inherits from the [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) class, calling `add_to(self)` will associate the dispose method with the [tree_exiting](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-signal-tree-exiting) signal.
@@ -117,7 +117,7 @@ If the class being used inherits from the [Node](https://docs.godotengine.org/en
 ```gdscript
 var bag: Array[Disposable] = []
 subject.add_to(bag)
-subject.subscribe(func(_unit: Unit): pass ).add_to(bag)
+subject.subscribe(func(x): print(x)).add_to(bag)
 
 for d in bag:
     d.dispose()
@@ -128,7 +128,9 @@ The argument for `add_to()` can also accept an `Array[Disposable]`.
 ## Other observables (factory methods)
 ### from_signal
 ```gdscript
-Observable.from_signal($Button.pressed).subscribe(func(_x: Unit): print("pressed"))
+Observable \
+	.from_signal($Button.pressed)\
+	.subscribe(func(_x): print("pressed"))
 ```
 
 This converts Godot signals to `Observable` ones. It only supports signals with 0 or 1 arguments. If the signal has 0 arguments, it is converted to `Unit`.
@@ -139,7 +141,9 @@ var s1 := Subject.new()
 var s2 := Subject.new()
 var s3 := Subject.new()
 
-Observable.merge([s1, s2, s3]).subscribe(func(x): print(x))
+Observable \
+	.merge([s1, s2, s3]) \
+	.subscribe(func(x): print(x))
 
 s1.on_next("foo")
 s2.on_next("bar")
@@ -153,6 +157,16 @@ baz
 
 ## Operators
 ### select
+```gdscript
+subject.select(func(x): return x * 2).subscribe(func(x): print(x))
+
+subject.on_next(1)
+subject.on_next(2)
+```
+```console
+2
+4
+```
 
 ### skip
 ```gdscript
