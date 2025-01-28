@@ -28,7 +28,6 @@ class _TakeWhileObserver extends RefCounted:
 	func _on_next_core(value: Variant) -> void:
 		# Already completed
 		if not _predicate:
-			print("Already Completed")
 			return
 
 		assert(_predicate.is_valid(), "take_while.predicate is not valid.")
