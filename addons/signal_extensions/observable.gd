@@ -33,6 +33,14 @@ func skip(count: int) -> Observable:
 	else:
 		return _Skip.new(self, count)
 
+func take_while(predicate: Callable) -> Observable:
+	if self is _TakeWhile:
+		var old: Callable = self._predicate
+		self._predicate = func(x): return old.call(x) and predicate.call(x)
+		return self
+	else:
+		return _TakeWhile.new(self, predicate)
+
 ## Take the first `count` elements of the observable.
 func take(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
