@@ -44,4 +44,9 @@ func add_to(obj: Variant) -> Disposable:
 	return self
 
 class _EmptyDisposable extends Disposable:
-	pass
+	func dispose() -> void:
+		pass
+
+	@warning_ignore("unused_parameter")
+	func add_to(obj: Variant) -> Disposable:
+		return self
