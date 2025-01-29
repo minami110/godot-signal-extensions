@@ -129,7 +129,7 @@ The argument for `add_to()` can also accept an `Array[Disposable]`.
 ### from_signal
 ```gdscript
 Observable \
-	.from_signal($Button.pressed)\
+	.from_signal($Button.pressed) \
 	.subscribe(func(_x): print("pressed"))
 ```
 
@@ -154,9 +154,27 @@ s3.on_next("baz")
 ```
 
 ## Operators
+### debounce
+```gdscript
+subject.debounce(0.1).subscribe(func(x): arr.push_back(x))
+
+subject.on_next(1)
+subject.on_next(2)
+await get_tree().create_timer(0.05).timeout
+subject.on_next(3)
+await get_tree().create_timer(0.05).timeout
+subject.on_next(4)
+await get_tree().create_timer(0.1).timeout
+```
+```
+[4]
+```
+
 ### select
 ```gdscript
-subject.select(func(x): return x * 2).subscribe(func(x): arr.push_back(x))
+subject \
+	.select(func(x): return x * 2) \
+	.subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
@@ -180,7 +198,9 @@ subject.on_next(1)
 
 ### skip_while
 ```gdscript
-subject.skip_while(funx(x): return x <= 1).subscribe(func(x): arr.push_back(x))
+subject \
+	.skip_while(funx(x): return x <= 1) \
+	.subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
@@ -204,7 +224,9 @@ subject.on_next(3)
 
 ### take_while
 ```gdscript
-subject.take_while(func(x): return x <= 1).subscribe(func(x): arr.push_back(x))
+subject \
+	.take_while(func(x): return x <= 1) \
+	.subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
@@ -214,22 +236,28 @@ subject.on_next(1)
 [1]
 ```
 
-### throttle_last
+### throttle_last (sample)
 ```gdscript
 subject.throttle_last(0.1).subscribe(func(x): arr.push_back(x))
+# alias: subject.sample(0.1).subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
-await get_tree().create_timer(0.05).timeout
 subject.on_next(2)
-await get_tree().create_timer(0.11).timeout
+await get_tree().create_timer(0.05).timeout
+subject.on_next(3)
+await get_tree().create_timer(0.05).timeout
+subject.on_next(4)
+await get_tree().create_timer(0.1).timeout
 ```
 ```
-[2]
+[3, 4]
 ```
 
 ### where
 ```gdscript
-subject.where(func(x): return x >= 2).subscribe(func(x): arr.push_back(x))
+subject \
+	.where(func(x): return x >= 2) \
+	.subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)

@@ -31,6 +31,11 @@ func debounce(time_sec: float) -> Observable:
 
 	return _Debounce.new(self, time_sec)
 
+## Emit the most recent items emitted by an [Observable] within [param time_sec] intervals.[br]
+## Alias for [method Observable.throttle_last]
+func sample(time_sec: float) -> Observable:
+	return throttle_last(time_sec)
+
 ## Transform the items emitted by an [Observable] by applying a [param selector] to each item.
 func select(selector: Callable) -> Observable:
 	if self is _Select:
