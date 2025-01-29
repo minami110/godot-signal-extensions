@@ -1,4 +1,6 @@
 class_name _ThrottleLast extends Observable
+## ThrottleLast (Sample) operator
+## Ref: ReactiveX - Sample operator: https://reactivex.io/documentation/operators/sample.html
 
 var _source: Observable
 var _interval: float
