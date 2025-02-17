@@ -1,6 +1,6 @@
 class_name Disposable extends RefCounted
 
-static var empty = _EmptyDisposable.new()
+static var empty: Disposable = _EmptyDisposable.new()
 
 func dispose() -> void:
 	pass
@@ -28,7 +28,7 @@ func add_to(obj: Variant) -> Disposable:
 
 		# Note: 4.3 でなぜかこれで呼び出されない, ラムダなら動く
 		# obj.tree_exiting.connect(dispose, ConnectFlags.CONNECT_ONE_SHOT)
-		obj.tree_exiting.connect(func(): dispose(), ConnectFlags.CONNECT_ONE_SHOT)
+		obj.tree_exiting.connect(func() -> void: dispose(), ConnectFlags.CONNECT_ONE_SHOT)
 		return self
 
 	if obj is Array[Disposable]:

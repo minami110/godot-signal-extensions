@@ -12,7 +12,7 @@ func _init(sig: Signal) -> void:
 		return
 
 	# Check signal's argument count
-	var signal_info := sig.get_object().get_signal_list().filter(func(info):
+	var signal_info := sig.get_object().get_signal_list().filter(func(info: Dictionary) -> bool:
 		return info.name == sig.get_name()
 	)
 	assert(signal_info.size() == 1)
@@ -46,11 +46,12 @@ func dispose() -> void:
 	# Disconnect all signals
 	var connections := get_signal_connection_list(&"_on_next")
 	for c in connections:
-		_on_next.disconnect(c.callable as Callable)
+		var callable: Callable = c.callable
+		_on_next.disconnect(callable)
 
 	# Disconnect this instance callable from the source signal
 	if is_instance_id_valid(_source_signal.get_object_id()):
-		for c in _source_signal.get_connections():
+		for c: Dictionary in _source_signal.get_connections():
 			var callable: Callable = c.callable
 			if get_instance_id() == callable.get_object_id():
 				_source_signal.disconnect(callable)

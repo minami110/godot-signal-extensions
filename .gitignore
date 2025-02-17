@@ -4,3 +4,6 @@
 
 # Addons
 /addons/gdUnit4/
+
+# VSCode
+/.vscode/

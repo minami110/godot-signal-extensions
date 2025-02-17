@@ -39,7 +39,8 @@ func sample(time_sec: float) -> Observable:
 ## Transform the items emitted by an [Observable] by applying a [param selector] to each item.
 func select(selector: Callable) -> Observable:
 	if self is _Select:
-		return _Select.new(self._source, func(x): return selector.call(self._selector.call(x)))
+		var new_source: Observable = self._source
+		return _Select.new(new_source, func(x: Variant) -> Variant: return selector.call(self._selector.call(x)))
 	else:
 		return _Select.new(self, selector)
 
@@ -53,14 +54,17 @@ func skip(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
 
 	if self is _Skip:
-		return _Skip.new(self._source, self._remaining + count)
+		var new_source: Observable = self._source
+		var new_count: int = self._remaining + count
+		return _Skip.new(new_source, new_count)
 	else:
 		return _Skip.new(self, count)
 
 ## Mirror items emitted by an [Observable] until a specified [param predicate] becomes [code]false[/code].
 func take_while(predicate: Callable) -> Observable:
 	if self is _TakeWhile:
-		return _TakeWhile.new(self._source, func(x): return self._predicate.call(x) and predicate.call(x))
+		var new_source: Observable = self._source
+		return _TakeWhile.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
 	else:
 		return _TakeWhile.new(self, predicate)
 
@@ -69,7 +73,9 @@ func take(count: int) -> Observable:
 	assert(count > 0, "count must be greater than 0")
 
 	if self is _Take:
-		return _Take.new(self._source, self._remaining + count)
+		var new_source: Observable = self._source
+		var new_count: int = self._remaining + count
+		return _Take.new(new_source, new_count)
 	else:
 		return _Take.new(self, count)
 
@@ -82,7 +88,8 @@ func throttle_last(time_sec: float) -> Observable:
 ## Emit only those items from an [Observable] that pass a [param predicate] test.
 func where(predicate: Callable) -> Observable:
 	if self is _Where:
-		return _Where.new(self._source, func(x): return self._predicate.call(x) and predicate.call(x))
+		var new_source: Observable = self._source
+		return _Where.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
 	else:
 		return _Where.new(self, predicate)
 

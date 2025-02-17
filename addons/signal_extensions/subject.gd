@@ -34,7 +34,8 @@ func dispose() -> void:
 	# Disconnect all signals
 	var connections := get_signal_connection_list(&"_on_next")
 	for c in connections:
-		_on_next.disconnect(c.callable as Callable)
+		var callable: Callable = c.callable
+		_on_next.disconnect(callable)
 
 	set_block_signals(true)
 
