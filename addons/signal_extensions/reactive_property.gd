@@ -1,6 +1,5 @@
-class_name ReactiveProperty extends Observable
+class_name ReactiveProperty extends ReadOnlyReactiveProperty
 
-var _value: Variant
 var _check_equality: bool
 signal _on_next(value: Variant)
 
@@ -14,11 +13,6 @@ func _to_string() -> String:
 ## var rp2 := ReactiveProperty.new(1, false) # Disable equality check
 ## [/codeblock]
 func _init(initial_value: Variant, check_equality := true) -> void:
-	if initial_value == null:
-		push_error("initial_value should not be null.")
-		set_block_signals(true)
-		return
-
 	_value = initial_value
 	_check_equality = check_equality
 
@@ -26,13 +20,14 @@ func _get_value() -> Variant:
 	return _value
 
 func _set_value(new_value: Variant) -> void:
-	if _check_equality and _value == new_value:
+	if _check_equality and _test_equality(_value, new_value):
 		return
 
 	_value = new_value
 
 	if not is_blocking_signals():
 		_on_next.emit(new_value)
+
 
 ## The current value of the property.
 var value: Variant: get = _get_value, set = _set_value
@@ -71,3 +66,18 @@ func wait() -> Variant:
 		return null
 
 	return await _on_next
+
+static func _test_equality(a: Variant, b: Variant) -> bool:
+	if a == null and b == null:
+		return true
+
+	if a == null or b == null:
+		return false
+
+	if typeof(a) != typeof(b):
+		return false
+
+	if a == b:
+		return true
+
+	return false
