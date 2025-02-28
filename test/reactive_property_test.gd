@@ -8,7 +8,7 @@ const __source := 'res://addons/signal_extensions/reactive_property.gd'
 
 var _result_int: int
 
-func test_rp() -> void:
+func test_standard1() -> void:
 	_result_int = 0
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(func(new_value: int) -> void:
@@ -25,6 +25,25 @@ func test_rp() -> void:
 	rp.value = 3
 	assert_int(_result_int).is_equal(2)
 	assert_int(rp.value).is_equal(3)
+
+func test_standard2() -> void:
+	var result: Array = []
+	var rp := ReactiveProperty.new(null)
+	rp.subscribe(func(new_value: Variant) -> void:
+		result.push_back(new_value)
+	)
+
+	rp.value = 1
+	rp.value = "Foo"
+	rp.value = null
+	rp.value = null
+	var n1 := Node2D.new()
+	var n2 := Node2D.new()
+	rp.value = n1
+	rp.value = n2
+	assert_array(result).is_equal([null, 1, "Foo", null, n1, n2])
+	n1.queue_free()
+	n2.queue_free()
 
 func test_rp_equality() -> void:
 	_result_int = 0
@@ -87,3 +106,20 @@ func test_dispose() -> void:
 	rp.dispose()
 	rp.value = 4
 	assert_int(_result_int).is_equal(3)
+
+func test_read_only_reactive_property() -> void:
+	var result: Array = []
+	var rp_source: ReactiveProperty = ReactiveProperty.new(1)
+
+	# cast
+	var rp := rp_source as ReadOnlyReactiveProperty
+	rp.subscribe(func(new_value: int) -> void:
+		result.push_back(new_value)
+	)
+
+	assert_int(rp.current_value).is_equal(1)
+
+	rp_source.value = 10
+
+	assert_int(rp.current_value).is_equal(10)
+	assert_array(result).is_equal([1, 10])
