@@ -67,6 +67,15 @@ Hello, world!
 Only the `on_next()` is implemented.<br>
 Unsubscribing from both the source and the subscriber can be done using `dispose()`.
 
+```gdscript
+var subject := Subject.new()
+var subscription := subject.subscribe(func(): print("Hello, World!")) # No argument
+subject.on_next(Unit.default)
+```
+
+You can also omit the argument if it's not needed.
+
+
 ### ReactiveProperty
 ```gdscript
 var health := ReactiveProperty.new(100.0)

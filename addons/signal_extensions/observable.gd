@@ -4,7 +4,13 @@ class_name Observable extends Disposable
 ## Subscribes to the [Observable].[br]
 ## [b]Note:[/b] This method currently supports only the `on_next` callback.
 func subscribe(on_next: Callable) -> Disposable:
-	return _subscribe_core(on_next)
+	assert(on_next.is_valid(), "Subject.subscribe observer is not valid.")
+	assert(on_next.get_argument_count() <= 1, "")
+
+	if on_next.get_argument_count() == 1:
+		return _subscribe_core(on_next)
+	else:
+		return _subscribe_core(func(_x: Variant): on_next.call())
 
 ## protected method for inheriting classes
 @warning_ignore("unused_parameter")
