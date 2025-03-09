@@ -6,20 +6,32 @@ extends GdUnitTestSuite
 
 var _result_int: int
 
-func test_subject() -> void:
-	_result_int = 0
+func standard() -> void:
+	var result: Array[int] = []
+
 	var subject := Subject.new()
 	subject.subscribe(func(i: int) -> void:
-		_result_int = i
+		result.append(i)
 	)
-	assert_int(_result_int).is_equal(0)
 
 	subject.on_next(10)
-	assert_int(_result_int).is_equal(10)
-
+	subject.on_next(10)
 	subject.dispose()
 	subject.on_next(20)
-	assert_int(_result_int).is_equal(10)
+	assert_array(result).is_equal([10, 10])
+
+
+func standard_no_argument() -> void:
+	var result: Array[int] = []
+
+	var subject := Subject.new()
+	subject.subscribe(func() -> void:
+		result.append("called")
+	)
+
+	subject.on_next(10)
+	subject.on_next(20)
+	assert_array(result).is_equal(["called", "called"])
 
 func test_unit() -> void:
 	_result_int = 0

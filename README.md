@@ -9,8 +9,7 @@ You can install the plugin by searching for "[Signal Extensions](https://godoten
 
 ### from GitHub
 Download the latest .zip file from the [Releases](https://github.com/minami110/godot-signal-extensions/releases) page of this repository.<br>
-After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.<br>
-Launch the editor and enable "Signal Extensions" from `Project Settings > Plugins`.
+After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.
 
 ## Sample Code
 ```gdscript
@@ -67,6 +66,15 @@ Hello, world!
 Only the `on_next()` is implemented.<br>
 Unsubscribing from both the source and the subscriber can be done using `dispose()`.
 
+```gdscript
+var subject := Subject.new()
+var subscription := subject.subscribe(func(): print("Hello, World!")) # No argument
+subject.on_next(Unit.default)
+```
+
+You can also omit the argument if it's not needed.
+
+
 ### ReactiveProperty
 ```gdscript
 var health := ReactiveProperty.new(100.0)
@@ -88,6 +96,22 @@ health.dispose()
 100
 50
 ```
+
+### ReadOnly
+```gdscript
+var _health: ReactiveProperty
+var _pressed: Subject
+
+var health: ReadOnlyReactiveProperty:
+	get:
+		return _health
+
+var pressed: Observable:
+	get:
+		return _pressed
+```
+
+By casting to Observable or ReadOnlyReactiveProperty, you can prevent external modification of the value.
 
 ### Await Subjects and ReactivePropety
 
