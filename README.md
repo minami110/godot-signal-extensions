@@ -9,8 +9,7 @@ You can install the plugin by searching for "[Signal Extensions](https://godoten
 
 ### from GitHub
 Download the latest .zip file from the [Releases](https://github.com/minami110/godot-signal-extensions/releases) page of this repository.<br>
-After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.<br>
-Launch the editor and enable "Signal Extensions" from `Project Settings > Plugins`.
+After extracting it, copy the `addons/signal_extensions/` directory into the `addons/` folder of your project.
 
 ## Sample Code
 ```gdscript
