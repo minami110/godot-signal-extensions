@@ -98,6 +98,22 @@ health.dispose()
 50
 ```
 
+### ReadOnly
+```gdscript
+var _health: ReactiveProperty
+var _pressed: Subject
+
+var health: ReadOnlyReactiveProperty:
+	get:
+		return _health
+
+var pressed: Observable:
+	get:
+		return _pressed
+```
+
+By casting to Observable or ReadOnlyReactiveProperty, you can prevent external modification of the value.
+
 ### Await Subjects and ReactivePropety
 
 ```gdscript
