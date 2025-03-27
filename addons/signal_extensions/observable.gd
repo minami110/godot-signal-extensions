@@ -10,7 +10,7 @@ func subscribe(on_next: Callable) -> Disposable:
 	if on_next.get_argument_count() == 1:
 		return _subscribe_core(on_next)
 	else:
-		return _subscribe_core(func(_x: Variant): on_next.call())
+		return _subscribe_core(func(_x: Variant) -> void: on_next.call())
 
 ## protected method for inheriting classes
 @warning_ignore("unused_parameter")
