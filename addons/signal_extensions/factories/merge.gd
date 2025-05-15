@@ -21,6 +21,9 @@ func _on_next_core(value: Variant) -> void:
 	_observer.call(value)
 
 
+func wait() -> Variant:
+	return await _MergePromise.any(_sources)
+
 class _MergeDisposable extends Disposable:
 	var _disposables: Array[Disposable] = []
 
@@ -28,3 +31,26 @@ class _MergeDisposable extends Disposable:
 		for disposable in _disposables:
 			disposable.dispose()
 		_disposables = []
+
+
+class _MergePromise extends RefCounted:
+	signal _any_signal_emitted(v: Variant)
+
+	static func any(sources: Array[Observable]) -> Variant:
+		assert(sources.size() > 0, "Empty sources")
+		return await _MergePromise.new()._any_async(sources)
+
+	func _any_async(sources: Array[Observable]) -> Variant:
+		var bag: Array[Disposable] = []
+
+		for source in sources:
+			source.subscribe(func(x: Variant) -> void:
+				_any_signal_emitted.emit(x)
+			).add_to(bag)
+
+		var result: Variant = await _any_signal_emitted
+		for d in bag:
+			d.dispose()
+		bag.clear()
+
+		return result
