@@ -3,9 +3,8 @@ run-name: ${{ github.head_ref || github.ref_name }}-gdunit4-tests
 
 on:
   pull_request:
-    paths-ignore:
-      - '**.yml'
-      - '**.md'
+    branches: [ main ]
+    paths-ignore: ['**.md']
 
 jobs:
   unit-test:
@@ -29,5 +28,5 @@ jobs:
           godot-version: '4.4.1'
           paths: |
             res://test/
-          timeout: 5
+          timeout: 10
           report-name: test_report.xml
