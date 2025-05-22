@@ -223,8 +223,8 @@ subject.on_next(1)
 ### skip_while
 ```gdscript
 subject \
-	.skip_while(funx(x): return x <= 1) \
-	.subscribe(func(x): arr.push_back(x))
+        .skip_while(func(x): return x <= 1) \
+        .subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
 subject.on_next(2)
