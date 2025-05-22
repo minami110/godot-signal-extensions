@@ -32,25 +32,26 @@ func test_from_signal_oneparm() -> void:
 	assert_int(_result_int).is_equal(2)
 
 func test_from_signal_twoparms() -> void:
-        var result: Array = []
-        var d1 := Observable.from_signal(twoparms).subscribe(func(arr: Array) -> void:
-                result = arr
-        )
-        twoparms.emit(1.0, "ok")
-        assert_array(result).is_equal([1.0, "ok"])
+	var result: Array = []
+	var d1 := Observable.from_signal(twoparms).subscribe(func(arr: Array) -> void:
+			result.append_array(arr)
+	)
+	twoparms.emit(1.0, "ok")
+	assert_array(result).is_equal([1.0, "ok"])
 
-        d1.dispose()
-        twoparms.emit(2.0, "ng")
-        assert_array(result).is_equal([1.0, "ok"])
+	d1.dispose()
+	twoparms.emit(2.0, "ng")
+	assert_array(result).is_equal([1.0, "ok"])
+
 
 func test_from_signal_threeparms() -> void:
-        var result: Array = []
-        var d1 := Observable.from_signal(threeparms).subscribe(func(arr: Array) -> void:
-                result = arr
-        )
-        threeparms.emit(1, 2, 3)
-        assert_array(result).is_equal([1, 2, 3])
+	var result: Array = []
+	var d1 := Observable.from_signal(threeparms).subscribe(func(arr: Array) -> void:
+			result.append_array(arr)
+	)
+	threeparms.emit(1, 2, 3)
+	assert_array(result).is_equal([1, 2, 3])
 
-        d1.dispose()
-        threeparms.emit(4, 5, 6)
-        assert_array(result).is_equal([1, 2, 3])
+	d1.dispose()
+	threeparms.emit(4, 5, 6)
+	assert_array(result).is_equal([1, 2, 3])
