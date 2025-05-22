@@ -1,4 +1,9 @@
 # Signal Extensions for Godot 4
+[![Godot 4.3](https://img.shields.io/badge/Godot-4.3-478cbf?logo=godot-engine&logoColor=white)](https://godotengine.org)
+[![Godot 4.4](https://img.shields.io/badge/Godot-4.4-478cbf?logo=godot-engine&logoColor=white)](https://godotengine.org)
+[![gdunit4-tests](https://github.com/minami110/godot-signal-extensions/actions/workflows/gdunit4-tests.yml/badge.svg)](https://github.com/minami110/godot-signal-extensions/actions/workflows/gdunit4-tests.yml)
+
+
 This plugin extends GDScript's [Signal](https://docs.godotengine.org/en/stable/classes/class_signal.html) and [Callable](https://docs.godotengine.org/en/stable/classes/class_callable.html) classes, influenced by [Cysharp/R3](https://github.com/Cysharp/R3).<br>
 The main purpose of this plugin is to make it easier to unsubscribe from Godot signals. However, it is not intended to fully replicate R3.<br>
 Additionally, several simple operators are implemented.
