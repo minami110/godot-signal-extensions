@@ -129,11 +129,11 @@ extends Node
 @onready var _subject := Subject.new()
 
 func _ready() -> void:
-    # Will dispose subject when node exiting
-    _subject.add_to(self)
+	# Will dispose subject when node exiting
+	_subject.add_to(self)
 
-    # Will dispose subscription when node exiting
-    _subject.subscribe(func(x): print(x)).add_to(self)
+	# Will dispose subscription when node exiting
+	_subject.subscribe(func(x): print(x)).add_to(self)
 ```
 
 If the class being used inherits from the [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) class, calling `add_to(self)` will associate the dispose method with the [tree_exiting](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-signal-tree-exiting) signal.
@@ -144,7 +144,7 @@ subject.add_to(bag)
 subject.subscribe(func(x): print(x)).add_to(bag)
 
 for d in bag:
-    d.dispose()
+	d.dispose()
 ```
 
 The argument for `add_to()` can also accept an `Array[Disposable]`.
@@ -223,7 +223,7 @@ subject.on_next(1)
 ### skip_while
 ```gdscript
 subject \
-	.skip_while(funx(x): return x <= 1) \
+	.skip_while(func(x): return x <= 1) \
 	.subscribe(func(x): arr.push_back(x))
 
 subject.on_next(1)
