@@ -2,7 +2,6 @@ class_name _FromSignal extends Observable
 
 signal _on_next(value: Variant)
 var _source_signal := Signal()
-var _source_signal_arg_count: int
 
 func _init(sig: Signal) -> void:
 	# Check empty signal
@@ -11,27 +10,23 @@ func _init(sig: Signal) -> void:
 		set_block_signals(true)
 		return
 
-	# Check signal's argument count
-	var signal_info := sig.get_object().get_signal_list().filter(func(info: Dictionary) -> bool:
-		return info.name == sig.get_name()
-	)
-	assert(signal_info.size() == 1)
-	var sig_arg_count: int = signal_info[0]["args"].size()
+        # Check signal's argument count
+        var signal_info := sig.get_object().get_signal_list().filter(func(info: Dictionary) -> bool:
+                return info.name == sig.get_name()
+        )
+        assert(signal_info.size() == 1)
 
-	# Only 0 or 1 argument is allowed
-	if sig_arg_count >= 2:
-		push_error("signal should have 0 or 1 argument. %s has %d arguments" % [sig.get_name(), sig_arg_count])
-		set_block_signals(true)
-		return
+        _source_signal = sig
 
-	_source_signal_arg_count = sig_arg_count
-	_source_signal = sig
-
-	# When the signal has no argument, wrap it with a signal that emits Unit
-	if _source_signal_arg_count == 0:
-		_source_signal.connect(func() -> void: _on_next.emit(Unit.default))
-	else:
-		_source_signal.connect(func(x: Variant) -> void: _on_next.emit(x))
+        _source_signal.connect(func(... args) -> void:
+                match args.size():
+                        0:
+                                _on_next.emit(Unit.default)
+                        1:
+                                _on_next.emit(args[0])
+                        _:
+                                _on_next.emit(args)
+        )
 
 func _subscribe_core(observer: Callable) -> Disposable:
 	if not _source_signal:
