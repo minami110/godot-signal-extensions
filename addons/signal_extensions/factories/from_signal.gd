@@ -39,7 +39,7 @@ func _init(sig: Signal) -> void:
 		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant, value5: Variant, value6: Variant, value7: Variant, value8: Variant) -> void: _on_next.emit([value1, value2, value3, value4, value5, value6, value7, value8]))
 	else:
 		set_block_signals(true)
-		assert(false, "Signal has too many arguments. Max 8 arguments are supported.")
+		assert(false, "Signal '%s' has %d arguments, which exceeds the maximum of 8 supported arguments." % [sig.get_name(), sig_arg_count])
 
 
 func _subscribe_core(observer: Callable) -> Disposable:
