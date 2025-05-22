@@ -5,7 +5,7 @@ extends GdUnitTestSuite
 @warning_ignore("return_value_discarded")
 
 
-func standard() -> void:
+func test_standard() -> void:
 	var result: Array[int] = []
 
 	var subject := BehaviourSubject.new(5)
@@ -18,3 +18,11 @@ func standard() -> void:
 	subject.dispose()
 	subject.on_next(20)
 	assert_array(result).is_equal([5, 10, 10])
+
+
+func test_behaviour_subject_wait() -> void:
+	var subject := BehaviourSubject.new(1)
+
+	subject.on_next.call_deferred(2)
+	var result: int = await subject.wait()
+	assert_int(result).is_equal(2)

@@ -31,5 +31,6 @@ func test_from_signal_oneparm() -> void:
 	assert_int(_result_int).is_equal(2)
 
 func test_from_signal_twoparms() -> void:
+	@warning_ignore("untyped_declaration")
 	await assert_error(func(): Observable.from_signal(twoparms).subscribe(func(_x): pass )) \
 		.is_push_error("signal should have 0 or 1 argument. twoparms has 2 arguments")
