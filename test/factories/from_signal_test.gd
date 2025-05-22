@@ -4,6 +4,7 @@ var _result_int: int
 signal noparms
 signal oneparm(x: float)
 signal twoparms(x: float, y: String)
+signal threeparms(a: int, b: int, c: int)
 
 func test_from_signal_noparm() -> void:
 	_result_int = 0
@@ -31,6 +32,26 @@ func test_from_signal_oneparm() -> void:
 	assert_int(_result_int).is_equal(2)
 
 func test_from_signal_twoparms() -> void:
-	@warning_ignore("untyped_declaration")
-	await assert_error(func(): Observable.from_signal(twoparms).subscribe(func(_x): pass )) \
-		.is_push_error("signal should have 0 or 1 argument. twoparms has 2 arguments")
+	var result: Array = []
+	var d1 := Observable.from_signal(twoparms).subscribe(func(arr: Array) -> void:
+			result.append_array(arr)
+	)
+	twoparms.emit(1.0, "ok")
+	assert_array(result).is_equal([1.0, "ok"])
+
+	d1.dispose()
+	twoparms.emit(2.0, "ng")
+	assert_array(result).is_equal([1.0, "ok"])
+
+
+func test_from_signal_threeparms() -> void:
+	var result: Array = []
+	var d1 := Observable.from_signal(threeparms).subscribe(func(arr: Array) -> void:
+			result.append_array(arr)
+	)
+	threeparms.emit(1, 2, 3)
+	assert_array(result).is_equal([1, 2, 3])
+
+	d1.dispose()
+	threeparms.emit(4, 5, 6)
+	assert_array(result).is_equal([1, 2, 3])
