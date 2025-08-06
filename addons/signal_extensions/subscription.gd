@@ -1,4 +1,4 @@
-class_name Subscription extends Disposable
+extends Disposable
 
 # インスタンス変数
 var _signal: Signal = Signal()
