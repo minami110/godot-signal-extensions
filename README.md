@@ -221,7 +221,7 @@ func _ready() -> void:
 If the class being used inherits from the [Node](https://docs.godotengine.org/en/stable/classes/class_node.html) class, calling `add_to(self)` will associate the dispose method with the [tree_exiting](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-signal-tree-exiting) signal.
 
 ```gdscript
-var bag: Array[Disposable] = []
+var bag: Array = []
 subject.add_to(bag)
 subject.subscribe(func(x): print(x)).add_to(bag)
 
@@ -229,7 +229,7 @@ for d in bag:
 	d.dispose()
 ```
 
-The argument for `add_to()` can also accept an `Array[Disposable]`.
+The argument for `add_to()` can also accept an `Array`.
 
 ## Awaiting Observables
 
@@ -326,7 +326,7 @@ s1.on_next("foo")
 s2.on_next("bar")
 s3.on_next("baz")
 ```
-```
+```console
 ["foo", "bar", "baz"]
 ```
 
@@ -345,7 +345,7 @@ await get_tree().create_timer(0.05).timeout
 subject.on_next(4)
 await get_tree().create_timer(0.1).timeout
 ```
-```
+```console
 [4]
 ```
 
@@ -360,7 +360,7 @@ subject \
 subject.on_next(1)
 subject.on_next(2)
 ```
-```
+```console
 [2, 4]
 ```
 
@@ -375,7 +375,7 @@ subject.on_next(2)
 subject.on_next(3)
 subject.on_next(1)
 ```
-```
+```console
 [3, 1]
 ```
 
@@ -391,7 +391,7 @@ subject.on_next(1)
 subject.on_next(2)
 subject.on_next(1)
 ```
-```
+```console
 [2, 1]
 ```
 
@@ -405,7 +405,7 @@ subject.on_next(1)
 subject.on_next(2)
 subject.on_next(3)
 ```
-```
+```console
 [1, 2]
 ```
 
@@ -421,7 +421,7 @@ subject.on_next(1)
 subject.on_next(2)
 subject.on_next(1)
 ```
-```
+```console
 [1]
 ```
 
@@ -441,7 +441,7 @@ await get_tree().create_timer(0.05).timeout
 subject.on_next(4)
 await get_tree().create_timer(0.1).timeout
 ```
-```
+```console
 [3, 4]
 ```
 
@@ -457,7 +457,7 @@ subject.on_next(1)
 subject.on_next(2)
 subject.on_next(3)
 ```
-```
+```console
 [2, 3]
 ```
 
