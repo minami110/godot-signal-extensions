@@ -1,4 +1,4 @@
-class_name _Merge extends Observable
+extends Observable
 
 var _sources: Array[Observable] = []
 var _observer: Callable

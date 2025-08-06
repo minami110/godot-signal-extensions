@@ -1,4 +1,4 @@
-class_name _Skip extends Observable
+extends Observable
 
 var _source: Observable
 var _remaining: int

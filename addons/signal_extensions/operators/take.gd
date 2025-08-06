@@ -1,4 +1,4 @@
-class_name _Take extends Observable
+extends Observable
 
 var _source: Observable
 var _remaining: int

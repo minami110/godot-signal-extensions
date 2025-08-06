@@ -1,4 +1,4 @@
-class_name _Debounce extends Observable
+extends Observable
 
 var _source: Observable
 var _interval: float

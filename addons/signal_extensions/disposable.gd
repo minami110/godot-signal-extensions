@@ -1,9 +1,10 @@
+@abstract
 class_name Disposable extends RefCounted
 
 static var empty: Disposable = _EmptyDisposable.new()
 
-func dispose() -> void:
-	pass
+@abstract
+func dispose() -> void
 
 func add_to(obj: Variant) -> Disposable:
 	if obj == null:

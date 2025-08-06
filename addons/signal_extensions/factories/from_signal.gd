@@ -1,4 +1,6 @@
-class_name _FromSignal extends Observable
+extends Observable
+
+const Subscription = preload("../subscription.gd")
 
 signal _on_next(value: Variant)
 var _source_signal := Signal()

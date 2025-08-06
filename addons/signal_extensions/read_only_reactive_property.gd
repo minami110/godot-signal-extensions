@@ -1,3 +1,4 @@
+@abstract
 class_name ReadOnlyReactiveProperty extends Observable
 
 var _value: Variant

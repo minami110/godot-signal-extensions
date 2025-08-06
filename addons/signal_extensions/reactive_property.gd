@@ -1,7 +1,10 @@
 class_name ReactiveProperty extends ReadOnlyReactiveProperty
 
-var _check_equality: bool
+const Subscription = preload("subscription.gd")
+
 signal _on_next(value: Variant)
+
+var _check_equality: bool
 
 func _to_string() -> String:
 	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
@@ -81,3 +84,46 @@ static func _test_equality(a: Variant, b: Variant) -> bool:
 		return true
 
 	return false
+
+## Adds this [ReactiveProperty] to an object for automatic disposal.[br]
+## Supported types:[br]
+## - [Node]: The [ReactiveProperty] will be disposed when the node exits the tree.[br]
+## - [Array][[Disposable]]: The [ReactiveProperty] will be added to the array.[br]
+## [b]Note:[/b] This method is copied from Disposable implementation for compatibility.
+func add_to(obj: Variant) -> ReactiveProperty:
+	if obj == null:
+		self.dispose()
+		push_error("Null obj. disposed")
+		return self
+
+	if obj is Node:
+		if not is_instance_valid(obj) or obj.is_queued_for_deletion():
+			self.dispose()
+			push_error("Invalid node. disposed")
+			return self
+
+		# outside tree
+		if not obj.is_inside_tree():
+			# Before enter tree
+			if not obj.is_node_ready():
+				push_warning("add_to does not support before enter tree")
+			self.dispose()
+			push_warning("Node is outside tree. disposed")
+			return self
+
+		# Note: 4.3 でなぜかこれで呼び出されない, ラムダなら動く
+		# obj.tree_exiting.connect(dispose, ConnectFlags.CONNECT_ONE_SHOT)
+		obj.tree_exiting.connect(func() -> void: dispose(), ConnectFlags.CONNECT_ONE_SHOT)
+		return self
+
+	if obj is Array:
+		if obj.is_read_only():
+			self.dispose()
+			push_error("Array is read only. disposed")
+			return self
+
+		obj.push_back(self)
+		return self
+
+	push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
+	return self

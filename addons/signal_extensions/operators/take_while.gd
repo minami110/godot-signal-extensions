@@ -1,4 +1,4 @@
-class_name _TakeWhile extends Observable
+extends Observable
 
 var _source: Observable
 var _predicate: Callable

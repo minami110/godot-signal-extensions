@@ -1,6 +1,8 @@
 class_name BehaviourSubject extends Observable
 ### A variant of Subject that requires an initial value and emits its current value whenever it is subscribed to.
 
+const Subscription = preload("subscription.gd")
+
 signal _on_next(value: Variant)
 
 var _latest_value: Variant
@@ -65,3 +67,46 @@ func wait() -> Variant:
 		return null
 
 	return await _on_next
+
+## Adds this [BehaviourSubject] to an object for automatic disposal.[br]
+## Supported types:[br]
+## - [Node]: The [BehaviourSubject] will be disposed when the node exits the tree.[br]
+## - [Array][[Disposable]]: The [BehaviourSubject] will be added to the array.[br]
+## [b]Note:[/b] This method is copied from Disposable implementation for compatibility.
+func add_to(obj: Variant) -> BehaviourSubject:
+	if obj == null:
+		self.dispose()
+		push_error("Null obj. disposed")
+		return self
+
+	if obj is Node:
+		if not is_instance_valid(obj) or obj.is_queued_for_deletion():
+			self.dispose()
+			push_error("Invalid node. disposed")
+			return self
+
+		# outside tree
+		if not obj.is_inside_tree():
+			# Before enter tree
+			if not obj.is_node_ready():
+				push_warning("add_to does not support before enter tree")
+			self.dispose()
+			push_warning("Node is outside tree. disposed")
+			return self
+
+		# Note: 4.3 でなぜかこれで呼び出されない, ラムダなら動く
+		# obj.tree_exiting.connect(dispose, ConnectFlags.CONNECT_ONE_SHOT)
+		obj.tree_exiting.connect(func() -> void: dispose(), ConnectFlags.CONNECT_ONE_SHOT)
+		return self
+
+	if obj is Array:
+		if obj.is_read_only():
+			self.dispose()
+			push_error("Array is read only. disposed")
+			return self
+
+		obj.push_back(self)
+		return self
+
+	push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
+	return self
