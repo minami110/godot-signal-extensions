@@ -57,7 +57,7 @@ Observable (abstract)
 ├── BehaviourSubject
 ├── ReadOnlyReactiveProperty (abstract)
 │   └── ReactiveProperty
-└── Operator classes (_Select, _Where, _Take, etc.)
+└── Operator classes (Select, Where, Take, etc.)
 ```
 
 ### Unit
@@ -100,8 +100,15 @@ var subscription := subject.subscribe(func(): print("Hello, World!")) # No argum
 subject.on_next(Unit.default)
 ```
 
-You can also omit the argument if it's not needed.
+You can also omit the argument if it's not needed. When you don't need the emitted value, use a parameter-less function to ignore the stream values.
 
+```gdscript
+# Practical examples of ignoring stream values
+button_clicks.subscribe(func(): print("Button was clicked!"))
+
+var click_count = 0
+button_clicks.subscribe(func(): click_count += 1)
+```
 
 ### BehaviourSubject
 ```gdscript
@@ -299,7 +306,7 @@ signal player_moved(position: Vector2, velocity: Vector2)
 
 Observable \
 	.from_signal(player_moved) \
-	.subscribe(func(args: Array): 
+	.subscribe(func(args: Array):
 		var pos = args[0] as Vector2
 		var vel = args[1] as Vector2
 		print("Player at ", pos, " moving at ", vel))
