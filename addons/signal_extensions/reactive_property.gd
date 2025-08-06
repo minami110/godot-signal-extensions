@@ -1,40 +1,68 @@
 class_name ReactiveProperty extends ReadOnlyReactiveProperty
-
-const Subscription = preload("subscription.gd")
-
-signal _on_next(value: Variant)
-
-var _check_equality: bool
-
-func _to_string() -> String:
-	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
-
-## Create a new reactive property.[br]
+## A reactive property that holds a value and notifies observers when it changes.
+##
+## ReactiveProperty extends [ReadOnlyReactiveProperty] to provide mutable value storage
+## with automatic change notifications. It immediately emits the current value to new
+## subscribers and can optionally check for equality before emitting changes.
+##
 ## Usage:
 ## [codeblock]
-## var rp1 := ReactiveProperty.new(1)
-## var rp2 := ReactiveProperty.new(1, false) # Disable equality check
+## var health := ReactiveProperty.new(100)
+## health.subscribe(func(value): print("Health: ", value))
+## health.value = 50  # Triggers notification
 ## [/codeblock]
+
+# Dependencies
+const Subscription = preload("subscription.gd")
+
+## Internal signal for value change notifications.
+## @deprecated: This is an internal implementation detail and should not be used directly.
+signal _on_next(value: Variant)
+
+## Whether to check for equality before emitting changes.
+var _check_equality: bool
+
+## The current value of the reactive property.
+##
+## Setting this property will trigger notifications to all subscribers
+## if the new value is different from the current value (when equality checking is enabled).
+## Getting this property returns the current stored value.
+##
+## Usage:
+## [codeblock]
+## rp.value = 42        # Set new value
+## var current = rp.value  # Get current value
+## [/codeblock]
+var value: Variant: get = _get_value, set = _set_value
+
+## Creates a new ReactiveProperty with an initial value.
+##
+## The reactive property will store the initial value and emit it to new subscribers.
+## Optionally, you can disable equality checking to force emission on every value assignment.
+##
+## Usage:
+## [codeblock]
+## var health := ReactiveProperty.new(100)      # With equality check
+## var score := ReactiveProperty.new(0, false)  # Without equality check
+## [/codeblock]
+##
+## [param initial_value]: The starting value for the property
+## [param check_equality]: Whether to check equality before emitting (default: true)
 func _init(initial_value: Variant, check_equality := true) -> void:
 	_value = initial_value
 	_check_equality = check_equality
 
-func _get_value() -> Variant:
-	return _value
+# Built-in overrides
+func _to_string() -> String:
+	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
 
-func _set_value(new_value: Variant) -> void:
-	if _check_equality and _test_equality(_value, new_value):
-		return
-
-	_value = new_value
-
-	if not is_blocking_signals():
-		_on_next.emit(new_value)
-
-
-## The current value of the property.
-var value: Variant: get = _get_value, set = _set_value
-
+## Core subscription implementation for ReactiveProperty.
+##
+## This method immediately calls the observer with the current value,
+## then sets up a subscription for future value changes.
+##
+## [param observer]: The callback function to register
+## [br][b]Returns:[/b] A [Disposable] subscription object
 func _subscribe_core(observer: Callable) -> Disposable:
 	if is_blocking_signals():
 		return Disposable.empty
@@ -45,7 +73,13 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	observer.call(_value)
 	return Subscription.new(_on_next, observer)
 
-## Dispose of the property.
+## Disposes the reactive property and disconnects all subscribers.
+##
+## This method cleans up all signal connections and marks the property
+## as disposed. After disposal, the property will not emit any more changes
+## and [method wait] will return null immediately.
+##
+## [b]Note:[/b] This operation is irreversible.
 func dispose() -> void:
 	if is_blocking_signals():
 		return
@@ -58,18 +92,63 @@ func dispose() -> void:
 
 	set_block_signals(true)
 
-## Wait for the next value changed.[br]
-## [b]Note:[/b] If disposed, it will return null[br]
+## Waits for the next value change asynchronously.
+##
+## This method allows you to await the next change to the property value,
+## similar to awaiting a Godot signal. It's useful for reacting to future changes.
+##
 ## Usage:
 ## [codeblock]
-## var value := await rp.wait()
+## var new_value := await rp.wait()
+## print("Property changed to: ", new_value)
 ## [/codeblock]
+##
+## [br][b]Returns:[/b] The next changed value, or null if disposed
+## [br][b]Note:[/b] If the property is disposed, this returns null immediately.
 func wait() -> Variant:
 	if is_blocking_signals():
 		return null
 
 	return await _on_next
 
+## Adds this reactive property to a disposal container for automatic cleanup.
+##
+## This method allows automatic disposal when a [Node] exits the tree
+## or when added to an [Array] for batch disposal.
+##
+## Usage:
+## [codeblock]
+## rp.add_to(self)  # Dispose when this node exits tree
+## rp.add_to(disposal_bag)  # Add to disposal array
+## [/codeblock]
+##
+## [param obj]: A [Node] or [Array] to handle disposal
+## [br][b]Returns:[/b] This reactive property for method chaining
+func add_to(obj: Variant) -> ReactiveProperty:
+	Disposable.add_to_impl(self, obj)
+	return self
+
+# Private implementation methods
+func _get_value() -> Variant:
+	return _value
+
+func _set_value(new_value: Variant) -> void:
+	if _check_equality and _test_equality(_value, new_value):
+		return
+
+	_value = new_value
+
+	if not is_blocking_signals():
+		_on_next.emit(new_value)
+
+## Tests equality between two variants with proper null handling.
+##
+## This static method provides safe equality comparison that properly
+## handles null values and type differences.
+##
+## [param a]: First value to compare
+## [param b]: Second value to compare
+## [br][b]Returns:[/b] True if the values are considered equal
 static func _test_equality(a: Variant, b: Variant) -> bool:
 	if a == null and b == null:
 		return true
@@ -84,46 +163,3 @@ static func _test_equality(a: Variant, b: Variant) -> bool:
 		return true
 
 	return false
-
-## Adds this [ReactiveProperty] to an object for automatic disposal.[br]
-## Supported types:[br]
-## - [Node]: The [ReactiveProperty] will be disposed when the node exits the tree.[br]
-## - [Array][[Disposable]]: The [ReactiveProperty] will be added to the array.[br]
-## [b]Note:[/b] This method is copied from Disposable implementation for compatibility.
-func add_to(obj: Variant) -> ReactiveProperty:
-	if obj == null:
-		self.dispose()
-		push_error("Null obj. disposed")
-		return self
-
-	if obj is Node:
-		if not is_instance_valid(obj) or obj.is_queued_for_deletion():
-			self.dispose()
-			push_error("Invalid node. disposed")
-			return self
-
-		# outside tree
-		if not obj.is_inside_tree():
-			# Before enter tree
-			if not obj.is_node_ready():
-				push_warning("add_to does not support before enter tree")
-			self.dispose()
-			push_warning("Node is outside tree. disposed")
-			return self
-
-		# Note: 4.3 でなぜかこれで呼び出されない, ラムダなら動く
-		# obj.tree_exiting.connect(dispose, ConnectFlags.CONNECT_ONE_SHOT)
-		obj.tree_exiting.connect(func() -> void: dispose(), ConnectFlags.CONNECT_ONE_SHOT)
-		return self
-
-	if obj is Array:
-		if obj.is_read_only():
-			self.dispose()
-			push_error("Array is read only. disposed")
-			return self
-
-		obj.push_back(self)
-		return self
-
-	push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
-	return self

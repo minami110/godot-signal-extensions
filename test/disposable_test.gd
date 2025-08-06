@@ -1,6 +1,8 @@
 extends GdUnitTestSuite
 
 signal no_parms
+const Subscription = preload("res://addons/signal_extensions/subscription.gd")
+
 var _result_int: int
 
 func test_add_to_array() -> void:

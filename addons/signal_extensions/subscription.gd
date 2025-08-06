@@ -1,8 +1,10 @@
-extends Disposable
+class_name Subscription extends Disposable
 
+# インスタンス変数
 var _signal: Signal = Signal()
 var _callable: Callable = Callable()
 
+# コンストラクタ
 func _init(sig: Signal, callable: Callable) -> void:
 	# Note: Signal.is_zero() == Signal.is_null()
 	if not sig:
@@ -27,6 +29,7 @@ func _init(sig: Signal, callable: Callable) -> void:
 	_signal = sig
 	_callable = callable
 
+# オーバーライドメソッド
 func dispose() -> void:
 	if not _signal:
 		return

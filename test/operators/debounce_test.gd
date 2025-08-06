@@ -9,7 +9,7 @@ func test_standard() -> void:
 	# Note: Subscription を変数で受けておいて Callable が死なないようにする
 	var _d1 := pub \
 		.debounce(0.1) \
-		.subscribe(func(x): result.push_back(x))
+		.subscribe(func(x: Variant) -> void: result.push_back(x))
 
 	# t: 0.0
 	pub.on_next(1)
