@@ -9,7 +9,7 @@ func test_merge() -> void:
 	var s3 := Subject.new()
 
 	var d := Observable \
-		.merge([s1, s2, s3]) \
+		.merge(s1, s2, s3) \
 		.subscribe(func(x: int) -> void: _list.push_back(x))
 	assert_array(_list, true).is_equal([])
 
@@ -36,7 +36,7 @@ func test_merge_wait1() -> void:
 	s2.on_next.call_deferred(2)
 	s1.on_next.call_deferred(3)
 
-	var merge := Observable.merge([s1, s2])
+	var merge := Observable.merge(s1, s2)
 	var result: Variant = await merge.wait()
 
 	assert_that(result).is_equal(2)
@@ -48,10 +48,10 @@ func test_merge_wait2() -> void:
 
 	s1.on_next.call_deferred("foo")
 
-	var merge := Observable.merge([
+	var merge := Observable.merge(
 		s1.select(func(_x: Variant) -> int: return 10),
-		s2.select(func(_x: Variant) -> int: return 20),
-	])
+		s2.select(func(_x: Variant) -> int: return 20)
+	)
 	var result: Variant = await merge.wait()
 
 	assert_that(result).is_equal(10)

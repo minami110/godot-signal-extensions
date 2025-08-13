@@ -5,6 +5,7 @@ signal noparms
 signal oneparm(x: float)
 signal twoparms(x: float, y: String)
 signal threeparms(a: int, b: int, c: int)
+signal nineparms(a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int, i: int)
 
 func test_from_signal_noparm() -> void:
 	_result_int = 0
@@ -55,3 +56,16 @@ func test_from_signal_threeparms() -> void:
 	d1.dispose()
 	threeparms.emit(4, 5, 6)
 	assert_array(result).is_equal([1, 2, 3])
+
+
+func test_from_signal_nineparms() -> void:
+	var result: Array = []
+	var d1 := Observable.from_signal(nineparms).subscribe(func(arr: Array) -> void:
+			result.append_array(arr)
+	)
+	nineparms.emit(1, 2, 3, 4, 5, 6, 7, 8, 9)
+	assert_array(result).is_equal([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+	d1.dispose()
+	nineparms.emit(10, 11, 12, 13, 14, 15, 16, 17, 18)
+	assert_array(result).is_equal([1, 2, 3, 4, 5, 6, 7, 8, 9])

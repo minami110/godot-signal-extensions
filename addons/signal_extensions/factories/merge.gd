@@ -3,7 +3,7 @@ extends Observable
 var _sources: Array[Observable] = []
 var _observer: Callable
 
-func _init(sources: Array[Observable]) -> void:
+func _init(...sources: Array) -> void:
 	_sources = sources
 
 func _subscribe_core(observer: Callable) -> Disposable:

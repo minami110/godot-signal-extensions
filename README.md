@@ -273,7 +273,7 @@ var new_health = await health.wait()
 ```gdscript
 var s1 := Subject.new()
 var s2 := Subject.new()
-var merged := Observable.merge([s1, s2])
+var merged := Observable.merge(s1, s2)
 
 # Will resolve with whichever emits first
 var first_result = await merged.wait()
@@ -298,7 +298,7 @@ Observable \
 	.subscribe(func(_x): print("pressed"))
 ```
 
-Converts Godot signals into reactive Observable streams. It supports signals with 0 to 8 arguments. If the signal has 0 arguments, it is converted to `Unit`. For signals with 2 or more arguments, the values are converted into an Array.
+Converts Godot signals into reactive Observable streams. Now supports unlimited arguments using Godot 4.5+ variadic arguments. If the signal has 0 arguments, it is converted to `Unit`. For signals with 2 or more arguments, the values are converted into an Array.
 
 ```gdscript
 # Multi-argument signal example
@@ -313,13 +313,14 @@ Observable \
 ```
 
 ### merge
+Merge multiple observables into a single observable stream. Now uses variadic arguments for more intuitive syntax.
 ```gdscript
 var s1 := Subject.new()
 var s2 := Subject.new()
 var s3 := Subject.new()
 
 Observable \
-	.merge([s1, s2, s3]) \
+	.merge(s1, s2, s3) \
 	.subscribe(func(x): arr.push_back(x))
 
 s1.on_next("foo")

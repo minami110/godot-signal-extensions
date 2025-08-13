@@ -80,13 +80,13 @@ static func from_signal(sig: Signal) -> Observable:
 ## [codeblock]
 ## var s1 := Subject.new()
 ## var s2 := Subject.new()
-## var merged := Observable.merge([s1, s2])
+## var merged := Observable.merge(s1, s2)
 ## merged.subscribe(func(x): print(x))
 ## [/codeblock]
 ##
-## [param sources]: Array of observables to merge
+## [param sources]: Variadic arguments of observables to merge
 ## [br][b]Returns:[/b] An [Observable] that emits values from all source observables
-static func merge(sources: Array[Observable]) -> Observable:
+static func merge(...sources: Array) -> Observable:
 	return Merge.new(sources)
 
 ## Only emit an item if a particular time span has passed without it emitting another item.
