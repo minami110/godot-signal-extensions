@@ -229,7 +229,47 @@ for d in bag:
 	d.dispose()
 ```
 
-The argument for `add_to()` can also accept an `Array`.
+The argument for `add_to()` can also accept an `Array`. For more convenient management of multiple disposables, consider using `DisposableBag` (see below).
+
+## DisposableBag
+
+DisposableBag is a convenient container class for managing multiple Disposable objects. It automatically disposes all contained items when the bag itself is disposed.
+
+```gdscript
+extends Node
+
+@onready var _subject1 := Subject.new()
+@onready var _subject2 := Subject.new()
+@onready var _bag := DisposableBag.new()
+
+func _ready() -> void:
+	# Add disposables to the bag
+	_bag.add(_subject1)
+	_bag.add(_subject2)
+	_bag.add(_subject1.subscribe(func(x): print("Subject1: ", x)))
+	_bag.add(_subject2.subscribe(func(x): print("Subject2: ", x)))
+	
+	# The bag itself can be auto-disposed when node exits
+	_bag.add_to(self)
+	
+	# Test emissions
+	_subject1.on_next("Hello")
+	_subject2.on_next("World")
+	
+	# Manual cleanup options:
+	# _bag.clear()    # Disposes all items but bag can still be used
+	# _bag.dispose()  # Disposes all items and makes bag unusable
+```
+```console
+Subject1: Hello
+Subject2: World
+```
+
+DisposableBag provides several advantages over manual Array management:
+- **Automatic disposal**: All items are disposed when the bag is disposed
+- **Type safety**: Only accepts Disposable objects
+- **Convenience methods**: `clear()` for manual cleanup, `add()` for easy addition
+- **Self-disposal**: The bag itself inherits from Disposable and can use `add_to()`
 
 ## Awaiting Observables
 
