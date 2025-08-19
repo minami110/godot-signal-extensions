@@ -39,9 +39,8 @@ static func add_to_impl(disposable: Variant, obj: Variant) -> void:
 	if obj == null:
 		disposable.dispose()
 		push_error("Null obj. disposed")
-		return
 
-	if obj is Node:
+	elif obj is Node:
 		if not is_instance_valid(obj) or obj.is_queued_for_deletion():
 			disposable.dispose()
 			push_error("Invalid node. disposed")
@@ -59,22 +58,20 @@ static func add_to_impl(disposable: Variant, obj: Variant) -> void:
 		# Note: 4.3 でなぜかこれで呼び出されない, ラムダなら動く
 		# obj.tree_exiting.connect(dispose, ConnectFlags.CONNECT_ONE_SHOT)
 		obj.tree_exiting.connect(func() -> void: disposable.dispose(), ConnectFlags.CONNECT_ONE_SHOT)
-		return
 
-	if obj is DisposableBag:
+	elif obj is DisposableBag:
 		obj.add(disposable)
-		return
 
-	if obj is Array:
+	elif obj is Array:
 		if obj.is_read_only():
 			disposable.dispose()
 			push_error("Array is read only. disposed")
 			return
 
 		obj.push_back(disposable)
-		return
 
-	push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
+	else:
+		push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
 
 ## Adds this disposable to a container for automatic cleanup.
 ##

@@ -1,16 +1,18 @@
 class_name DisposableBag extends Disposable
 
 var _items: Array[Disposable] = []
-var _is_disposed: bool = false
 
 func add(item: Disposable) -> void:
-    if _is_disposed:
+    if _items.is_read_only():
         item.dispose()
         return
 
     _items.push_back(item)
 
 func clear() -> void:
+    if _items.is_read_only():
+        return
+
     for item in _items:
         item.dispose()
     _items.clear()
@@ -18,4 +20,4 @@ func clear() -> void:
 
 func dispose() -> void:
     clear()
-    _is_disposed = true
+    _items.make_read_only()
