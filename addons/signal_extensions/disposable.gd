@@ -61,6 +61,10 @@ static func add_to_impl(disposable: Variant, obj: Variant) -> void:
 		obj.tree_exiting.connect(func() -> void: disposable.dispose(), ConnectFlags.CONNECT_ONE_SHOT)
 		return
 
+	if obj is DisposableBag:
+		obj.add(disposable)
+		return
+
 	if obj is Array:
 		if obj.is_read_only():
 			disposable.dispose()
