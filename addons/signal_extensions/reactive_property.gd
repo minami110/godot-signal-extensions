@@ -48,13 +48,19 @@ var value: Variant: get = _get_value, set = _set_value
 ##
 ## [param initial_value]: The starting value for the property
 ## [param check_equality]: Whether to check equality before emitting (default: true)
-func _init(initial_value: Variant, check_equality := true) -> void:
+func _init(initial_value: Variant = null, check_equality := true) -> void:
 	_value = initial_value
 	_check_equality = check_equality
 
-# Built-in overrides
 func _to_string() -> String:
 	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
+
+func _validate_property(property: Dictionary) -> void:
+	# Do not serialize value and current_value properies
+	if property.name == "value":
+		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
+	elif property.name == "current_value":
+		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
 
 ## Core subscription implementation for ReactiveProperty.
 ##

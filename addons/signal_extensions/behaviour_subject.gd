@@ -36,11 +36,17 @@ var value: Variant: get = _get_value
 ## Unlike [Subject], BehaviourSubject requires an initial value.
 ##
 ## [param initial_value]: The value to store and emit to new subscribers
-func _init(initial_value: Variant) -> void:
+func _init(initial_value: Variant = null) -> void:
 	_latest_value = initial_value
 
 func _to_string() -> String:
 	return "<BehaviourSubject#%d>" % get_instance_id()
+
+func _validate_property(property: Dictionary) -> void:
+	# Do not serialize value and current_value properies
+	if property.name == "value":
+		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
+
 
 ## Core subscription implementation for BehaviourSubject.
 ##
