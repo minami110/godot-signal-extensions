@@ -203,6 +203,35 @@ health.dispose()
 50
 ```
 
+### ConfigFile Serialization
+
+ReactiveProperty and BehaviourSubject support Godot's [ConfigFile](https://docs.godotengine.org/en/4.4/classes/class_configfile.html) serialization for persistent storage. Their internal values are automatically serialized, allowing you to save and load reactive observables in configuration files.
+
+```gdscript
+# Saving ReactiveProperty and BehaviourSubject to ConfigFile
+var health := ReactiveProperty.new(100)
+var status := BehaviourSubject.new("idle")
+
+var config := ConfigFile.new()
+config.set_value("player", "health", health)
+config.set_value("player", "status", status)
+config.save("user://player_data.cfg")
+
+# Loading from ConfigFile
+var config := ConfigFile.new()
+config.load("user://player_data.cfg")
+
+var loaded_health: ReactiveProperty = config.get_value("player", "health")
+var loaded_status: BehaviourSubject = config.get_value("player", "status")
+
+# Subscribe to loaded observables
+loaded_health.subscribe(func(value): print("Loaded health: ", value))
+loaded_status.subscribe(func(value): print("Loaded status: ", value))  # Immediately prints "idle"
+print("Current health value: ", loaded_health.value)  # Prints: 100
+print("Current status value: ", loaded_status.value)  # Prints: "idle"
+```
+
+**Note:** Subscriptions and internal state are not preserved during serialization - only the current values (`_value` for ReactiveProperty and `_latest_value` for BehaviourSubject) are saved and restored.
 
 ## Disposable Pattern
 ```gdscript
