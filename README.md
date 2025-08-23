@@ -229,8 +229,8 @@ loaded_health.subscribe(func(value): print("Loaded health: ", value))
 loaded_status.subscribe(func(value): print("Loaded status: ", value))
 ```
 ```console
-100
-idle
+Loaded health: 100
+Loaded status: idle
 ```
 
 **Note:** Subscriptions and internal state are not preserved during serialization - only the current values (`_value` for ReactiveProperty and `_latest_value` for BehaviourSubject) are saved and restored.
