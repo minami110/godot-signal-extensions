@@ -226,9 +226,11 @@ var loaded_status: BehaviourSubject = config.get_value("player", "status")
 
 # Subscribe to loaded observables
 loaded_health.subscribe(func(value): print("Loaded health: ", value))
-loaded_status.subscribe(func(value): print("Loaded status: ", value))  # Immediately prints "idle"
-print("Current health value: ", loaded_health.value)  # Prints: 100
-print("Current status value: ", loaded_status.value)  # Prints: "idle"
+loaded_status.subscribe(func(value): print("Loaded status: ", value))
+```
+```console
+100
+idle
 ```
 
 **Note:** Subscriptions and internal state are not preserved during serialization - only the current values (`_value` for ReactiveProperty and `_latest_value` for BehaviourSubject) are saved and restored.
@@ -277,14 +279,14 @@ func _ready() -> void:
 	_bag.add(_subject2)
 	_bag.add(_subject1.subscribe(func(x): print("Subject1: ", x)))
 	_bag.add(_subject2.subscribe(func(x): print("Subject2: ", x)))
-	
+
 	# The bag itself can be auto-disposed when node exits
 	_bag.add_to(self)
-	
+
 	# Test emissions
 	_subject1.on_next("Hello")
 	_subject2.on_next("World")
-	
+
 	# Manual cleanup options:
 	# _bag.clear()    # Disposes all items but bag can still be used
 	# _bag.dispose()  # Disposes all items and makes bag unusable
