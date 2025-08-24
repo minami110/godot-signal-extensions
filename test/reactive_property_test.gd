@@ -123,3 +123,65 @@ func test_read_only_reactive_property() -> void:
 
 	assert_int(rp.current_value).is_equal(10)
 	assert_array(result).is_equal([1, 10])
+
+func test_config_file_serialization() -> void:
+	var result: Array = []
+	var original_rp := ReactiveProperty.new(100)
+
+	# テストのためConfigFileに保存
+	var config := ConfigFile.new()
+	config.set_value("player", "health", original_rp)
+	
+	# メモリ内でシリアライゼーション/デシリアライゼーションをテスト
+	var config_string := config.encode_var(original_rp)
+	var loaded_rp: ReactiveProperty = config.decode_var(config_string)
+	
+	# 値が保持されていることを確認
+	assert_int(loaded_rp.value).is_equal(100)
+	
+	# 読み込んだオブジェクトが正常に動作することを確認
+	loaded_rp.subscribe(func(new_value: int) -> void:
+		result.push_back(new_value)
+	)
+	
+	# 初期値がすぐに通知されることを確認
+	assert_array(result).is_equal([100])
+	
+	# 値を変更して正常に動作することを確認
+	loaded_rp.value = 75
+	assert_array(result).is_equal([100, 75])
+	assert_int(loaded_rp.value).is_equal(75)
+	
+	loaded_rp.dispose()
+
+func test_config_file_various_types() -> void:
+	# 様々な型でシリアライゼーションをテスト
+	var test_cases := [
+		42,
+		3.14,
+		"Hello World",
+		Vector2(10, 20),
+		null
+	]
+	
+	for test_value in test_cases:
+		var original_rp := ReactiveProperty.new(test_value)
+		
+		# シリアライゼーション/デシリアライゼーション
+		var config := ConfigFile.new()
+		var config_string := config.encode_var(original_rp)
+		var loaded_rp: ReactiveProperty = config.decode_var(config_string)
+		
+		# 値が保持されていることを確認
+		assert_that(loaded_rp.value).is_equal(test_value)
+		
+		# 新しい値を設定して動作確認
+		var result: Array = []
+		loaded_rp.subscribe(func(new_value: Variant) -> void:
+			result.push_back(new_value)
+		)
+		
+		# 初期値が通知される
+		assert_that(result[0]).is_equal(test_value)
+		
+		loaded_rp.dispose()

@@ -57,10 +57,8 @@ func _to_string() -> String:
 
 func _validate_property(property: Dictionary) -> void:
 	# Do not serialize value and current_value properies
-	if property.name == "value":
-		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
-	elif property.name == "current_value":
-		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
+	if property.name == "value" or property.name == "current_value":
+		property.usage &= ~(PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_SCRIPT_VARIABLE)
 
 ## Core subscription implementation for ReactiveProperty.
 ##

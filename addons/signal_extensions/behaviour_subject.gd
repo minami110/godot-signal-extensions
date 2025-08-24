@@ -45,7 +45,7 @@ func _to_string() -> String:
 func _validate_property(property: Dictionary) -> void:
 	# Do not serialize value and current_value properies
 	if property.name == "value":
-		property.usage = PROPERTY_USAGE_DEFAULT & ~PROPERTY_USAGE_STORAGE
+		property.usage &= ~(PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_SCRIPT_VARIABLE)
 
 
 ## Core subscription implementation for BehaviourSubject.
