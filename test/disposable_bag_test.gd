@@ -136,7 +136,7 @@ func test_bag_add_to_node_with_auto_free() -> void:
 	# Node が free されると bag が dispose されることを確認
 	var bag := DisposableBag.new()
 	var subject := Subject.new()
-	var node: Node = auto_free(Node.new())
+	var node: Node = Node.new()
 
 	bag.add(subject)
 
@@ -151,6 +151,7 @@ func test_bag_add_to_node_with_auto_free() -> void:
 	assert_bool(subject.is_blocking_signals()).is_false()
 
 	# Node がツリーから削除される
+	node.queue_free()
 	await child_exiting_tree
 
 	# Node が free されると bag が dispose され、Subject も dispose される

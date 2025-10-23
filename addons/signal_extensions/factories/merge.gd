@@ -4,9 +4,9 @@ var _sources: Array[Observable] = []
 var _observer: Callable
 
 
-func _init(sources: Array[Observable]) -> void:
+func _init(sources: Array) -> void:
 	assert(sources.size() > 0, "Sources array cannot be empty")
-	_sources = sources
+	_sources.assign(sources)
 
 
 func _subscribe_core(observer: Callable) -> Disposable:

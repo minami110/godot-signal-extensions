@@ -59,7 +59,8 @@ func test_merge_wait2() -> void:
 
 
 func test_merge_empty_sources_error() -> void:
-	assert_failure(func() -> void: Observable.merge()).has_message("Observable.merge requires at least one source")
+	@warning_ignore("redundant_await")
+	await assert_error(Observable.merge).is_runtime_error("Observable.merge requires at least one source")
 
 
 func test_merge_invalid_type_error() -> void:

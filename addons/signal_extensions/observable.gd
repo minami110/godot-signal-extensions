@@ -1,5 +1,6 @@
 @abstract
-class_name Observable extends RefCounted
+class_name Observable
+extends RefCounted
 ## Base abstract class for reactive programming in Godot.
 ##
 ## This class extends GDScript's [Signal] and [Callable] classes, influenced by [url=https://github.com/Cysharp/R3]Cysharp/R3[/url].
@@ -21,6 +22,7 @@ const TakeWhile = preload("operators/take_while.gd")
 const ThrottleLast = preload("operators/throttle_last.gd")
 const Where = preload("operators/where.gd")
 
+
 ## Core subscription method for inheriting classes.
 ##
 ## This is an abstract method that must be implemented by all derived classes.
@@ -30,6 +32,7 @@ const Where = preload("operators/where.gd")
 ## [br][b]Returns:[/b] A [Disposable] that can be used to unsubscribe
 @abstract
 func _subscribe_core(on_next: Callable) -> Disposable
+
 
 ## Subscribes to the [Observable] with a callback function.
 ##
@@ -54,6 +57,7 @@ func subscribe(on_next: Callable) -> Disposable:
 	else:
 		return _subscribe_core(func(_x: Variant) -> void: on_next.call())
 
+
 ## Creates an [Observable] from a Godot [Signal].
 ##
 ## This factory method converts a standard Godot signal into an observable stream.
@@ -70,6 +74,7 @@ func subscribe(on_next: Callable) -> Disposable:
 ## [br][b]Returns:[/b] An [Observable] that emits when the signal is emitted
 static func from_signal(sig: Signal) -> Observable:
 	return FromSignal.new(sig)
+
 
 ## Merges multiple [Observable]s into a single observable stream.
 ##
@@ -103,6 +108,7 @@ static func merge(...sources: Array) -> Observable:
 
 	return Merge.new(sources)
 
+
 ## Only emit an item if a particular time span has passed without it emitting another item.
 ##
 ## This operator delays emissions and only emits the most recent item
@@ -121,6 +127,7 @@ func debounce(time_sec: float) -> Observable:
 
 	return Debounce.new(self, time_sec)
 
+
 ## Emit the most recent items within periodic time intervals.
 ##
 ## This is an alias for [method throttle_last]. It samples the observable
@@ -130,6 +137,7 @@ func debounce(time_sec: float) -> Observable:
 ## [br][b]Returns:[/b] An [Observable] that emits sampled values
 func sample(time_sec: float) -> Observable:
 	return throttle_last(time_sec)
+
 
 ## Transform items by applying a function to each emitted value.
 ##
@@ -149,6 +157,7 @@ func select(selector: Callable) -> Observable:
 		return Select.new(new_source, func(x: Variant) -> Variant: return selector.call(self._selector.call(x)))
 	else:
 		return Select.new(self, selector)
+
 
 ## Suppress the first N items emitted by the observable.
 ##
@@ -172,6 +181,7 @@ func skip(count: int) -> Observable:
 	else:
 		return Skip.new(self, count)
 
+
 ## Discard items until a predicate function returns false.
 ##
 ## This operator skips emissions while the predicate condition is true,
@@ -187,6 +197,7 @@ func skip(count: int) -> Observable:
 func skip_while(predicate: Callable) -> Observable:
 	# Note: no needed combine skip_while and skip_while
 	return SkipWhile.new(self, predicate)
+
 
 ## Emit only the first N items, then complete.
 ##
@@ -210,6 +221,7 @@ func take(count: int) -> Observable:
 	else:
 		return Take.new(self, count)
 
+
 ## Mirror items while a predicate function returns true.
 ##
 ## This operator emits values as long as the predicate condition is true.
@@ -229,6 +241,7 @@ func take_while(predicate: Callable) -> Observable:
 	else:
 		return TakeWhile.new(self, predicate)
 
+
 ## Emit the most recent items within periodic time intervals.
 ##
 ## This operator samples the observable at regular time intervals
@@ -246,6 +259,7 @@ func throttle_last(time_sec: float) -> Observable:
 	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
 
 	return ThrottleLast.new(self, time_sec)
+
 
 ## Emit only values that pass a predicate test.
 ##
