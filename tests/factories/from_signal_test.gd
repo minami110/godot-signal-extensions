@@ -24,10 +24,7 @@ func test_from_signal_noparm() -> void:
 
 func test_from_signal_oneparm() -> void:
 	var result: Array[int] = []
-	var d1 := Observable.from_signal(oneparm).subscribe(
-		func(x: int) -> void:
-			result.append(x)
-	)
+	var d1 := Observable.from_signal(oneparm).subscribe(result.append)
 	oneparm.emit(2)
 	assert_array(result).contains_exactly([2])
 
@@ -38,10 +35,7 @@ func test_from_signal_oneparm() -> void:
 
 func test_from_signal_twoparms() -> void:
 	var result: Array = []
-	var d1 := Observable.from_signal(twoparms).subscribe(
-		func(arr: Array) -> void:
-			result.append_array(arr)
-	)
+	var d1 := Observable.from_signal(twoparms).subscribe(result.append_array)
 	twoparms.emit(1.0, "ok")
 	assert_array(result).contains_exactly([1.0, "ok"])
 
@@ -52,10 +46,7 @@ func test_from_signal_twoparms() -> void:
 
 func test_from_signal_threeparms() -> void:
 	var result: Array = []
-	var d1 := Observable.from_signal(threeparms).subscribe(
-		func(arr: Array) -> void:
-			result.append_array(arr)
-	)
+	var d1 := Observable.from_signal(threeparms).subscribe(result.append_array)
 	threeparms.emit(1, 2, 3)
 	assert_array(result).contains_exactly([1, 2, 3])
 
@@ -66,10 +57,7 @@ func test_from_signal_threeparms() -> void:
 
 func test_from_signal_nineparms() -> void:
 	var result: Array = []
-	var d1 := Observable.from_signal(nineparms).subscribe(
-		func(arr: Array) -> void:
-			result.append_array(arr)
-	)
+	var d1 := Observable.from_signal(nineparms).subscribe(result.append_array)
 	nineparms.emit(1, 2, 3, 4, 5, 6, 7, 8, 9)
 	assert_array(result).contains_exactly([1, 2, 3, 4, 5, 6, 7, 8, 9])
 

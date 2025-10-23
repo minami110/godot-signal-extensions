@@ -6,11 +6,7 @@ const Subscription = preload("uid://deioe3s8pcc8")
 
 func test_subscribe_no_params() -> void:
 	var result: Array[String] = []
-	var sub := Subscription.new(
-		no_parms,
-		func() -> void:
-			result.append("called")
-	)
+	var sub := Subscription.new(no_parms, result.append.bind("called"))
 	no_parms.emit()
 	assert_array(result).contains_exactly(["called"])
 	sub.dispose()
@@ -18,11 +14,7 @@ func test_subscribe_no_params() -> void:
 
 func test_unsubscribe() -> void:
 	var result: Array[String] = []
-	var sub := Subscription.new(
-		no_parms,
-		func() -> void:
-			result.append("called")
-	)
+	var sub := Subscription.new(no_parms, result.append.bind("called"))
 	no_parms.emit()
 	assert_array(result).contains_exactly(["called"])
 	sub.dispose()

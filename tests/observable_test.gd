@@ -17,10 +17,7 @@ func test_subscribe_with_one_argument_callback() -> void:
 	var received_values: Array = []
 	var subject := Subject.new()
 
-	subject.subscribe(
-		func(value: int) -> void:
-			received_values.push_back(value)
-	)
+	subject.subscribe(received_values.push_back)
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -89,10 +86,7 @@ func test_where_chaining_optimization() -> void:
 			return x < 15
 	)
 
-	observable.subscribe(
-		func(value: int) -> void:
-			filtered_values.push_back(value)
-	)
+	observable.subscribe(filtered_values.push_back)
 
 	subject.on_next(3)
 	subject.on_next(7)
@@ -117,10 +111,7 @@ func test_take_while_chaining_optimization() -> void:
 			return x < 15
 	)
 
-	observable.subscribe(
-		func(value: int) -> void:
-			taken_values.push_back(value)
-	)
+	observable.subscribe(taken_values.push_back)
 
 	subject.on_next(5)
 	subject.on_next(10)
@@ -140,10 +131,7 @@ func test_skip_chaining_optimization() -> void:
 	# skip を2回連続で呼び出す (skip(2) + skip(1) = skip(3))
 	var observable := subject.skip(2).skip(1)
 
-	observable.subscribe(
-		func(value: int) -> void:
-			skipped_values.push_back(value)
-	)
+	observable.subscribe(skipped_values.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)
@@ -164,10 +152,7 @@ func test_take_chaining_optimization() -> void:
 	# 注意: take の最適化は加算される
 	var observable := subject.take(3).take(2)
 
-	observable.subscribe(
-		func(value: int) -> void:
-			taken_values.push_back(value)
-	)
+	observable.subscribe(taken_values.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)
@@ -201,10 +186,7 @@ func test_from_signal_with_no_args() -> void:
 	var received_values: Array = []
 
 	var observable := Observable.from_signal(test_signal)
-	observable.subscribe(
-		func(value: Unit) -> void:
-			received_values.push_back(value)
-	)
+	observable.subscribe(received_values.push_back)
 
 	test_signal.emit()
 	test_signal.emit()
@@ -220,10 +202,7 @@ func test_from_signal_with_one_arg() -> void:
 	var received_values: Array = []
 
 	var observable := Observable.from_signal(test_signal_with_arg)
-	observable.subscribe(
-		func(value: int) -> void:
-			received_values.push_back(value)
-	)
+	observable.subscribe(received_values.push_back)
 
 	test_signal_with_arg.emit(42)
 	test_signal_with_arg.emit(100)
@@ -240,10 +219,7 @@ func test_merge_with_multiple_observables() -> void:
 	var merged_values: Array = []
 	var merged := Observable.merge(subject1, subject2, subject3)
 
-	merged.subscribe(
-		func(value: int) -> void:
-			merged_values.push_back(value)
-	)
+	merged.subscribe(merged_values.push_back)
 
 	subject1.on_next(1)
 	subject2.on_next(2)
@@ -261,10 +237,7 @@ func test_merge_with_array() -> void:
 	var merged_values: Array = []
 	var merged := Observable.merge([subject1, subject2])
 
-	merged.subscribe(
-		func(value: int) -> void:
-			merged_values.push_back(value)
-	)
+	merged.subscribe(merged_values.push_back)
 
 	subject1.on_next(10)
 	subject2.on_next(20)
@@ -287,10 +260,7 @@ func test_complex_operator_chain() -> void:
 	).select(
 		func(x: int) -> int:
 			return x * 2
-	).skip(1).take(3).subscribe(
-		func(value: int) -> void:
-			result_values.push_back(value)
-	)
+	).skip(1).take(3).subscribe(result_values.push_back)
 
 	subject.on_next(-5) # where でフィルタリング
 	subject.on_next(1) # 2 になるが skip でスキップ
@@ -305,10 +275,7 @@ func test_complex_operator_chain() -> void:
 func test_take_skip() -> void:
 	var result: Array[int] = []
 	var subject := Subject.new()
-	var d := subject.take(3).skip(1).subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	var d := subject.take(3).skip(1).subscribe(result.append)
 
 	subject.on_next(10)
 	assert_array(result).is_empty()
@@ -322,10 +289,7 @@ func test_take_skip() -> void:
 func test_skip_take() -> void:
 	var result: Array[int] = []
 	var rp := ReactiveProperty.new(10)
-	var d := rp.skip(2).take(2).subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	var d := rp.skip(2).take(2).subscribe(result.append)
 	assert_array(result).is_empty()
 
 	rp.value = 20
@@ -343,10 +307,7 @@ func test_where_skip() -> void:
 	var d := subject.where(
 		func(i: int) -> bool:
 			return i > 10
-	).skip(1).subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	).skip(1).subscribe(result.append)
 
 	subject.on_next(10)
 	assert_array(result).is_empty()

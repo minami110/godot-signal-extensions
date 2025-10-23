@@ -13,7 +13,7 @@ func test_standard() -> void:
 	# Note: Subscription を変数で受けておいて Callable が死なないようにする
 	var _d1 := pub \
 	.throttle_last(0.1) \
-	.subscribe(func(x): result.push_back(x))
+	.subscribe(result.push_back)
 
 	pub.on_next(1)
 	pub.on_next(2)

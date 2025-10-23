@@ -28,10 +28,7 @@ func test_subscribe_emits_current_value_immediately() -> void:
 	var ro_rp := rp_source as ReadOnlyReactiveProperty
 
 	var received_values: Array = []
-	ro_rp.subscribe(
-		func(value: String) -> void:
-			received_values.push_back(value)
-	)
+	ro_rp.subscribe(received_values.push_back)
 
 	# subscribe 時に即座に現在の値が emit される
 	assert_array(received_values).contains_exactly(["initial"])
@@ -43,10 +40,7 @@ func test_subscribe_receives_updates() -> void:
 	var ro_rp := rp_source as ReadOnlyReactiveProperty
 
 	var received_values: Array = []
-	ro_rp.subscribe(
-		func(value: int) -> void:
-			received_values.push_back(value)
-	)
+	ro_rp.subscribe(received_values.push_back)
 
 	# ソースの値を変更
 	rp_source.value = 2
@@ -121,10 +115,7 @@ func test_with_operators() -> void:
 	ro_rp.where(
 		func(x: int) -> bool:
 			return x > 5
-	).subscribe(
-		func(value: int) -> void:
-			filtered_values.push_back(value)
-	)
+	).subscribe(filtered_values.push_back)
 
 	# 値を変更
 	rp_source.value = 3

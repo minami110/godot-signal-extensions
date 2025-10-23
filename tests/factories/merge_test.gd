@@ -14,7 +14,7 @@ func test_merge() -> void:
 
 	var d := Observable \
 	.merge(s1, s2, s3) \
-	.subscribe(func(x: int) -> void: _list.push_back(x))
+	.subscribe(_list.push_back)
 	assert_array(_list).is_empty()
 
 	s1.on_next(1)
@@ -76,7 +76,7 @@ func test_merge_with_array_argument() -> void:
 	var s2 := Subject.new()
 	var sources: Array[Observable] = [s1, s2]
 
-	var d := Observable.merge(sources).subscribe(func(x: int) -> void: _list.push_back(x))
+	var d := Observable.merge(sources).subscribe(_list.push_back)
 
 	s1.on_next(10)
 	s2.on_next(20)

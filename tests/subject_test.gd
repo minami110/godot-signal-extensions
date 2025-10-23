@@ -11,10 +11,7 @@ func standard() -> void:
 	var result: Array[int] = []
 
 	var subject := Subject.new()
-	subject.subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	subject.subscribe(result.append)
 
 	subject.on_next(10)
 	subject.on_next(10)
@@ -27,10 +24,7 @@ func standard_no_argument() -> void:
 	var result: Array[int] = []
 
 	var subject := Subject.new()
-	subject.subscribe(
-		func() -> void:
-			result.append("called")
-	)
+	subject.subscribe(result.append.bind("called"))
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -40,23 +34,17 @@ func standard_no_argument() -> void:
 func test_unit() -> void:
 	var result: Array[String] = []
 	var subject := Subject.new()
-	subject.subscribe(
-		func(_u: Unit) -> void:
-			result.append("called")
-	)
+	subject.subscribe(result.append.bind("called"))
 	assert_array(result).is_empty()
 
-	subject.on_next(Unit.default)
+	subject.on_next()
 	assert_array(result).contains_exactly(["called"])
 
 
 func test_subject_await() -> void:
 	var result: Array[int] = []
 	var subject := Subject.new()
-	subject.subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	subject.subscribe(result.append)
 
 	subject.on_next.call_deferred(10)
 	var await_result: int = await subject.wait()
@@ -69,10 +57,7 @@ func test_dispose() -> void:
 	var result: Array[int] = []
 
 	var subject := Subject.new()
-	var d := subject.subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	var d := subject.subscribe(result.append)
 	subject.dispose()
 	subject = Subject.new()
 
@@ -80,10 +65,7 @@ func test_dispose() -> void:
 	assert_array(result).is_empty()
 
 	d.dispose()
-	d = subject.subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	d = subject.subscribe(result.append)
 	d.dispose()
 	subject.dispose()
 	subject.on_next(10)
