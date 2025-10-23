@@ -1,5 +1,6 @@
 @abstract
-class_name Disposable extends RefCounted
+class_name Disposable
+extends RefCounted
 ## Abstract base class for objects that require cleanup.
 ##
 ## The Disposable pattern provides a consistent way to manage resource cleanup
@@ -13,6 +14,7 @@ class_name Disposable extends RefCounted
 ## Useful as a null object to avoid null checks in disposal logic.
 static var empty: Disposable = _EmptyDisposable.new()
 
+
 ## Abstract method that must be implemented by all disposable objects.
 ##
 ## This method should clean up any resources held by the object,
@@ -22,6 +24,7 @@ static var empty: Disposable = _EmptyDisposable.new()
 ## it can safely be garbage collected.
 @abstract
 func dispose() -> void
+
 
 ## Internal implementation for adding disposables to containers.
 ##
@@ -73,6 +76,7 @@ static func add_to_impl(disposable: Variant, obj: Variant) -> void:
 	else:
 		push_error("Unsupported obj types. Supported types: Node, Array[Disposable]")
 
+
 ## Adds this disposable to a container for automatic cleanup.
 ##
 ## This method provides automatic disposal in two scenarios:
@@ -92,6 +96,7 @@ func add_to(obj: Variant) -> Disposable:
 	add_to_impl(self, obj)
 	return self
 
+
 ## Internal empty disposable implementation.
 ##
 ## This class provides a null object pattern for disposables that
@@ -100,6 +105,7 @@ class _EmptyDisposable extends Disposable:
 	func dispose() -> void:
 		pass
 
+
 	## Empty implementation that returns self without doing anything.
 	##
 	## Since empty disposables don't need cleanup, adding them to
@@ -107,6 +113,5 @@ class _EmptyDisposable extends Disposable:
 	##
 	## [param obj]: Ignored parameter for consistency
 	## [br][b]Returns:[/b] This empty disposable
-	@warning_ignore("unused_parameter")
-	func add_to(obj: Variant) -> Disposable:
+	@warning_ignore("unused_parameter") func add_to(obj: Variant) -> Disposable:
 		return self

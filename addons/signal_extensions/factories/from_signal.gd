@@ -5,6 +5,7 @@ const Subscription = preload("../subscription.gd")
 signal _on_next(value: Variant)
 var _source_signal := Signal()
 
+
 func _init(sig: Signal) -> void:
 	# Check empty signal
 	if not sig:
@@ -13,8 +14,9 @@ func _init(sig: Signal) -> void:
 		return
 
 	# Check signal's argument count
-	var signal_info := sig.get_object().get_signal_list().filter(func(info: Dictionary) -> bool:
-		return info.name == sig.get_name()
+	var signal_info := sig.get_object().get_signal_list().filter(
+		func(info: Dictionary) -> bool:
+			return info.name == sig.get_name()
 	)
 	assert(signal_info.size() == 1)
 
@@ -34,6 +36,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 		return Disposable.empty
 	else:
 		return Subscription.new(_on_next, observer)
+
 
 func dispose() -> void:
 	if not _source_signal:

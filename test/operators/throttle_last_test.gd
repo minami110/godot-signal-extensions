@@ -1,7 +1,10 @@
 extends GdUnitTestSuite
 
+@warning_ignore_start("untyped_declaration")
+
 func _wait_time(time_sec: float) -> Signal:
 	return get_tree().create_timer(time_sec).timeout
+
 
 ## throttle_last (sample) standard test
 func test_standard() -> void:
@@ -9,8 +12,8 @@ func test_standard() -> void:
 	var pub := Subject.new()
 	# Note: Subscription を変数で受けておいて Callable が死なないようにする
 	var _d1 := pub \
-		.throttle_last(0.1) \
-		.subscribe(func(x): result.push_back(x))
+	.throttle_last(0.1) \
+	.subscribe(func(x): result.push_back(x))
 
 	pub.on_next(1)
 	pub.on_next(2)

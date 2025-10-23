@@ -4,6 +4,7 @@ extends Disposable
 var _signal: Signal = Signal()
 var _callable: Callable = Callable()
 
+
 # コンストラクタ
 func _init(sig: Signal, callable: Callable) -> void:
 	# Note: Signal.is_zero() == Signal.is_null()
@@ -28,6 +29,7 @@ func _init(sig: Signal, callable: Callable) -> void:
 
 	_signal = sig
 	_callable = callable
+
 
 # オーバーライドメソッド
 func dispose() -> void:

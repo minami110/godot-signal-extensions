@@ -1,5 +1,6 @@
 @abstract
-class_name ReadOnlyReactiveProperty extends Observable
+class_name ReadOnlyReactiveProperty
+extends Observable
 
 # インスタンス変数
 var _value: Variant

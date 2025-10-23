@@ -1,12 +1,13 @@
 extends GdUnitTestSuite
 
+@warning_ignore_start("untyped_declaration")
 
 func test_standard() -> void:
 	var result := []
 	var subject := Subject.new()
 	subject \
-		.take_while(func(x): return x <= 2) \
-		.subscribe(func(x): result.push_back(x))
+	.take_while(func(x): return x <= 2) \
+	.subscribe(func(x): result.push_back(x))
 
 	subject.on_next(1)
 	subject.on_next(2)

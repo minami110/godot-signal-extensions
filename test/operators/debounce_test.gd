@@ -3,13 +3,14 @@ extends GdUnitTestSuite
 func _wait_time(time_sec: float) -> Signal:
 	return get_tree().create_timer(time_sec).timeout
 
+
 func test_standard() -> void:
 	var result := []
 	var pub := Subject.new()
 	# Note: Subscription を変数で受けておいて Callable が死なないようにする
 	var _d1 := pub \
-		.debounce(0.1) \
-		.subscribe(func(x: Variant) -> void: result.push_back(x))
+	.debounce(0.1) \
+	.subscribe(func(x: Variant) -> void: result.push_back(x))
 
 	# t: 0.0
 	pub.on_next(1)

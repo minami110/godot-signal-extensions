@@ -1,4 +1,5 @@
-class_name ReactiveProperty extends ReadOnlyReactiveProperty
+class_name ReactiveProperty
+extends ReadOnlyReactiveProperty
 ## A reactive property that holds a value and notifies observers when it changes.
 ##
 ## ReactiveProperty extends [ReadOnlyReactiveProperty] to provide mutable value storage
@@ -33,7 +34,9 @@ var _check_equality: bool
 ## rp.value = 42        # Set new value
 ## var current = rp.value  # Get current value
 ## [/codeblock]
-var value: Variant: get = _get_value, set = _set_value
+var value: Variant:
+	get = _get_value, set = _set_value
+
 
 ## Creates a new ReactiveProperty with an initial value.
 ##
@@ -52,13 +55,16 @@ func _init(initial_value: Variant = null, check_equality := true) -> void:
 	_value = initial_value
 	_check_equality = check_equality
 
+
 func _to_string() -> String:
 	return "%s:<ReactiveProperty#%d>" % [_value, get_instance_id()]
+
 
 func _validate_property(property: Dictionary) -> void:
 	# Do not serialize value and current_value properies
 	if property.name == "value" or property.name == "current_value":
 		property.usage &= ~(PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_SCRIPT_VARIABLE)
+
 
 ## Core subscription implementation for ReactiveProperty.
 ##
@@ -76,6 +82,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 
 	observer.call(_value)
 	return Subscription.new(_on_next, observer)
+
 
 ## Disposes the reactive property and disconnects all subscribers.
 ##
@@ -96,6 +103,7 @@ func dispose() -> void:
 
 	set_block_signals(true)
 
+
 ## Waits for the next value change asynchronously.
 ##
 ## This method allows you to await the next change to the property value,
@@ -115,6 +123,7 @@ func wait() -> Variant:
 
 	return await _on_next
 
+
 ## Adds this reactive property to a disposal container for automatic cleanup.
 ##
 ## This method allows automatic disposal when a [Node] exits the tree
@@ -132,9 +141,11 @@ func add_to(obj: Variant) -> ReactiveProperty:
 	Disposable.add_to_impl(self, obj)
 	return self
 
+
 # Private implementation methods
 func _get_value() -> Variant:
 	return _value
+
 
 func _set_value(new_value: Variant) -> void:
 	if _check_equality and _test_equality(_value, new_value):
@@ -144,6 +155,7 @@ func _set_value(new_value: Variant) -> void:
 
 	if not is_blocking_signals():
 		_on_next.emit(new_value)
+
 
 ## Tests equality between two variants with proper null handling.
 ##

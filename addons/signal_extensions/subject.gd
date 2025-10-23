@@ -1,4 +1,5 @@
-class_name Subject extends Observable
+class_name Subject
+extends Observable
 ## A basic implementation of the Observer pattern for reactive programming.
 ##
 ## Subject acts as both an observable and an observer. It can emit values
@@ -20,9 +21,11 @@ const Subscription = preload("subscription.gd")
 ## @deprecated: This is an internal implementation detail and should not be used directly.
 signal _on_next(value: Variant)
 
+
 # Built-in overrides
 func _to_string() -> String:
 	return "<Subject#%d>" % get_instance_id()
+
 
 ## Core subscription implementation for Subject.
 ##
@@ -38,6 +41,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	assert(observer.is_valid(), "Subject.subscribe observer is not valid.")
 	assert(observer.get_argument_count() == 1, "Subject.subscribe observer must have exactly one argument")
 	return Subscription.new(_on_next, observer)
+
 
 ## Emits a value to all subscribed observers.
 ##
@@ -62,6 +66,7 @@ func on_next(value: Variant = null) -> void:
 	else:
 		_on_next.emit(value)
 
+
 ## Disposes the subject and disconnects all subscribers.
 ##
 ## This method cleans up all signal connections and marks the subject
@@ -81,6 +86,7 @@ func dispose() -> void:
 
 	set_block_signals(true)
 
+
 ## Waits for the next value to be emitted asynchronously.
 ##
 ## This method allows you to await the next emission from the subject,
@@ -99,6 +105,7 @@ func wait() -> Variant:
 		return null
 
 	return await _on_next
+
 
 ## Adds this subject to a disposal container for automatic cleanup.
 ##

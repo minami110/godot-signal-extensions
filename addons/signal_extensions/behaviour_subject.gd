@@ -1,4 +1,5 @@
-class_name BehaviourSubject extends Observable
+class_name BehaviourSubject
+extends Observable
 ## A variant of Subject that requires an initial value and emits its current value whenever it is subscribed to.
 ##
 ## BehaviourSubject maintains the latest emitted value and immediately provides it to new subscribers.
@@ -28,7 +29,9 @@ var _latest_value: Variant
 ## var current_status = status_subject.value
 ## print("Current status: ", current_status)
 ## [/codeblock]
-var value: Variant: get = _get_value
+var value: Variant:
+	get = _get_value
+
 
 ## Creates a new BehaviourSubject with an initial value.
 ##
@@ -39,8 +42,10 @@ var value: Variant: get = _get_value
 func _init(initial_value: Variant = null) -> void:
 	_latest_value = initial_value
 
+
 func _to_string() -> String:
 	return "<BehaviourSubject#%d>" % get_instance_id()
+
 
 func _validate_property(property: Dictionary) -> void:
 	# Do not serialize value and current_value properies
@@ -84,6 +89,7 @@ func add_to(obj: Variant) -> BehaviourSubject:
 	Disposable.add_to_impl(self, obj)
 	return self
 
+
 ## Disposes the subject and disconnects all subscribers.
 ##
 ## This method cleans up all signal connections, clears the stored value,
@@ -103,6 +109,7 @@ func dispose() -> void:
 
 	set_block_signals(true)
 	_latest_value = null
+
 
 ## Emits a new value to all subscribers and updates the stored value.
 ##
@@ -124,6 +131,7 @@ func on_next(value: Variant = null) -> void:
 	_latest_value = value
 	_on_next.emit(_latest_value)
 
+
 ## Waits for the next value to be emitted asynchronously.
 ##
 ## This method allows you to await the next emission from the subject,
@@ -143,6 +151,7 @@ func wait() -> Variant:
 		return null
 
 	return await _on_next
+
 
 # Private implementation methods
 func _get_value() -> Variant:

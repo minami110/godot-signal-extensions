@@ -2,6 +2,7 @@ extends GdUnitTestSuite
 
 var _list: Array[int]
 
+
 func test_merge() -> void:
 	_list = []
 	var s1 := Subject.new()
@@ -9,8 +10,8 @@ func test_merge() -> void:
 	var s3 := Subject.new()
 
 	var d := Observable \
-		.merge(s1, s2, s3) \
-		.subscribe(func(x: int) -> void: _list.push_back(x))
+	.merge(s1, s2, s3) \
+	.subscribe(func(x: int) -> void: _list.push_back(x))
 	assert_array(_list, true).is_equal([])
 
 	s1.on_next(1)
@@ -50,7 +51,7 @@ func test_merge_wait2() -> void:
 
 	var merge := Observable.merge(
 		s1.select(func(_x: Variant) -> int: return 10),
-		s2.select(func(_x: Variant) -> int: return 20)
+		s2.select(func(_x: Variant) -> int: return 20),
 	)
 	var result: Variant = await merge.wait()
 
@@ -58,12 +59,12 @@ func test_merge_wait2() -> void:
 
 
 func test_merge_empty_sources_error() -> void:
-	assert_failure(func() -> void: Observable.merge(), "Observable.merge requires at least one source")
+	assert_failure(func() -> void: Observable.merge()).has_message("Observable.merge requires at least one source")
 
 
 func test_merge_invalid_type_error() -> void:
 	var s1 := Subject.new()
-	assert_failure(func() -> void: Observable.merge(s1, "not_observable"), "All sources must be Observable instances")
+	assert_failure(func() -> void: Observable.merge(s1, "not_observable")).has_message("All sources must be Observable instances")
 
 
 func test_merge_with_array_argument() -> void:
@@ -84,4 +85,4 @@ func test_merge_with_array_argument() -> void:
 
 func test_merge_array_argument_empty_error() -> void:
 	var empty_sources: Array[Observable] = []
-	assert_failure(func() -> void: Observable.merge(empty_sources), "Observable.merge requires at least one source")
+	assert_failure(func() -> void: Observable.merge(empty_sources)).has_message("Observable.merge requires at least one source")
