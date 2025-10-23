@@ -60,38 +60,35 @@ Observable (abstract)
 └── Operator classes (Select, Where, Take, etc.)
 ```
 
-### Unit
-
-Unit is a special type used to represent the absence of a meaningful value, particularly for signals that don't carry data.
-
-```gdscript
-# Unit is used for signals without arguments
-var subject := Subject.new()
-subject.on_next(Unit.default)  # Explicit Unit
-subject.on_next()              # Same as above - Unit.default is used automatically
-```
-
 ## Subject and Reactive Property
 ### Subject
+
+Subject is a basic implementation of the observer pattern that allows you to manually emit values to multiple subscribers.
+
 ```gdscript
 var subject := Subject.new()
 var subscription := subject.subscribe(func(_x): print("Hello, World!"))
 
-# On next (emit)
-subject.on_next(Unit.default)
+# Emit values
+subject.on_next(Unit.default)  # Explicit Unit
+subject.on_next()              # Same as above - Unit.default is used automatically
+subject.on_next("data")        # Emit actual data
 
 # Unsubscribe
 subscription.dispose()
-subject.on_next() # no arg == Unit.default
 
 # Dispose subject
 subject.dispose()
 ```
 ```console
-Hello, world!
+Hello, World!
+Hello, World!
+Hello, World!
 ```
 
-Only the `on_next()` is implemented.<br>
+**Unit Type**: Unit is a special type used to represent the absence of a meaningful value, particularly for signals that don't carry data. When you call `on_next()` without arguments, `Unit.default` is automatically used.
+
+Only the `on_next()` method is implemented.<br>
 Unsubscribing from both the source and the subscriber can be done using `dispose()`.
 
 ```gdscript
@@ -298,7 +295,7 @@ Subject2: World
 
 DisposableBag provides several advantages over manual Array management:
 - **Automatic disposal**: All items are disposed when the bag is disposed
-- **Type safety**: Only accepts Disposable objects
+- **Flexibility**: Accepts any object with a `dispose()` method
 - **Convenience methods**: `clear()` for manual cleanup, `add()` for easy addition
 - **Self-disposal**: The bag itself inherits from Disposable and can use `add_to()`
 
