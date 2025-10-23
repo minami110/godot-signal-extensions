@@ -1,9 +1,5 @@
 extends GdUnitTestSuite
 
-@warning_ignore("unused_parameter")
-@warning_ignore("unused_variable")
-@warning_ignore("return_value_discarded")
-
 signal no_parms
 const Subscription = preload("res://addons/signal_extensions/subscription.gd")
 var _result_int: int

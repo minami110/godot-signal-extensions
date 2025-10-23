@@ -142,7 +142,6 @@ func add_to(obj: Variant) -> ReactiveProperty:
 	return self
 
 
-# Private implementation methods
 func _get_value() -> Variant:
 	return _value
 

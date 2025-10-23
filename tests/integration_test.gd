@@ -1,9 +1,5 @@
 extends GdUnitTestSuite
 
-@warning_ignore("unused_parameter")
-@warning_ignore("unused_variable")
-@warning_ignore("return_value_discarded")
-
 var _result_int: int
 static var _result_static_int: int
 
