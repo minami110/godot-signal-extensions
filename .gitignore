@@ -4,6 +4,7 @@
 
 # Addons
 /addons/gdUnit4/
+/reports/
 
 # VSCode
 /.vscode/

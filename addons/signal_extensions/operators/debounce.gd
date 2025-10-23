@@ -1,11 +1,13 @@
-class_name _Debounce extends Observable
+extends Observable
 
 var _source: Observable
 var _interval: float
 
+
 func _init(source: Observable, interval: float) -> void:
 	_source = source
 	_interval = interval
+
 
 func _subscribe_core(on_next: Callable) -> Disposable:
 	assert(on_next.is_valid(), "debounce.subscribe on_next is not valid.")
@@ -14,6 +16,7 @@ func _subscribe_core(on_next: Callable) -> Disposable:
 	var o := _DebounceObserver.new(on_next, _interval)
 	return _source.subscribe(func(value: Variant) -> void: o._on_next_core(value))
 
+
 class _DebounceObserver extends RefCounted:
 	var _on_next: Callable
 	var _interval: float
@@ -21,12 +24,14 @@ class _DebounceObserver extends RefCounted:
 	var _last_value: Variant
 	var _timer: SceneTreeTimer
 
+
 	func _init(on_next: Callable, interval: float) -> void:
 		_on_next = on_next
 		_interval = interval
 
 		_scene_tree = Engine.get_main_loop() as SceneTree
 		assert(_scene_tree, "throttlelast Failed to access SceneTree")
+
 
 	func _on_next_core(value: Variant) -> void:
 		# Timer is not running, intialize
@@ -44,6 +49,7 @@ class _DebounceObserver extends RefCounted:
 
 		# Update last value
 		_last_value = value
+
 
 	func _on_timeout() -> void:
 		# OnNext with last value

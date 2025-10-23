@@ -1,17 +1,19 @@
 extends GdUnitTestSuite
 
+@warning_ignore_start("untyped_declaration")
 
 func test_standard() -> void:
 	var result := []
 	var subject := Subject.new()
 	subject \
-		.take(2) \
-		.subscribe(func(x): result.push_back(x))
+	.take(2) \
+	.subscribe(func(x): result.push_back(x))
 
 	subject.on_next(10)
 	subject.on_next(20)
 	subject.on_next(30)
-	assert_array(result, true).is_equal([10, 20])
+	assert_array(result, true).contains_exactly([10, 20])
+
 
 func test_two_subscribers() -> void:
 	var result1 := []
@@ -27,8 +29,8 @@ func test_two_subscribers() -> void:
 
 	subject.on_next(1)
 	subject.on_next(2)
-	assert_array(result1, true).is_equal([1])
-	assert_array(result2, true).is_equal([1])
+	assert_array(result1, true).contains_exactly([1])
+	assert_array(result2, true).contains_exactly([1])
 
 	take2.subscribe(func(x): result3.push_back(x))
 
@@ -36,6 +38,6 @@ func test_two_subscribers() -> void:
 	subject.on_next(2)
 	subject.on_next(3)
 
-	assert_array(result1, true).is_equal([1])
-	assert_array(result2, true).is_equal([1])
-	assert_array(result3, true).is_equal([1, 2])
+	assert_array(result1, true).contains_exactly([1])
+	assert_array(result2, true).contains_exactly([1])
+	assert_array(result3, true).contains_exactly([1, 2])

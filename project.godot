@@ -12,7 +12,7 @@ config_version=5
 
 config/name="godot-signal-extensions"
 config/tags=PackedStringArray("dev")
-config/features=PackedStringArray("4.4", "GL Compatibility")
+config/features=PackedStringArray("4.5", "GL Compatibility")
 
 [debug]
 
@@ -29,6 +29,7 @@ enabled=PackedStringArray("res://addons/signal_extensions/plugin.cfg", "res://ad
 
 ui/toolbar/run_overall=true
 report/godot/push_error=true
+settings/test/test_lookup_folder="tests"
 
 [rendering]
 

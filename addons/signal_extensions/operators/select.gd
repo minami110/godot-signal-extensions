@@ -1,7 +1,8 @@
-class_name _Select extends Observable
+extends Observable
 
 var _source: Observable
 var _selector: Callable
+
 
 func _init(source: Observable, selector: Callable) -> void:
 	assert(selector.is_valid(), "select.selector is not valid.")
@@ -16,6 +17,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	assert(observer.get_argument_count() == 1, "select.subscribe observer must have exactly one argument")
 
 	return _source.subscribe(func(value: Variant) -> void: _on_next_core(observer, _selector, value))
+
 
 static func _on_next_core(next: Callable, selector: Callable, value: Variant) -> void:
 	assert(selector.is_valid(), "select.selector is not valid.")

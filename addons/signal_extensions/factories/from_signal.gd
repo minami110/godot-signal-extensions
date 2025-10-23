@@ -1,7 +1,10 @@
-class_name _FromSignal extends Observable
+extends Observable
+
+const Subscription = preload("../subscription.gd")
 
 signal _on_next(value: Variant)
 var _source_signal := Signal()
+
 
 func _init(sig: Signal) -> void:
 	# Check empty signal
@@ -11,8 +14,9 @@ func _init(sig: Signal) -> void:
 		return
 
 	# Check signal's argument count
-	var signal_info := sig.get_object().get_signal_list().filter(func(info: Dictionary) -> bool:
-		return info.name == sig.get_name()
+	var signal_info := sig.get_object().get_signal_list().filter(
+		func(info: Dictionary) -> bool:
+			return info.name == sig.get_name()
 	)
 	assert(signal_info.size() == 1)
 
@@ -23,23 +27,8 @@ func _init(sig: Signal) -> void:
 		_source_signal.connect(func() -> void: _on_next.emit(Unit.default))
 	elif sig_arg_count == 1:
 		_source_signal.connect(func(value: Variant) -> void: _on_next.emit(value))
-	elif sig_arg_count == 2:
-		_source_signal.connect(func(value1: Variant, value2: Variant) -> void: _on_next.emit([value1, value2]))
-	elif sig_arg_count == 3:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant) -> void: _on_next.emit([value1, value2, value3]))
-	elif sig_arg_count == 4:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant) -> void: _on_next.emit([value1, value2, value3, value4]))
-	elif sig_arg_count == 5:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant, value5: Variant) -> void: _on_next.emit([value1, value2, value3, value4, value5]))
-	elif sig_arg_count == 6:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant, value5: Variant, value6: Variant) -> void: _on_next.emit([value1, value2, value3, value4, value5, value6]))
-	elif sig_arg_count == 7:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant, value5: Variant, value6: Variant, value7: Variant) -> void: _on_next.emit([value1, value2, value3, value4, value5, value6, value7]))
-	elif sig_arg_count == 8:
-		_source_signal.connect(func(value1: Variant, value2: Variant, value3: Variant, value4: Variant, value5: Variant, value6: Variant, value7: Variant, value8: Variant) -> void: _on_next.emit([value1, value2, value3, value4, value5, value6, value7, value8]))
 	else:
-		set_block_signals(true)
-		assert(false, "Signal '%s' has %d arguments, which exceeds the maximum of 8 supported arguments." % [sig.get_name(), sig_arg_count])
+		_source_signal.connect(func(...args: Array) -> void: _on_next.emit(args))
 
 
 func _subscribe_core(observer: Callable) -> Disposable:
@@ -47,6 +36,7 @@ func _subscribe_core(observer: Callable) -> Disposable:
 		return Disposable.empty
 	else:
 		return Subscription.new(_on_next, observer)
+
 
 func dispose() -> void:
 	if not _source_signal:

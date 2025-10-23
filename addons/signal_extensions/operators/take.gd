@@ -1,12 +1,14 @@
-class_name _Take extends Observable
+extends Observable
 
 var _source: Observable
 var _remaining: int
+
 
 func _init(source: Observable, count: int) -> void:
 	assert(count > 0, "count must be greater than 0")
 	_source = source
 	_remaining = count
+
 
 func _subscribe_core(observer: Callable) -> Disposable:
 	assert(observer.is_valid(), "take.subscribe observer is not valid.")
@@ -15,13 +17,16 @@ func _subscribe_core(observer: Callable) -> Disposable:
 	var o := _TakeObserver.new(observer, _remaining)
 	return _source.subscribe(func(value: Variant) -> void: o._on_next_core(value))
 
+
 class _TakeObserver extends RefCounted:
 	var _observer: Callable
 	var _remaining: int
 
+
 	func _init(observer: Callable, remaining: int) -> void:
 		_observer = observer
 		_remaining = remaining
+
 
 	func _on_next_core(value: Variant) -> void:
 		# Already completed
