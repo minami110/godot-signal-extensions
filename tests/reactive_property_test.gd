@@ -45,7 +45,7 @@ func test_standard2() -> void:
 	var n2 := Node2D.new()
 	rp.value = n1
 	rp.value = n2
-	assert_array(result).is_equal([null, 1, "Foo", null, n1, n2])
+	assert_array(result).contains_exactly([null, 1, "Foo", null, n1, n2])
 	n1.queue_free()
 	n2.queue_free()
 
@@ -137,7 +137,7 @@ func test_read_only_reactive_property() -> void:
 	rp_source.value = 10
 
 	assert_int(rp.current_value).is_equal(10)
-	assert_array(result).is_equal([1, 10])
+	assert_array(result).contains_exactly([1, 10])
 
 
 func test_config_file_serialization() -> void:
@@ -162,11 +162,11 @@ func test_config_file_serialization() -> void:
 	)
 
 	# 初期値がすぐに通知されることを確認
-	assert_array(result).is_equal([100])
+	assert_array(result).contains_exactly([100])
 
 	# 値を変更して正常に動作することを確認
 	loaded_rp.value = 75
-	assert_array(result).is_equal([100, 75])
+	assert_array(result).contains_exactly([100, 75])
 	assert_int(loaded_rp.value).is_equal(75)
 
 	loaded_rp.dispose()

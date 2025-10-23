@@ -44,11 +44,11 @@ func test_from_signal_twoparms() -> void:
 			result.append_array(arr)
 	)
 	twoparms.emit(1.0, "ok")
-	assert_array(result).is_equal([1.0, "ok"])
+	assert_array(result).contains_exactly([1.0, "ok"])
 
 	d1.dispose()
 	twoparms.emit(2.0, "ng")
-	assert_array(result).is_equal([1.0, "ok"])
+	assert_array(result).contains_exactly([1.0, "ok"])
 
 
 func test_from_signal_threeparms() -> void:
@@ -58,11 +58,11 @@ func test_from_signal_threeparms() -> void:
 			result.append_array(arr)
 	)
 	threeparms.emit(1, 2, 3)
-	assert_array(result).is_equal([1, 2, 3])
+	assert_array(result).contains_exactly([1, 2, 3])
 
 	d1.dispose()
 	threeparms.emit(4, 5, 6)
-	assert_array(result).is_equal([1, 2, 3])
+	assert_array(result).contains_exactly([1, 2, 3])
 
 
 func test_from_signal_nineparms() -> void:
@@ -72,8 +72,8 @@ func test_from_signal_nineparms() -> void:
 			result.append_array(arr)
 	)
 	nineparms.emit(1, 2, 3, 4, 5, 6, 7, 8, 9)
-	assert_array(result).is_equal([1, 2, 3, 4, 5, 6, 7, 8, 9])
+	assert_array(result).contains_exactly([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 	d1.dispose()
 	nineparms.emit(10, 11, 12, 13, 14, 15, 16, 17, 18)
-	assert_array(result).is_equal([1, 2, 3, 4, 5, 6, 7, 8, 9])
+	assert_array(result).contains_exactly([1, 2, 3, 4, 5, 6, 7, 8, 9])

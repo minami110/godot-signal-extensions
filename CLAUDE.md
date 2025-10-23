@@ -1,72 +1,86 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-This is a Godot 4 plugin called "Signal Extensions" that extends GDScript's Signal and Callable classes. The plugin provides reactive programming features inspired by Cysharp/R3, focusing on making it easier to unsubscribe from Godot signals and providing observable stream operators.
+Godot 4 plugin extending Signal and Callable with reactive programming features (inspired by Cysharp/R3). Simplifies signal management through automatic disposal and observable streams.
+
+## Development Environment
+
+### Requirements
+- **Godot Version**: 4.5.1
+- **GDScript Version**: 2.0+
+
+### Plugins
+- **Signal Extensions** (`addons/signal_extensions/plugin.cfg`) - Main plugin
+- **GDUnit4** (`addons/gdUnit4/plugin.cfg`) - Testing framework
+
+### Project Configuration
+Strict type checking enabled:
+```gdscript
+gdscript/warnings/untyped_declaration=1
+gdscript/warnings/unsafe_cast=1
+gdscript/warnings/unsafe_call_argument=1
+```
 
 ## Development Commands
 
 ### Testing
-- **Run all tests**: Use GDUnit4 testing framework
-  - Tests are located in `test/` directory
-  - Project is configured to use GDUnit4 plugin (enabled in project.godot)
-  - CI runs tests with: `res://test/` path
-  - Tests extend `GdUnitTestSuite` class
+**Use the `gdscript-test-skill` skill for all test operations:**
+```bash
+/gdscript-test-skill
+```
 
-### Linting and Code Quality
-- The project has strict GDScript warnings enabled:
-  - `untyped_declaration=1`
-  - `unsafe_cast=1` 
-  - `unsafe_call_argument=1`
-  - Addon warnings are not excluded (`exclude_addons=false`)
+### File Operations
+```bash
+/gdscript-file-manager-skill  # Move, rename, delete GDScript files
+```
+
+### Code Validation
+```bash
+/gdscript-validate-skill  # Validate GDScript changes
+```
 
 ## Code Architecture
 
-### Core Classes Hierarchy
+### Core Classes
 ```
-Disposable (base class)
-├── Observable (abstract)
-│   ├── Subject
-│   ├── BehaviourSubject 
-│   ├── ReactiveProperty
-│   └── Operator classes (_Select, _Where, _Take, etc.)
-├── Subscription
-└── ReadOnlyReactiveProperty
+Disposable → Observable (Subject, BehaviourSubject, ReactiveProperty, Operators)
+          → Subscription, DisposableBag, ReadOnlyReactiveProperty
 ```
 
-### Plugin Structure
-- **Main plugin files**: `addons/signal_extensions/`
-  - Core classes: `observable.gd`, `subject.gd`, `reactive_property.gd`, etc.
-  - **Factories**: `factories/` - contains `from_signal.gd`, `merge.gd`
-  - **Operators**: `operators/` - contains stream operators like `debounce.gd`, `select.gd`, `where.gd`, etc.
-  - Plugin configuration: `plugin.cfg`
+### Plugin Location
+`addons/signal_extensions/` - Core classes, factories/, operators/
 
-### Key Design Patterns
-- **Abstract base classes**: `Observable` is abstract with `_subscribe_core()` method
-- **Method chaining**: Operators return new Observable instances for chaining
-- **Disposable pattern**: All observables implement disposal for cleanup
-- **Factory methods**: Static methods on `Observable` class for creating observables
-- **Operator optimization**: Some operators like `select` can be combined to avoid nesting
+## Key Features
 
-### Testing Structure
-- Tests mirror the source structure in `test/` directory
-- Integration tests in `integration_test.gd` test operator combinations
-- Each operator and core class has corresponding test file
-- Tests use GDUnit4 assertions (`assert_int()`, etc.)
+### Observable Types
+- **Subject**: Manual emission hot observable
+- **BehaviourSubject**: Subject with current value
+- **ReactiveProperty**: Two-way bindable property
 
-### Key Features
-- **Observable streams**: Subject, BehaviourSubject, ReactiveProperty
-- **Signal conversion**: `Observable.from_signal()` converts Godot signals
-- **Stream operators**: debounce, select, where, take, skip, throttle_last, etc.
-- **Automatic disposal**: `add_to(Node)` connects disposal to `tree_exiting` signal
-- **Await support**: `wait()` method allows awaiting observables like signals
+### Operators
+- **Transformation**: select, where
+- **Limiting**: take, skip, take_while, skip_while
+- **Time-based**: debounce, throttle_last
+- **Combining**: merge
 
-## Development Notes
+### Disposal Patterns
+```gdscript
+# Manual disposal
+subscription.dispose()
 
-- Project targets Godot 4.3+ (currently configured for 4.5)
-- Uses GL Compatibility rendering method
-- Plugin version is managed in `plugin.cfg`
-- CI runs on Ubuntu 22.04 with Godot 4.4.1
-- Repository uses conventional Git workflow with `main` branch
+# Automatic disposal (recommended)
+observable.subscribe(callback).add_to(self)
+```
+
+## Best Practices
+
+**Type Safety**: Explicit types everywhere (params, returns, vars) - warnings are errors
+
+**Memory**: Always dispose subscriptions - prefer `.add_to(node)` for automatic cleanup
+
+**Testing**: Files end with `_test.gd`, extend `GdUnitTestSuite`, use GDUnit4 assertions
+
+**Style**: Method chaining for operators, lambdas for simple transformations

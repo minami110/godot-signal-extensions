@@ -1,5 +1,8 @@
 extends GdUnitTestSuite
 
+@warning_ignore_start("redundant_await")
+@warning_ignore_start("untyped_declaration")
+
 var _list: Array[int]
 
 
@@ -12,7 +15,7 @@ func test_merge() -> void:
 	var d := Observable \
 	.merge(s1, s2, s3) \
 	.subscribe(func(x: int) -> void: _list.push_back(x))
-	assert_array(_list).is_equal([])
+	assert_array(_list).is_empty()
 
 	s1.on_next(1)
 	s2.on_next(2)
@@ -27,7 +30,7 @@ func test_merge() -> void:
 
 	d.dispose()
 	s3.on_next(8)
-	assert_array(_list).is_equal([1, 2, 3, 4, 5, 6, 7])
+	assert_array(_list).contains_exactly([1, 2, 3, 4, 5, 6, 7])
 
 
 func test_merge_wait1() -> void:
@@ -59,13 +62,11 @@ func test_merge_wait2() -> void:
 
 
 func test_merge_empty_sources_error() -> void:
-	@warning_ignore("redundant_await")
 	await assert_error(func(): Observable.merge()).is_push_error("Observable.merge requires at least one source")
 
 
 func test_merge_invalid_type_error() -> void:
 	var s1 := Subject.new()
-	@warning_ignore("redundant_await")
 	await assert_error(func(): Observable.merge(s1, "not_observable")).is_push_error("All sources must be Observable instances")
 
 
@@ -82,7 +83,7 @@ func test_merge_with_array_argument() -> void:
 	s1.on_next(30)
 
 	d.dispose()
-	assert_array(_list).is_equal([10, 20, 30])
+	assert_array(_list).contains_exactly([10, 20, 30])
 
 
 func test_merge_array_argument_empty_error() -> void:

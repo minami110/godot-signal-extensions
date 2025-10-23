@@ -20,7 +20,7 @@ func standard() -> void:
 	subject.on_next(10)
 	subject.dispose()
 	subject.on_next(20)
-	assert_array(result).is_equal([10, 10])
+	assert_array(result).contains_exactly([10, 10])
 
 
 func standard_no_argument() -> void:
@@ -34,7 +34,7 @@ func standard_no_argument() -> void:
 
 	subject.on_next(10)
 	subject.on_next(20)
-	assert_array(result).is_equal(["called", "called"])
+	assert_array(result).contains_exactly(["called", "called"])
 
 
 func test_unit() -> void:
