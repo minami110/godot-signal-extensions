@@ -1,6 +1,5 @@
 extends GdUnitTestSuite
 
-var _result_int: int
 signal noparms
 signal oneparm(x: float)
 signal twoparms(x: float, y: String)
@@ -9,32 +8,32 @@ signal nineparms(a: int, b: int, c: int, d: int, e: int, f: int, g: int, h: int,
 
 
 func test_from_signal_noparm() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var d1 := Observable.from_signal(noparms).subscribe(
 		func(u: Unit) -> void:
 			assert_object(u).is_instanceof(Unit)
-			_result_int += 1
+			result.append("called")
 	)
 	noparms.emit()
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 
 	d1.dispose()
 	noparms.emit()
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 
 
 func test_from_signal_oneparm() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var d1 := Observable.from_signal(oneparm).subscribe(
 		func(x: int) -> void:
-			_result_int += x
+			result.append(x)
 	)
 	oneparm.emit(2)
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([2])
 
 	d1.dispose()
 	oneparm.emit(3)
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([2])
 
 
 func test_from_signal_twoparms() -> void:

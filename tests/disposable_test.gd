@@ -1,26 +1,23 @@
 extends GdUnitTestSuite
 
-var _result_int: int
-
-
 func test_add_to_array() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var bag: Array[Disposable] = []
 	var subject := Subject.new()
 	subject.subscribe(
 		func(_u: Unit) -> void:
-			_result_int += 1
+			result.append("called")
 	).add_to(bag)
 
 	for sub in bag:
 		sub.dispose()
 
 	subject.on_next()
-	assert_int(_result_int).is_equal(0)
+	assert_array(result).is_empty()
 
 
 func test_add_to_node() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var node := Node.new()
 	var subject := Subject.new()
 
@@ -29,14 +26,14 @@ func test_add_to_node() -> void:
 
 	subject.subscribe(
 		func(_u: Unit) -> void:
-			_result_int += 1
+			result.append("called")
 	).add_to(node)
 
 	subject.on_next(Unit.default)
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 
 	node.queue_free()
 	await child_exiting_tree
 
 	subject.on_next(Unit.default)
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])

@@ -1,6 +1,10 @@
 extends GdUnitTestSuite
 
-var _result_int: int
+static var _result_static_array: Array[int] = []
+
+
+static func update_static_result_array(i: int) -> void:
+	_result_static_array.append(i)
 
 
 func standard() -> void:
@@ -34,53 +38,61 @@ func standard_no_argument() -> void:
 
 
 func test_unit() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var subject := Subject.new()
 	subject.subscribe(
 		func(_u: Unit) -> void:
-			_result_int += 1
+			result.append("called")
 	)
-	assert_int(_result_int).is_equal(0)
+	assert_array(result).is_empty()
 
 	subject.on_next(Unit.default)
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 
 
 func test_subject_await() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var subject := Subject.new()
 	subject.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 
 	subject.on_next.call_deferred(10)
-	var result: int = await subject.wait()
-	assert_int(result).is_equal(10)
+	var await_result: int = await subject.wait()
+	assert_int(await_result).is_equal(10)
 
 	await get_tree().process_frame
 
 
 func test_dispose() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 
 	var subject := Subject.new()
 	var d := subject.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 	subject.dispose()
 	subject = Subject.new()
 
 	subject.on_next(10)
-	assert_int(_result_int).is_equal(0)
+	assert_array(result).is_empty()
 
 	d.dispose()
 	d = subject.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 	d.dispose()
 	subject.dispose()
 	subject.on_next(10)
-	assert_int(_result_int).is_equal(0)
+	assert_array(result).is_empty()
+
+
+func test_static_method_bind() -> void:
+	_result_static_array.clear()
+	var subject := Subject.new()
+	subject.subscribe(update_static_result_array)
+	subject.on_next(10)
+	assert_array(_result_static_array).contains_exactly([10])

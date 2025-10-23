@@ -1,31 +1,30 @@
 extends GdUnitTestSuite
 
 signal no_parms
-const Subscription = preload("res://addons/signal_extensions/subscription.gd")
-var _result_int: int
+const Subscription = preload("uid://deioe3s8pcc8")
 
 
 func test_subscribe_no_params() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var sub := Subscription.new(
 		no_parms,
 		func() -> void:
-			_result_int += 1
+			result.append("called")
 	)
 	no_parms.emit()
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 	sub.dispose()
 
 
 func test_unsubscribe() -> void:
-	_result_int = 0
+	var result: Array[String] = []
 	var sub := Subscription.new(
 		no_parms,
 		func() -> void:
-			_result_int += 1
+			result.append("called")
 	)
 	no_parms.emit()
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])
 	sub.dispose()
 	no_parms.emit()
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly(["called"])

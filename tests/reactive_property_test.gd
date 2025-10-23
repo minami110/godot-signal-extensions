@@ -1,25 +1,23 @@
 extends GdUnitTestSuite
 
-var _result_int: int
-
 
 func test_standard1() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(
 		func(new_value: int) -> void:
-			_result_int = new_value
+			result.append(new_value)
 	)
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly([1])
 	assert_int(rp.value).is_equal(1)
 
 	rp.value = 2
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 2])
 	assert_int(rp.value).is_equal(2)
 
 	rp.dispose()
 	rp.value = 3
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 2])
 	assert_int(rp.value).is_equal(3)
 
 
@@ -45,74 +43,74 @@ func test_standard2() -> void:
 
 
 func test_rp_equality() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(
 		func(new_value: int) -> void:
-			_result_int += new_value
+			result.append(new_value)
 	)
 	rp.value = 1
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly([1])
 	rp.value = 2
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 2])
 
 
 func test_rp_equality_disabled() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1, false)
 	rp.subscribe(
 		func(new_value: int) -> void:
-			_result_int += new_value
+			result.append(new_value)
 	)
 	rp.value = 1
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 1])
 	rp.value = 2
-	assert_int(_result_int).is_equal(4)
+	assert_array(result).contains_exactly([1, 1, 2])
 
 
 func test_rp_await() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 
 	var callable := func() -> void:
 		rp.value = 2
 	callable.call_deferred()
-	var result: int = await rp.wait()
-	assert_int(result).is_equal(2)
+	var await_result: int = await rp.wait()
+	assert_int(await_result).is_equal(2)
 
 	await get_tree().process_frame
 
 
 func test_dispose() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 
 	var rp := ReactiveProperty.new(1)
 	var d := rp.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 	rp.dispose()
 	rp = ReactiveProperty.new(2)
 
 	rp.value = 3
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly([1])
 
 	d.dispose()
 	d = rp.subscribe(
 		func(i: int) -> void:
-			_result_int = i
+			result.append(i)
 	)
 	d.dispose()
 	d = null
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 3])
 
 	rp.dispose()
 	rp.value = 4
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 3])
 
 
 func test_read_only_reactive_property() -> void:

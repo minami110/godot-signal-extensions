@@ -300,3 +300,62 @@ func test_complex_operator_chain() -> void:
 	subject.on_next(5) # 10 だが take(3) で終了
 
 	assert_array(result_values).contains_exactly([4, 6, 8])
+
+
+func test_take_skip() -> void:
+	var result: Array[int] = []
+	var subject := Subject.new()
+	var d := subject.take(3).skip(1).subscribe(
+		func(i: int) -> void:
+			result.append(i)
+	)
+
+	subject.on_next(10)
+	assert_array(result).is_empty()
+	subject.on_next(20)
+	assert_array(result).contains_exactly([20])
+	d.dispose()
+	subject.on_next(30)
+	assert_array(result).contains_exactly([20])
+
+
+func test_skip_take() -> void:
+	var result: Array[int] = []
+	var rp := ReactiveProperty.new(10)
+	var d := rp.skip(2).take(2).subscribe(
+		func(i: int) -> void:
+			result.append(i)
+	)
+	assert_array(result).is_empty()
+
+	rp.value = 20
+	assert_array(result).is_empty()
+	rp.value = 30
+	assert_array(result).contains_exactly([30])
+	d.dispose()
+	rp.value = 40
+	assert_array(result).contains_exactly([30])
+
+
+func test_where_skip() -> void:
+	var result: Array[int] = []
+	var subject := Subject.new()
+	var d := subject.where(
+		func(i: int) -> bool:
+			return i > 10
+	).skip(1).subscribe(
+		func(i: int) -> void:
+			result.append(i)
+	)
+
+	subject.on_next(10)
+	assert_array(result).is_empty()
+	subject.on_next(20)
+	assert_array(result).is_empty()
+	subject.on_next(10)
+	assert_array(result).is_empty()
+	subject.on_next(20)
+	assert_array(result).contains_exactly([20])
+	d.dispose()
+	subject.on_next(30)
+	assert_array(result).contains_exactly([20])
