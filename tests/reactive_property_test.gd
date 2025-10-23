@@ -1,41 +1,27 @@
 extends GdUnitTestSuite
 
-# warning-ignore-all:unused_parameter
-# warning-ignore-all:unused_variable
-# warning-ignore-all:return_value_discarded
-
-const __source := 'res://addons/signal_extensions/reactive_property.gd'
-
-var _result_int: int
-
 
 func test_standard1() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
-	rp.subscribe(
-		func(new_value: int) -> void:
-			_result_int = new_value
-	)
-	assert_int(_result_int).is_equal(1)
+	rp.subscribe(result.append)
+	assert_array(result).contains_exactly([1])
 	assert_int(rp.value).is_equal(1)
 
 	rp.value = 2
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 2])
 	assert_int(rp.value).is_equal(2)
 
 	rp.dispose()
 	rp.value = 3
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 2])
 	assert_int(rp.value).is_equal(3)
 
 
 func test_standard2() -> void:
 	var result: Array = []
 	var rp := ReactiveProperty.new(null)
-	rp.subscribe(
-		func(new_value: Variant) -> void:
-			result.push_back(new_value)
-	)
+	rp.subscribe(result.push_back)
 
 	rp.value = 1
 	rp.value = "Foo"
@@ -51,74 +37,59 @@ func test_standard2() -> void:
 
 
 func test_rp_equality() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
-	rp.subscribe(
-		func(new_value: int) -> void:
-			_result_int += new_value
-	)
+	rp.subscribe(result.append)
 	rp.value = 1
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly([1])
 	rp.value = 2
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 2])
 
 
 func test_rp_equality_disabled() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1, false)
-	rp.subscribe(
-		func(new_value: int) -> void:
-			_result_int += new_value
-	)
+	rp.subscribe(result.append)
 	rp.value = 1
-	assert_int(_result_int).is_equal(2)
+	assert_array(result).contains_exactly([1, 1])
 	rp.value = 2
-	assert_int(_result_int).is_equal(4)
+	assert_array(result).contains_exactly([1, 1, 2])
 
 
 func test_rp_await() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
-	rp.subscribe(
-		func(i: int) -> void:
-			_result_int = i
-	)
+	rp.subscribe(result.append)
 
 	var callable := func() -> void:
 		rp.value = 2
 	callable.call_deferred()
-	var result: int = await rp.wait()
-	assert_int(result).is_equal(2)
+	var await_result: int = await rp.wait()
+	assert_int(await_result).is_equal(2)
 
 	await get_tree().process_frame
 
 
 func test_dispose() -> void:
-	_result_int = 0
+	var result: Array[int] = []
 
 	var rp := ReactiveProperty.new(1)
-	var d := rp.subscribe(
-		func(i: int) -> void:
-			_result_int = i
-	)
+	var d := rp.subscribe(result.append)
 	rp.dispose()
 	rp = ReactiveProperty.new(2)
 
 	rp.value = 3
-	assert_int(_result_int).is_equal(1)
+	assert_array(result).contains_exactly([1])
 
 	d.dispose()
-	d = rp.subscribe(
-		func(i: int) -> void:
-			_result_int = i
-	)
+	d = rp.subscribe(result.append)
 	d.dispose()
 	d = null
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 3])
 
 	rp.dispose()
 	rp.value = 4
-	assert_int(_result_int).is_equal(3)
+	assert_array(result).contains_exactly([1, 3])
 
 
 func test_read_only_reactive_property() -> void:
@@ -127,10 +98,7 @@ func test_read_only_reactive_property() -> void:
 
 	# cast
 	var rp := rp_source as ReadOnlyReactiveProperty
-	rp.subscribe(
-		func(new_value: int) -> void:
-			result.push_back(new_value)
-	)
+	rp.subscribe(result.push_back)
 
 	assert_int(rp.current_value).is_equal(1)
 
@@ -159,10 +127,7 @@ func test_config_file_serialization() -> void:
 	assert_int(loaded_rp.value).is_equal(100)
 
 	# 読み込んだオブジェクトが正常に動作することを確認
-	loaded_rp.subscribe(
-		func(new_value: int) -> void:
-			result.push_back(new_value)
-	)
+	loaded_rp.subscribe(result.push_back)
 
 	# 初期値がすぐに通知されることを確認
 	assert_array(result).contains_exactly([100])
@@ -202,10 +167,7 @@ func test_config_file_various_types() -> void:
 
 		# 新しい値を設定して動作確認
 		var result: Array = []
-		loaded_rp.subscribe(
-			func(new_value: Variant) -> void:
-				result.push_back(new_value)
-		)
+		loaded_rp.subscribe(result.push_back)
 
 		# 初期値が通知される
 		assert_that(result[0]).is_equal(test_value)

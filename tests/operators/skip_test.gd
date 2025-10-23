@@ -7,7 +7,7 @@ func test_standard() -> void:
 	var subject := Subject.new()
 	var d1 := subject \
 	.skip(1) \
-	.subscribe(func(x): result.push_back(x))
+	.subscribe(result.push_back)
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -27,7 +27,7 @@ func test_two_subscribers() -> void:
 	var skip2 := skip1.skip(1)
 
 	# two subscribers
-	skip1.subscribe(func(x): result1.push_back(x))
+	skip1.subscribe(result1.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)
@@ -36,7 +36,7 @@ func test_two_subscribers() -> void:
 	assert_array(result2, true).is_empty()
 	assert_array(result3, true).is_empty()
 
-	skip1.subscribe(func(x): result2.push_back(x))
+	skip1.subscribe(result2.push_back)
 
 	subject.on_next(3)
 	subject.on_next(4)
@@ -45,7 +45,7 @@ func test_two_subscribers() -> void:
 	assert_array(result2, true).contains_exactly([4])
 	assert_array(result3, true).is_empty()
 
-	skip2.subscribe(func(x): result3.push_back(x))
+	skip2.subscribe(result3.push_back)
 
 	subject.on_next(5)
 	subject.on_next(6)

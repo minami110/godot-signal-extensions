@@ -7,7 +7,7 @@ func test_standard() -> void:
 	var subject := Subject.new()
 	subject \
 	.take(2) \
-	.subscribe(func(x): result.push_back(x))
+	.subscribe(result.push_back)
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -24,15 +24,15 @@ func test_two_subscribers() -> void:
 	var take1 := subject.take(1)
 	var take2 := take1.take(1)
 
-	take1.subscribe(func(x): result1.push_back(x))
-	take1.subscribe(func(x): result2.push_back(x))
+	take1.subscribe(result1.push_back)
+	take1.subscribe(result2.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)
 	assert_array(result1, true).contains_exactly([1])
 	assert_array(result2, true).contains_exactly([1])
 
-	take2.subscribe(func(x): result3.push_back(x))
+	take2.subscribe(result3.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)

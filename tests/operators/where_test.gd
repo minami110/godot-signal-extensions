@@ -7,7 +7,7 @@ func test_standard() -> void:
 	var subject := Subject.new()
 	var d := subject \
 	.where(func(x): return x >= 20) \
-	.subscribe(func(i): result.push_back(i))
+	.subscribe(result.push_back)
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -25,7 +25,7 @@ func test_merge_behaviour() -> void:
 	var d := subject \
 	.where(func(x): return x > 20) \
 	.where(func(x): return x < 30) \
-	.subscribe(func(i): result.push_back(i))
+	.subscribe(result.push_back)
 
 	subject.on_next(10)
 	subject.on_next(20)
@@ -46,15 +46,15 @@ func test_two_subscribers() -> void:
 	var where2 := where1.where(func(x): return x >= 3)
 
 	# two subscribers
-	where1.subscribe(func(x): result1.push_back(x))
-	where1.subscribe(func(x): result2.push_back(x))
+	where1.subscribe(result1.push_back)
+	where1.subscribe(result2.push_back)
 
 	subject.on_next(1)
 	subject.on_next(2)
 	assert_array(result1, true).contains_exactly([2])
 	assert_array(result2, true).contains_exactly([2])
 
-	where2.subscribe(func(x): result3.push_back(x))
+	where2.subscribe(result3.push_back)
 	subject.on_next(2)
 	subject.on_next(3)
 	assert_array(result1, true).contains_exactly([2, 2, 3])

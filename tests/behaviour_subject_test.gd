@@ -1,17 +1,10 @@
 extends GdUnitTestSuite
 
-@warning_ignore("unused_parameter")
-@warning_ignore("unused_variable")
-@warning_ignore("return_value_discarded")
-
 func test_standard() -> void:
 	var result: Array[int] = []
 
 	var subject := BehaviourSubject.new(5)
-	subject.subscribe(
-		func(i: int) -> void:
-			result.append(i)
-	)
+	subject.subscribe(result.append)
 
 	subject.on_next(10)
 	subject.on_next(10)
@@ -49,10 +42,7 @@ func test_config_file_serialization() -> void:
 	assert_str(loaded_subject.value).is_equal("complete")
 
 	# 新しいsubscriberがすぐに最新値を受け取ることを確認
-	loaded_subject.subscribe(
-		func(new_value: String) -> void:
-			result.push_back(new_value)
-	)
+	loaded_subject.subscribe(result.push_back)
 
 	# 初期値（最新値）がすぐに通知されることを確認
 	assert_array(result).contains_exactly(["complete"])
@@ -92,10 +82,7 @@ func test_config_file_various_types() -> void:
 
 		# 新しいsubscriberの動作確認
 		var result: Array = []
-		loaded_subject.subscribe(
-			func(new_value: Variant) -> void:
-				result.push_back(new_value)
-		)
+		loaded_subject.subscribe(result.push_back)
 
 		# 初期値（最新値）がすぐに通知される
 		assert_that(result[0]).is_equal(test_value)
