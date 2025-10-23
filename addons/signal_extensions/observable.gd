@@ -92,19 +92,27 @@ static func from_signal(sig: Signal) -> Observable:
 ## [param sources]: Variadic arguments of observables to merge
 ## [br][b]Returns:[/b] An [Observable] that emits values from all source observables
 static func merge(...sources: Array) -> Observable:
-	assert(sources.size() > 0, "Observable.merge requires at least one source")
+	if sources.size() == 0:
+		push_error("Observable.merge requires at least one source")
+		return null
 
 	if sources.size() == 1 and sources[0] is Array:
 		var array_arg: Array = sources[0]
-		assert(array_arg.size() > 0, "Observable.merge requires at least one source")
+		if array_arg.size() == 0:
+			push_error("Observable.merge requires at least one source")
+			return null
 
 		for source: Variant in array_arg:
-			assert(source is Observable, "All sources must be Observable instances")
+			if not (source is Observable):
+				push_error("All sources must be Observable instances")
+				return null
 
 		return Merge.new(array_arg)
 
 	for source: Variant in sources:
-		assert(source is Observable, "All sources must be Observable instances")
+		if not (source is Observable):
+			push_error("All sources must be Observable instances")
+			return null
 
 	return Merge.new(sources)
 
