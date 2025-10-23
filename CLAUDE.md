@@ -3,14 +3,12 @@
 This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
-
 Godot 4 plugin extending Signal and Callable with reactive programming features (inspired by Cysharp/R3). Simplifies signal management through automatic disposal and observable streams.
 
-## Development Environment
+## GitHub Repository
+- Repository: https://github.com/minami110/godot-signal-extensions
+- Main branch: main
 
-### Requirements
-- **Godot Version**: 4.5.1
-- **GDScript Version**: 2.0+
 
 ## Key Directories
 - `addons/signal_extensions`: Main plugin
@@ -19,7 +17,6 @@ Godot 4 plugin extending Signal and Callable with reactive programming features 
 
 
 ## Development Commands
-
 ### Testing
 **Use the `gdscript-test-skill` skill for all test operations:**
 ```bash
@@ -48,7 +45,6 @@ Disposable → Observable (Subject, BehaviourSubject, ReactiveProperty, Operator
 `addons/signal_extensions/` - Core classes, factories/, operators/
 
 ## Key Features
-
 ### Observable Types
 - **Subject**: Manual emission hot observable
 - **BehaviourSubject**: Subject with current value
