@@ -8,7 +8,7 @@ set -e
 # スクリプトのディレクトリを取得してプロジェクトルートに移動
 # これにより、どのディレクトリから実行されても正しく動作する
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR/../../../"
+cd "$SCRIPT_DIR/../../../../"
 
 # Godot 実行ファイルのパス（環境変数で上書き可能）
 GODOT_CMD="${GODOT_PATH:-godot}"

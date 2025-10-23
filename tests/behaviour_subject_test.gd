@@ -38,8 +38,12 @@ func test_config_file_serialization() -> void:
 
 	# シリアライゼーション/デシリアライゼーション
 	var config := ConfigFile.new()
-	var config_string := config.encode_var(original_subject)
-	var loaded_subject: BehaviourSubject = config.decode_var(config_string)
+	config.set_value("test", "subject", original_subject)
+	var config_text: String = config.encode_to_text()
+
+	var loaded_config := ConfigFile.new()
+	loaded_config.parse(config_text)
+	var loaded_subject: BehaviourSubject = loaded_config.get_value("test", "subject")
 
 	# 最新値が保持されていることを確認
 	assert_str(loaded_subject.value).is_equal("complete")
@@ -71,13 +75,17 @@ func test_config_file_various_types() -> void:
 		null,
 	]
 
-	for test_value in test_cases:
+	for test_value: Variant in test_cases:
 		var original_subject := BehaviourSubject.new(test_value)
 
 		# シリアライゼーション/デシリアライゼーション
 		var config := ConfigFile.new()
-		var config_string := config.encode_var(original_subject)
-		var loaded_subject: BehaviourSubject = config.decode_var(config_string)
+		config.set_value("test", "subject", original_subject)
+		var config_text: String = config.encode_to_text()
+
+		var loaded_config := ConfigFile.new()
+		loaded_config.parse(config_text)
+		var loaded_subject: BehaviourSubject = loaded_config.get_value("test", "subject")
 
 		# 値が保持されていることを確認
 		assert_that(loaded_subject.value).is_equal(test_value)

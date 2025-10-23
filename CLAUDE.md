@@ -12,17 +12,11 @@ Godot 4 plugin extending Signal and Callable with reactive programming features 
 - **Godot Version**: 4.5.1
 - **GDScript Version**: 2.0+
 
-### Plugins
-- **Signal Extensions** (`addons/signal_extensions/plugin.cfg`) - Main plugin
-- **GDUnit4** (`addons/gdUnit4/plugin.cfg`) - Testing framework
+## Key Directories
+- `addons/signal_extensions`: Main plugin
+- `addons/gdUnit4`: Testing framework, **DO NOT EDIT**
+- `tests/`: Test files
 
-### Project Configuration
-Strict type checking enabled:
-```gdscript
-gdscript/warnings/untyped_declaration=1
-gdscript/warnings/unsafe_cast=1
-gdscript/warnings/unsafe_call_argument=1
-```
 
 ## Development Commands
 
@@ -75,12 +69,13 @@ subscription.dispose()
 observable.subscribe(callback).add_to(self)
 ```
 
-## Best Practices
+## Code Style Guidelines
+- **Use Context7**: Always use the Context7 MCP Server to verify the latest Godot Engine and GDScript syntax, API (functions, classes, signatures) when creating or modifying files.
+- **YAGNI**: Do not add features, abstractions, or configuration unless currently required by the codebase or tests.
+- **GDScript Style**: Follow Godot 4.5 style guide for formatting, documentation, and type hints (use gdscript-format-skill for details)
+- **Resource Management**: Use gdscript-file-manager-skill when moving, renaming, or deleting GDScript files
 
-**Type Safety**: Explicit types everywhere (params, returns, vars) - warnings are errors
-
-**Memory**: Always dispose subscriptions - prefer `.add_to(node)` for automatic cleanup
-
-**Testing**: Files end with `_test.gd`, extend `GdUnitTestSuite`, use GDUnit4 assertions
-
-**Style**: Method chaining for operators, lambdas for simple transformations
+## PR Guidelines
+- target branch: origin/main
+- Verify API changes with Context7 before making changes
+- Include summary of changes in PR description

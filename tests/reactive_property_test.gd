@@ -149,8 +149,11 @@ func test_config_file_serialization() -> void:
 	config.set_value("player", "health", original_rp)
 
 	# メモリ内でシリアライゼーション/デシリアライゼーションをテスト
-	var config_string := config.encode_var(original_rp)
-	var loaded_rp: ReactiveProperty = config.decode_var(config_string)
+	var config_text: String = config.encode_to_text()
+
+	var loaded_config := ConfigFile.new()
+	loaded_config.parse(config_text)
+	var loaded_rp: ReactiveProperty = loaded_config.get_value("player", "health")
 
 	# 値が保持されていることを確認
 	assert_int(loaded_rp.value).is_equal(100)
@@ -182,13 +185,17 @@ func test_config_file_various_types() -> void:
 		null,
 	]
 
-	for test_value in test_cases:
+	for test_value: Variant in test_cases:
 		var original_rp := ReactiveProperty.new(test_value)
 
 		# シリアライゼーション/デシリアライゼーション
 		var config := ConfigFile.new()
-		var config_string := config.encode_var(original_rp)
-		var loaded_rp: ReactiveProperty = config.decode_var(config_string)
+		config.set_value("test", "property", original_rp)
+		var config_text: String = config.encode_to_text()
+
+		var loaded_config := ConfigFile.new()
+		loaded_config.parse(config_text)
+		var loaded_rp: ReactiveProperty = loaded_config.get_value("test", "property")
 
 		# 値が保持されていることを確認
 		assert_that(loaded_rp.value).is_equal(test_value)
