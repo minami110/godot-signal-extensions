@@ -1,5 +1,10 @@
 extends GdUnitTestSuite
 
+# Helper class for testing: Always updates even if values are equal
+class AlwaysUpdateRP extends ReactiveProperty:
+	func _should_update(_old_value: Variant, _new_value: Variant) -> bool:
+		return true # Always update, similar to old check_equality=false
+
 
 func test_standard1() -> void:
 	var result: Array[int] = []
@@ -41,19 +46,18 @@ func test_rp_equality() -> void:
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(result.append)
 	rp.value = 1
-	assert_array(result).contains_exactly([1])
 	rp.value = 2
-	assert_array(result).contains_exactly([1, 2])
+	rp.value = 2
+	assert_array(result).contains_exactly(1, 2)
 
 
 func test_rp_equality_disabled() -> void:
 	var result: Array[int] = []
-	var rp := ReactiveProperty.new(1, false)
+	var rp := AlwaysUpdateRP.new(1)
 	rp.subscribe(result.append)
 	rp.value = 1
-	assert_array(result).contains_exactly([1, 1])
 	rp.value = 2
-	assert_array(result).contains_exactly([1, 1, 2])
+	assert_array(result).contains_exactly(1, 1, 2)
 
 
 func test_rp_await() -> void:
