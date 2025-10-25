@@ -18,6 +18,7 @@ const Select = preload("operators/select.gd")
 const Skip = preload("operators/skip.gd")
 const SkipWhile = preload("operators/skip_while.gd")
 const Take = preload("operators/take.gd")
+const TakeUntil = preload("operators/take_until.gd")
 const TakeWhile = preload("operators/take_while.gd")
 const ThrottleLast = preload("operators/throttle_last.gd")
 const Where = preload("operators/where.gd")
@@ -228,6 +229,26 @@ func take(count: int) -> Observable:
 		return Take.new(new_source, new_count)
 	else:
 		return Take.new(self, count)
+
+
+## Emit values until another observable emits.
+##
+## This operator emits values from the source observable until
+## the given "other" observable emits a value. Once the other observable
+## emits, the source subscription completes.
+##
+## Usage:
+## [codeblock]
+## var stop_signal = Subject.new()
+## source_observable.take_until(stop_signal).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param other]: Observable that signals when to stop emitting values
+## [br][b]Returns:[/b] An [Observable] that completes when other emits
+func take_until(other: Observable) -> Observable:
+	assert(other != null, "take_until.other is not valid.")
+
+	return TakeUntil.new(self, other)
 
 
 ## Mirror items while a predicate function returns true.

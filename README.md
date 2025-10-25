@@ -412,6 +412,26 @@ subject.on_next(1)
 
 Emits values as long as the predicate function returns true. Once the condition becomes false, the observable completes.
 
+#### take_until
+```gdscript
+var source := Subject.new()
+var stop := Subject.new()
+
+source \
+	.take_until(stop) \
+	.subscribe(arr.push_back)
+
+source.on_next(1)
+source.on_next(2)
+stop.on_next()  # Stop signal
+source.on_next(3)
+```
+```console
+[1, 2]
+```
+
+Emits values until another observable emits. Once the provided observable emits any value, the source subscription completes. This is useful for combining multiple observables to control when a stream should stop.
+
 #### skip_while
 ```gdscript
 subject \
