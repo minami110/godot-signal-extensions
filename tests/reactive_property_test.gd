@@ -1,11 +1,5 @@
 extends GdUnitTestSuite
 
-# Helper class for testing: Always updates even if values are equal
-class AlwaysUpdateRP extends ReactiveProperty:
-	func _should_update(_old_value: Variant, _new_value: Variant) -> bool:
-		return true # Always update, similar to old check_equality=false
-
-
 func test_standard1() -> void:
 	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
@@ -32,13 +26,11 @@ func test_standard2() -> void:
 	rp.value = "Foo"
 	rp.value = null
 	rp.value = null
-	var n1 := Node2D.new()
-	var n2 := Node2D.new()
+	var n1: Node2D = auto_free(Node2D.new())
+	var n2: Node2D = auto_free(Node2D.new())
 	rp.value = n1
 	rp.value = n2
 	assert_array(result).contains_exactly([null, 1, "Foo", null, n1, n2])
-	n1.queue_free()
-	n2.queue_free()
 
 
 func test_rp_equality() -> void:
@@ -51,13 +43,29 @@ func test_rp_equality() -> void:
 	assert_array(result).contains_exactly(1, 2)
 
 
-func test_rp_equality_disabled() -> void:
-	var result: Array[int] = []
-	var rp := AlwaysUpdateRP.new(1)
-	rp.subscribe(result.append)
-	rp.value = 1
-	rp.value = 2
-	assert_array(result).contains_exactly(1, 1, 2)
+func test_rp_equality_with_objects() -> void:
+	var result: Array = []
+	var rp := ReactiveProperty.new(null)
+	rp.subscribe(result.push_back)
+
+	# Test with Node instances (using auto_free)
+	var node1: Node = auto_free(Node.new())
+	var node2: Node = auto_free(Node.new())
+
+	rp.value = node1
+	rp.value = node1
+	rp.value = node2
+	rp.value = null
+
+	# Test with RefCounted instances
+	var ref1 := RefCounted.new()
+	var ref2 := RefCounted.new()
+
+	rp.value = ref1
+	rp.value = ref1
+	rp.value = ref2
+
+	assert_array(result).contains_exactly(null, node1, node2, null, ref1, ref2)
 
 
 func test_rp_await() -> void:

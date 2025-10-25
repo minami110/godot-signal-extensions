@@ -1,16 +1,19 @@
 class_name ReactiveProperty
 extends ReadOnlyReactiveProperty
-## A reactive property that holds a value and notifies observers when it changes.
+## A simple reactive property that holds a value and notifies observers when it changes.
 ##
 ## ReactiveProperty extends [ReadOnlyReactiveProperty] to provide mutable value storage
 ## with automatic change notifications. It immediately emits the current value to new
-## subscribers and can optionally check for equality before emitting changes.
+## subscribers and uses equality checking to prevent redundant notifications.
+##
+## For custom transformation or validation logic, use [CustomReactiveProperty] instead.
 ##
 ## Usage:
 ## [codeblock]
 ## var health := ReactiveProperty.new(100)
 ## health.subscribe(func(value): print("Health: ", value))
 ## health.value = 50  # Triggers notification
+## health.value = 50  # No notification (same value)
 ## [/codeblock]
 
 # Dependencies
@@ -38,19 +41,13 @@ var value: Variant:
 ## Creates a new ReactiveProperty with an initial value.
 ##
 ## The reactive property will store the initial value and emit it to new subscribers.
-## By default, the property only emits changes when the new value differs from the current value.
-## You can customize this behavior by overriding [method _should_update].
+## The property uses equality checking to only emit when values differ.
 ##
 ## Usage:
 ## [codeblock]
 ## var health := ReactiveProperty.new(100)
-##
-## # Custom validation example
-## class ValidatedHP extends ReactiveProperty:
-##     func _should_update(old_value, new_value) -> bool:
-##         if new_value < 0 or new_value > 100:
-##             return false  # Reject out-of-range values
-##         return old_value != new_value
+## var name := ReactiveProperty.new("Player")
+## var position := ReactiveProperty.new(Vector2.ZERO)
 ## [/codeblock]
 ##
 ## [param initial_value]: The starting value for the property
@@ -66,24 +63,6 @@ func _validate_property(property: Dictionary) -> void:
 	# Do not serialize value and current_value properies
 	if property.name == "value" or property.name == "current_value":
 		property.usage &= ~(PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_SCRIPT_VARIABLE)
-
-
-## Core subscription implementation for ReactiveProperty.
-##
-## This method immediately calls the observer with the current value,
-## then sets up a subscription for future value changes.
-##
-## [param observer]: The callback function to register
-## [br][b]Returns:[/b] A [Disposable] subscription object
-func _subscribe_core(observer: Callable) -> Disposable:
-	if is_blocking_signals():
-		return Disposable.empty
-
-	assert(observer.is_valid(), "ReactiveProperty.subscribe observer is not valid.")
-	assert(observer.get_argument_count() == 1, "ReactiveProperty.subscribe observer must have exactly one argument")
-
-	observer.call(_value)
-	return Subscription.new(_on_next, observer)
 
 
 ## Disposes the reactive property and disconnects all subscribers.
@@ -144,46 +123,37 @@ func add_to(obj: Variant) -> ReactiveProperty:
 	return self
 
 
+## Core subscription implementation for ReactiveProperty.
+##
+## This method immediately calls the observer with the current value,
+## then sets up a subscription for future value changes.
+##
+## [param observer]: The callback function to register
+## [br][b]Returns:[/b] A [Disposable] subscription object
+func _subscribe_core(observer: Callable) -> Disposable:
+	if is_blocking_signals():
+		return Disposable.empty
+
+	assert(observer.is_valid(), "ReactiveProperty.subscribe observer is not valid.")
+	assert(observer.get_argument_count() == 1, "ReactiveProperty.subscribe observer must have exactly one argument")
+
+	observer.call(_value)
+	return Subscription.new(_on_next, observer)
+
+
 func _get_value() -> Variant:
 	return _value
 
 
 func _set_value(new_value: Variant) -> void:
-	if not _should_update(_value, new_value):
+	# Only update if value actually changed (equality check)
+	if _are_equal(_value, new_value):
 		return
 
 	_value = new_value
 
 	if not is_blocking_signals():
 		_on_next.emit(new_value)
-
-
-## Determines whether the value should be updated.
-##
-## Override this method to implement custom validation or change detection logic.
-## By default, this method returns true only when the new value differs from
-## the current value (equality check).
-##
-## Usage:
-## [codeblock]
-## # Always update (similar to old check_equality=false)
-## class AlwaysUpdateRP extends ReactiveProperty:
-##     func _should_update(old_value, new_value) -> bool:
-##         return true
-##
-## # Custom validation
-## class RangeRP extends ReactiveProperty:
-##     func _should_update(old_value, new_value) -> bool:
-##         if new_value < 0 or new_value > 100:
-##             return false
-##         return old_value != new_value
-## [/codeblock]
-##
-## [param old_value]: The current value
-## [param new_value]: The proposed new value
-## [br][b]Returns:[/b] True if the value should be updated, false otherwise
-func _should_update(old_value: Variant, new_value: Variant) -> bool:
-	return not _are_equal(old_value, new_value)
 
 
 ## Tests equality between two variants with proper null handling.
