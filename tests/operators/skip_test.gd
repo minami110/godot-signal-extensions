@@ -48,3 +48,12 @@ func test_two_subscribers() -> void:
 	assert_array(result1, true).contains_exactly(2, 3, 4, 5, 6, 7)
 	assert_array(result2, true).contains_exactly(4, 5, 6, 7)
 	assert_array(result3, true).contains_exactly(7)
+
+
+func test_skip_zero() -> void:
+	var result := []
+	Observable.of(10, 20, 30) \
+	.skip(0) \
+	.subscribe(result.push_back)
+
+	assert_array(result, true).contains_exactly(10, 20, 30)

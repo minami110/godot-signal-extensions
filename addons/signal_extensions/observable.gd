@@ -269,7 +269,10 @@ func scan(initial_value: Variant, accumulator: Callable) -> Observable:
 ## [param count]: Number of items to skip from the beginning
 ## [br][b]Returns:[/b] An [Observable] that skips the first N emissions
 func skip(count: int) -> Observable:
-	assert(count > 0, "count must be greater than 0")
+	assert(count >= 0, "count must be greater than 0")
+
+	if count == 0:
+		return self
 
 	if self is Skip:
 		var new_source: Observable = self._source
@@ -309,11 +312,9 @@ func skip_while(predicate: Callable) -> Observable:
 ## [param count]: Maximum number of items to emit
 ## [br][b]Returns:[/b] An [Observable] that emits at most N values
 func take(count: int) -> Observable:
-	if count < 0:
-		push_error("take count must be non-negative")
-		return Observable.empty()
+	assert(count >= 0, "count must be non-negative")
 
-	elif count == 0:
+	if count == 0:
 		return Observable.empty()
 
 	if self is Take:

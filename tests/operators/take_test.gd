@@ -36,18 +36,13 @@ func test_two_subscribers() -> void:
 
 	assert_array(result1, true).contains_exactly([1])
 	assert_array(result2, true).contains_exactly([1])
-	assert_array(result3, true).contains_exactly([1, 2])
+	assert_array(result3, true).contains_exactly([1])
 
 
 func test_take_zero_returns_empty() -> void:
 	var result := []
 	Observable.of(1, 2, 3).take(0).subscribe(result.push_back)
-	assert_array(result, true).is_empty()
-
-
-func test_take_negative_returns_null() -> void:
-	var result = Observable.range(1, 10).take(-5)
-	assert_object(result).is_null()
+	assert_array(result).is_empty()
 
 
 func test_take_zero_is_singleton() -> void:

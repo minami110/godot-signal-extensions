@@ -147,12 +147,12 @@ func test_take_chaining_optimization() -> void:
 	# take を連続して呼び出すと最適化されることを確認
 	var result: Array = []
 
-	# take を2回連続で呼び出す (take(3) + take(2) = take(5))
-	# 注意: take の最適化は加算される
+	# take を2回連続で呼び出す (take(3).take(2) = take(min(3, 2)))
+	# 注意: take の最適化は最小値を取る（R3準拠）
 	Observable.range(1, 6).take(3).take(2).subscribe(result.push_back)
 
-	# take(3+2=5) なので最初の5つが emit される
-	assert_array(result).contains_exactly([1, 2, 3, 4, 5])
+	# take(min(3, 2) = 2) なので最初の2つが emit される
+	assert_array(result).contains_exactly([1, 2])
 
 
 func test_sample_is_alias_for_throttle_last() -> void:
