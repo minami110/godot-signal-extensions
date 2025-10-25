@@ -37,3 +37,29 @@ func test_two_subscribers() -> void:
 	assert_array(result1, true).contains_exactly([1])
 	assert_array(result2, true).contains_exactly([1])
 	assert_array(result3, true).contains_exactly([1, 2])
+
+
+func test_take_zero_returns_empty() -> void:
+	var result := []
+	Observable.of(1, 2, 3).take(0).subscribe(result.push_back)
+	assert_array(result, true).is_empty()
+
+
+func test_take_negative_returns_null() -> void:
+	var result = Observable.range(1, 10).take(-5)
+	assert_that(result).is_null()
+
+
+func test_take_zero_is_singleton() -> void:
+	var take1 := Observable.of(1, 2, 3).take(0)
+	var take2 := Observable.range(1, 5).take(0)
+	var empty := Observable.empty()
+	# All should return the same singleton instance
+	assert_that(take1).is_same(empty)
+	assert_that(take2).is_same(empty)
+
+
+func test_take_zero_wait_returns_null() -> void:
+	var take_zero := Observable.of(1, 2, 3).take(0)
+	var result: Variant = await take_zero.wait()
+	assert_that(result).is_null()

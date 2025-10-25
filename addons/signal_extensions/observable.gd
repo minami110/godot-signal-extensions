@@ -11,10 +11,11 @@ extends RefCounted
 ## Use [method add_to] to automatically dispose when a [Node] exits the tree.
 
 # Factory and operator imports
+const Empty = preload("factories/empty.gd")
 const FromSignal = preload("factories/from_signal.gd")
 const Merge = preload("factories/merge.gd")
 const Of = preload("factories/of.gd")
-const RangeFactory = preload("factories/range_factory.gd")
+const RangeFactory = preload("factories/range.gd")
 const Debounce = preload("operators/debounce.gd")
 const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
@@ -62,6 +63,23 @@ func subscribe(on_next: Callable) -> Disposable:
 		return _subscribe_core(func(_x: Variant) -> void: on_next.call())
 
 
+## Creates an [Observable] that completes immediately without emitting values.
+##
+## This factory method returns a singleton empty observable that, when subscribed,
+## immediately completes without emitting any items. This is useful for representing
+## "no values" scenarios and is memory-efficient through singleton pattern (R3-compliant).
+##
+## Usage:
+## [codeblock]
+## Observable.empty().subscribe(func(x): print(x))  # Never prints
+## var result = await Observable.empty().wait()  # Returns null immediately
+## [/codeblock]
+##
+## [br][b]Returns:[/b] A singleton [Observable] that completes immediately
+static func empty() -> Observable:
+	return Empty.get_instance()
+
+
 ## Creates an [Observable] from a Godot [Signal].
 ##
 ## This factory method converts a standard Godot signal into an observable stream.
@@ -96,15 +114,13 @@ static func from_signal(sig: Signal) -> Observable:
 ## [param sources]: Variadic arguments of observables to merge
 ## [br][b]Returns:[/b] An [Observable] that emits values from all source observables
 static func merge(...sources: Array) -> Observable:
-	if sources.size() == 0:
-		push_error("Observable.merge requires at least one source")
-		return null
+	if sources.is_empty():
+		return empty()
 
 	if sources.size() == 1 and sources[0] is Array:
 		var array_arg: Array = sources[0]
 		if array_arg.size() == 0:
-			push_error("Observable.merge requires at least one source")
-			return null
+			return empty()
 
 		for source: Variant in array_arg:
 			if not (source is Observable):
@@ -135,6 +151,9 @@ static func merge(...sources: Array) -> Observable:
 ## [param values]: Variadic arguments of values to emit
 ## [br][b]Returns:[/b] An [Observable] that emits the provided values in order
 static func of(...values: Array) -> Observable:
+	if values.is_empty():
+		return empty()
+
 	return Of.new(values)
 
 
@@ -159,6 +178,8 @@ static func range(start: int, count: int) -> Observable:
 	if count < 0:
 		push_error("range count must be non-negative")
 		return null
+	elif count == 0:
+		return empty()
 
 	return RangeFactory.new(start, count)
 
@@ -288,11 +309,15 @@ func skip_while(predicate: Callable) -> Observable:
 ## [param count]: Maximum number of items to emit
 ## [br][b]Returns:[/b] An [Observable] that emits at most N values
 func take(count: int) -> Observable:
-	assert(count > 0, "count must be greater than 0")
+	if count < 0:
+		push_error("take count must be non-negative")
+		return null
+	elif count == 0:
+		return Observable.empty()
 
 	if self is Take:
 		var new_source: Observable = self._source
-		var new_count: int = self._remaining + count
+		var new_count: int = min(self._remaining, count)
 		return Take.new(new_source, new_count)
 	else:
 		return Take.new(self, count)
