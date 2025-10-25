@@ -14,6 +14,7 @@ extends RefCounted
 const FromSignal = preload("factories/from_signal.gd")
 const Merge = preload("factories/merge.gd")
 const Debounce = preload("operators/debounce.gd")
+const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
 const Skip = preload("operators/skip.gd")
 const SkipWhile = preload("operators/skip_while.gd")
@@ -166,6 +167,31 @@ func select(selector: Callable) -> Observable:
 		return Select.new(new_source, func(x: Variant) -> Variant: return selector.call(self._selector.call(x)))
 	else:
 		return Select.new(self, selector)
+
+
+## Accumulate items using an accumulator function.
+##
+## This operator applies an accumulator function to each emitted value,
+## starting with the provided initial value. Emits the accumulated result
+## for each source emission.
+##
+## Usage:
+## [codeblock]
+## # Sum all values: 1, 2, 3 -> 1, 3, 6
+## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
+##
+## # Count occurrences
+## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param initial_value]: The initial value for accumulation
+## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
+## [br][b]Returns:[/b] An [Observable] that emits accumulated values
+func scan(initial_value: Variant, accumulator: Callable) -> Observable:
+	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
+	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
+
+	return Scan.new(self, initial_value, accumulator)
 
 
 ## Suppress the first N items emitted by the observable.

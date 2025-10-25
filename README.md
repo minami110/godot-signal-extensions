@@ -347,6 +347,22 @@ subject.on_next(2)
 
 Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries.
 
+#### scan
+```gdscript
+subject \
+	.scan(0, func(acc, x): return acc + x) \
+	.subscribe(arr.push_back)
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+[1, 3, 6]
+```
+
+Accumulates values using an accumulator function starting with the provided initial value. Emits the accumulated result for each emission. Useful for calculating running totals, cumulative counters, or building up complex aggregated values.
+
 ### Filtering Operators
 
 #### where
