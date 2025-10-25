@@ -43,7 +43,7 @@ func test_merge_wait1() -> void:
 	var merge := Observable.merge(s1, s2)
 	var result: Variant = await merge.wait()
 
-	assert_that(result).is_equal(2)
+	assert_int(result).is_equal(2)
 
 
 func test_merge_wait2() -> void:
@@ -58,11 +58,13 @@ func test_merge_wait2() -> void:
 	)
 	var result: Variant = await merge.wait()
 
-	assert_that(result).is_equal(10)
+	assert_int(result).is_equal(10)
 
 
-func test_merge_empty_sources_error() -> void:
-	await assert_error(func(): Observable.merge()).is_push_error("Observable.merge requires at least one source")
+func test_merge_empty_sources_returns_empty() -> void:
+	var result := []
+	Observable.merge().subscribe(result.push_back)
+	assert_array(result, true).is_empty()
 
 
 func test_merge_invalid_type_error() -> void:
@@ -86,7 +88,23 @@ func test_merge_with_array_argument() -> void:
 	assert_array(_list).contains_exactly([10, 20, 30])
 
 
-func test_merge_array_argument_empty_error() -> void:
+func test_merge_array_argument_empty_returns_empty() -> void:
 	var empty_sources: Array[Observable] = []
-	@warning_ignore("redundant_await")
-	await assert_error(func(): Observable.merge(empty_sources)).is_push_error("Observable.merge requires at least one source")
+	var result := []
+	Observable.merge(empty_sources).subscribe(result.push_back)
+	assert_array(result, true).is_empty()
+
+
+func test_merge_empty_wait_returns_null() -> void:
+	var empty_merge := Observable.merge([])
+	var result: Variant = await empty_merge.wait()
+	assert_object(result).is_null()
+
+
+func test_merge_empty_is_singleton() -> void:
+	var merge1 := Observable.merge()
+	var merge2 := Observable.merge([])
+	var empty := Observable.empty()
+	# All should return the same singleton instance
+	assert_object(merge1).is_same(empty)
+	assert_object(merge2).is_same(empty)

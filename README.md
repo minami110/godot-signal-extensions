@@ -286,6 +286,31 @@ func _ready() -> void:
 This pattern is particularly useful for game objects that need to expose their state to other systems while maintaining strict control over how that state can be modified.
 
 ## Factory Methods
+
+### of
+```gdscript
+Observable.of(1, 2, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of values provided as arguments. The values are emitted synchronously when subscribed. This is useful for creating simple test data or converting known values into an observable stream.
+
+### range
+```gdscript
+Observable.range(1, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of integers within a specified range. The first parameter is the start value, and the second is the count of values to emit.
+
 ### from_signal
 ```gdscript
 Observable \
@@ -332,7 +357,7 @@ Operators allow you to transform, filter, and control the flow of observable str
 
 ### Transformation Operators
 
-#### select
+#### select / map
 ```gdscript
 subject \
 	.select(func(x): return x * 2) \
@@ -345,11 +370,27 @@ subject.on_next(2)
 [2, 4]
 ```
 
-Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries.
+Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries. `map()` is an alias for `select()`.
+
+#### scan
+```gdscript
+subject \
+	.scan(0, func(acc, x): return acc + x) \
+	.subscribe(arr.push_back)
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+[1, 3, 6]
+```
+
+Accumulates values using an accumulator function starting with the provided initial value. Emits the accumulated result for each emission. Useful for calculating running totals, cumulative counters, or building up complex aggregated values.
 
 ### Filtering Operators
 
-#### where
+#### where / filter
 ```gdscript
 subject \
 	.where(func(x): return x >= 2) \
@@ -363,7 +404,7 @@ subject.on_next(3)
 [2, 3]
 ```
 
-Filters emitted values, allowing only those that satisfy the predicate condition to pass through. Also known as "filter" in other reactive libraries.
+Filters emitted values, allowing only those that satisfy the predicate condition to pass through. Also known as "filter" in other reactive libraries. `filter()` is an alias for `where()`.
 
 ### Limiting Operators
 
@@ -411,6 +452,26 @@ subject.on_next(1)
 ```
 
 Emits values as long as the predicate function returns true. Once the condition becomes false, the observable completes.
+
+#### take_until
+```gdscript
+var source := Subject.new()
+var stop := Subject.new()
+
+source \
+	.take_until(stop) \
+	.subscribe(arr.push_back)
+
+source.on_next(1)
+source.on_next(2)
+stop.on_next()  # Stop signal
+source.on_next(3)
+```
+```console
+[1, 2]
+```
+
+Emits values until another observable emits. Once the provided observable emits any value, the source subscription completes. This is useful for combining multiple observables to control when a stream should stop.
 
 #### skip_while
 ```gdscript

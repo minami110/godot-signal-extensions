@@ -4,35 +4,20 @@ extends GdUnitTestSuite
 
 func test_standard() -> void:
 	var result := []
-	var subject := Subject.new()
-	var d := subject \
+	Observable.of(10, 20, 30, 10) \
 	.where(func(x): return x >= 20) \
 	.subscribe(result.push_back)
-
-	subject.on_next(10)
-	subject.on_next(20)
-	subject.on_next(30)
-	subject.on_next(10)
-	d.dispose()
-	subject.on_next(40)
 
 	assert_array(result, true).contains_exactly([20, 30])
 
 
 func test_merge_behaviour() -> void:
 	var result := []
-	var subject := Subject.new()
-	var d := subject \
+	Observable.of(10, 20, 25, 30) \
 	.where(func(x): return x > 20) \
 	.where(func(x): return x < 30) \
 	.subscribe(result.push_back)
 
-	subject.on_next(10)
-	subject.on_next(20)
-	subject.on_next(25)
-	subject.on_next(30)
-	d.dispose()
-	subject.on_next(25)
 	assert_array(result, true).contains_exactly([25])
 
 

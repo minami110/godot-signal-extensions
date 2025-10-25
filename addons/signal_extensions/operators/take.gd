@@ -5,7 +5,7 @@ var _remaining: int
 
 
 func _init(source: Observable, count: int) -> void:
-	assert(count > 0, "count must be greater than 0")
+	assert(count > 0, "take count must be greater than 0 (use Observable.empty() for count == 0)")
 	_source = source
 	_remaining = count
 

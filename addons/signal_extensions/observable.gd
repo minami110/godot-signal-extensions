@@ -11,13 +11,18 @@ extends RefCounted
 ## Use [method add_to] to automatically dispose when a [Node] exits the tree.
 
 # Factory and operator imports
+const Empty = preload("factories/empty.gd")
 const FromSignal = preload("factories/from_signal.gd")
 const Merge = preload("factories/merge.gd")
+const Of = preload("factories/of.gd")
+const RangeFactory = preload("factories/range.gd")
 const Debounce = preload("operators/debounce.gd")
+const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
 const Skip = preload("operators/skip.gd")
 const SkipWhile = preload("operators/skip_while.gd")
 const Take = preload("operators/take.gd")
+const TakeUntil = preload("operators/take_until.gd")
 const TakeWhile = preload("operators/take_while.gd")
 const ThrottleLast = preload("operators/throttle_last.gd")
 const Where = preload("operators/where.gd")
@@ -58,6 +63,23 @@ func subscribe(on_next: Callable) -> Disposable:
 		return _subscribe_core(func(_x: Variant) -> void: on_next.call())
 
 
+## Creates an [Observable] that completes immediately without emitting values.
+##
+## This factory method returns a singleton empty observable that, when subscribed,
+## immediately completes without emitting any items. This is useful for representing
+## "no values" scenarios and is memory-efficient through singleton pattern (R3-compliant).
+##
+## Usage:
+## [codeblock]
+## Observable.empty().subscribe(func(x): print(x))  # Never prints
+## var result = await Observable.empty().wait()  # Returns null immediately
+## [/codeblock]
+##
+## [br][b]Returns:[/b] A singleton [Observable] that completes immediately
+static func empty() -> Observable:
+	return Empty.get_instance()
+
+
 ## Creates an [Observable] from a Godot [Signal].
 ##
 ## This factory method converts a standard Godot signal into an observable stream.
@@ -92,15 +114,13 @@ static func from_signal(sig: Signal) -> Observable:
 ## [param sources]: Variadic arguments of observables to merge
 ## [br][b]Returns:[/b] An [Observable] that emits values from all source observables
 static func merge(...sources: Array) -> Observable:
-	if sources.size() == 0:
-		push_error("Observable.merge requires at least one source")
-		return null
+	if sources.is_empty():
+		return empty()
 
 	if sources.size() == 1 and sources[0] is Array:
 		var array_arg: Array = sources[0]
 		if array_arg.size() == 0:
-			push_error("Observable.merge requires at least one source")
-			return null
+			return empty()
 
 		for source: Variant in array_arg:
 			if not (source is Observable):
@@ -115,6 +135,53 @@ static func merge(...sources: Array) -> Observable:
 			return null
 
 	return Merge.new(sources)
+
+
+## Creates an [Observable] that emits a sequence of values provided as arguments.
+##
+## This factory method creates a Cold Observable that emits the provided values
+## in sequence when subscribed to. Each subscription will re-emit all values.
+##
+## Usage:
+## [codeblock]
+## Observable.of(1, 2, 3, 4, 5).subscribe(print)
+## Observable.of("hello", "world").subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param values]: Variadic arguments of values to emit
+## [br][b]Returns:[/b] An [Observable] that emits the provided values in order
+static func of(...values: Array) -> Observable:
+	if values.is_empty():
+		return empty()
+
+	return Of.new(values)
+
+
+## Creates an [Observable] that emits a sequence of integers within a range.
+##
+## This factory method creates a Cold Observable that emits integers
+## from start to start + count - 1 (inclusive).
+##
+## Usage:
+## [codeblock]
+## Observable.range(1, 5).subscribe(print)
+## # Output: 1, 2, 3, 4, 5
+##
+## Observable.range(10, 3).select(func(x): return x * 2).subscribe(print)
+## # Output: 20, 22, 24
+## [/codeblock]
+##
+## [param start]: The starting value of the range
+## [param count]: The number of values to emit
+## [br][b]Returns:[/b] An [Observable] that emits integers in the specified range
+static func range(start: int, count: int) -> Observable:
+	if count < 0:
+		push_error("range count must be non-negative")
+		return null
+	elif count == 0:
+		return empty()
+
+	return RangeFactory.new(start, count)
 
 
 ## Only emit an item if a particular time span has passed without it emitting another item.
@@ -134,17 +201,6 @@ func debounce(time_sec: float) -> Observable:
 	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
 
 	return Debounce.new(self, time_sec)
-
-
-## Emit the most recent items within periodic time intervals.
-##
-## This is an alias for [method throttle_last]. It samples the observable
-## at regular intervals and emits the most recent value from each interval.
-##
-## [param time_sec]: Time interval in seconds for sampling
-## [br][b]Returns:[/b] An [Observable] that emits sampled values
-func sample(time_sec: float) -> Observable:
-	return throttle_last(time_sec)
 
 
 ## Transform items by applying a function to each emitted value.
@@ -167,6 +223,39 @@ func select(selector: Callable) -> Observable:
 		return Select.new(self, selector)
 
 
+## Alias for [method select].
+##
+## [param selector]: Function to transform each emitted value
+## [br][b]Returns:[/b] An [Observable] that emits transformed values
+func map(selector: Callable) -> Observable:
+	return select(selector)
+
+
+## Accumulate items using an accumulator function.
+##
+## This operator applies an accumulator function to each emitted value,
+## starting with the provided initial value. Emits the accumulated result
+## for each source emission.
+##
+## Usage:
+## [codeblock]
+## # Sum all values: 1, 2, 3 -> 1, 3, 6
+## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
+##
+## # Count occurrences
+## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param initial_value]: The initial value for accumulation
+## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
+## [br][b]Returns:[/b] An [Observable] that emits accumulated values
+func scan(initial_value: Variant, accumulator: Callable) -> Observable:
+	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
+	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
+
+	return Scan.new(self, initial_value, accumulator)
+
+
 ## Suppress the first N items emitted by the observable.
 ##
 ## This operator ignores the first specified number of emissions
@@ -180,7 +269,10 @@ func select(selector: Callable) -> Observable:
 ## [param count]: Number of items to skip from the beginning
 ## [br][b]Returns:[/b] An [Observable] that skips the first N emissions
 func skip(count: int) -> Observable:
-	assert(count > 0, "count must be greater than 0")
+	assert(count >= 0, "count must be non-negative")
+
+	if count == 0:
+		return self
 
 	if self is Skip:
 		var new_source: Observable = self._source
@@ -220,14 +312,37 @@ func skip_while(predicate: Callable) -> Observable:
 ## [param count]: Maximum number of items to emit
 ## [br][b]Returns:[/b] An [Observable] that emits at most N values
 func take(count: int) -> Observable:
-	assert(count > 0, "count must be greater than 0")
+	assert(count >= 0, "count must be non-negative")
+
+	if count == 0:
+		return Observable.empty()
 
 	if self is Take:
 		var new_source: Observable = self._source
-		var new_count: int = self._remaining + count
+		var new_count: int = min(self._remaining, count)
 		return Take.new(new_source, new_count)
 	else:
 		return Take.new(self, count)
+
+
+## Emit values until another observable emits.
+##
+## This operator emits values from the source observable until
+## the given "other" observable emits a value. Once the other observable
+## emits, the source subscription completes.
+##
+## Usage:
+## [codeblock]
+## var stop_signal = Subject.new()
+## source_observable.take_until(stop_signal).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param other]: Observable that signals when to stop emitting values
+## [br][b]Returns:[/b] An [Observable] that completes when other emits
+func take_until(other: Observable) -> Observable:
+	assert(other != null, "take_until.other is not valid.")
+
+	return TakeUntil.new(self, other)
 
 
 ## Mirror items while a predicate function returns true.
@@ -269,6 +384,23 @@ func throttle_last(time_sec: float) -> Observable:
 	return ThrottleLast.new(self, time_sec)
 
 
+## Emit the most recent items within periodic time intervals.
+##
+## This operator samples the observable at regular time intervals
+## and emits the most recently emitted value from each interval.
+## Also available as [method throttle_last].
+##
+## Usage:
+## [codeblock]
+## subject.sample(0.1).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param time_sec]: Time interval in seconds for sampling
+## [br][b]Returns:[/b] An [Observable] that emits sampled values
+func sample(time_sec: float) -> Observable:
+	return throttle_last(time_sec)
+
+
 ## Emit only values that pass a predicate test.
 ##
 ## This operator filters the emitted values, only allowing through
@@ -287,3 +419,11 @@ func where(predicate: Callable) -> Observable:
 		return Where.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
 	else:
 		return Where.new(self, predicate)
+
+
+## Alias for [method where].
+##
+## [param predicate]: Function that returns boolean to test each value
+## [br][b]Returns:[/b] An [Observable] that emits only filtered values
+func filter(predicate: Callable) -> Observable:
+	return where(predicate)
