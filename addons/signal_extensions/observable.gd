@@ -269,7 +269,7 @@ func scan(initial_value: Variant, accumulator: Callable) -> Observable:
 ## [param count]: Number of items to skip from the beginning
 ## [br][b]Returns:[/b] An [Observable] that skips the first N emissions
 func skip(count: int) -> Observable:
-	assert(count >= 0, "count must be greater than 0")
+	assert(count >= 0, "count must be non-negative")
 
 	if count == 0:
 		return self
