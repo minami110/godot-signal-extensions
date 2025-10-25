@@ -182,17 +182,6 @@ func debounce(time_sec: float) -> Observable:
 	return Debounce.new(self, time_sec)
 
 
-## Emit the most recent items within periodic time intervals.
-##
-## This is an alias for [method throttle_last]. It samples the observable
-## at regular intervals and emits the most recent value from each interval.
-##
-## [param time_sec]: Time interval in seconds for sampling
-## [br][b]Returns:[/b] An [Observable] that emits sampled values
-func sample(time_sec: float) -> Observable:
-	return throttle_last(time_sec)
-
-
 ## Transform items by applying a function to each emitted value.
 ##
 ## This operator applies a transformation function to each value emitted
@@ -211,6 +200,14 @@ func select(selector: Callable) -> Observable:
 		return Select.new(new_source, func(x: Variant) -> Variant: return selector.call(self._selector.call(x)))
 	else:
 		return Select.new(self, selector)
+
+
+## Alias for [method select].
+##
+## [param selector]: Function to transform each emitted value
+## [br][b]Returns:[/b] An [Observable] that emits transformed values
+func map(selector: Callable) -> Observable:
+	return select(selector)
 
 
 ## Accumulate items using an accumulator function.
@@ -360,6 +357,23 @@ func throttle_last(time_sec: float) -> Observable:
 	return ThrottleLast.new(self, time_sec)
 
 
+## Emit the most recent items within periodic time intervals.
+##
+## This operator samples the observable at regular time intervals
+## and emits the most recently emitted value from each interval.
+## Also available as [method throttle_last].
+##
+## Usage:
+## [codeblock]
+## subject.sample(0.1).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param time_sec]: Time interval in seconds for sampling
+## [br][b]Returns:[/b] An [Observable] that emits sampled values
+func sample(time_sec: float) -> Observable:
+	return throttle_last(time_sec)
+
+
 ## Emit only values that pass a predicate test.
 ##
 ## This operator filters the emitted values, only allowing through
@@ -378,3 +392,11 @@ func where(predicate: Callable) -> Observable:
 		return Where.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
 	else:
 		return Where.new(self, predicate)
+
+
+## Alias for [method where].
+##
+## [param predicate]: Function that returns boolean to test each value
+## [br][b]Returns:[/b] An [Observable] that emits only filtered values
+func filter(predicate: Callable) -> Observable:
+	return where(predicate)

@@ -357,7 +357,7 @@ Operators allow you to transform, filter, and control the flow of observable str
 
 ### Transformation Operators
 
-#### select
+#### select / map
 ```gdscript
 subject \
 	.select(func(x): return x * 2) \
@@ -370,7 +370,7 @@ subject.on_next(2)
 [2, 4]
 ```
 
-Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries.
+Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries. `map()` is an alias for `select()`.
 
 #### scan
 ```gdscript
@@ -390,7 +390,7 @@ Accumulates values using an accumulator function starting with the provided init
 
 ### Filtering Operators
 
-#### where
+#### where / filter
 ```gdscript
 subject \
 	.where(func(x): return x >= 2) \
@@ -404,7 +404,7 @@ subject.on_next(3)
 [2, 3]
 ```
 
-Filters emitted values, allowing only those that satisfy the predicate condition to pass through. Also known as "filter" in other reactive libraries.
+Filters emitted values, allowing only those that satisfy the predicate condition to pass through. Also known as "filter" in other reactive libraries. `filter()` is an alias for `where()`.
 
 ### Limiting Operators
 
