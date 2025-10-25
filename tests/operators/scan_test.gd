@@ -55,9 +55,9 @@ func test_with_complex_objects() -> void:
 	) \
 	.subscribe(result.push_back)
 
-	assert_that(result[0]).is_equal({ "name": "John" })
-	assert_that(result[1]).is_equal({ "name": "John", "age": 30 })
-	assert_that(result[2]).is_equal({ "name": "John", "age": 30, "city": "NYC" })
+	assert_dict(result[0]).is_equal({ "name": "John" })
+	assert_dict(result[1]).is_equal({ "name": "John", "age": 30 })
+	assert_dict(result[2]).is_equal({ "name": "John", "age": 30, "city": "NYC" })
 
 
 func test_single_emission() -> void:

@@ -43,7 +43,7 @@ func test_merge_wait1() -> void:
 	var merge := Observable.merge(s1, s2)
 	var result: Variant = await merge.wait()
 
-	assert_that(result).is_equal(2)
+	assert_int(result).is_equal(2)
 
 
 func test_merge_wait2() -> void:
@@ -58,7 +58,7 @@ func test_merge_wait2() -> void:
 	)
 	var result: Variant = await merge.wait()
 
-	assert_that(result).is_equal(10)
+	assert_int(result).is_equal(10)
 
 
 func test_merge_empty_sources_returns_empty() -> void:
@@ -98,7 +98,7 @@ func test_merge_array_argument_empty_returns_empty() -> void:
 func test_merge_empty_wait_returns_null() -> void:
 	var empty_merge := Observable.merge([])
 	var result: Variant = await empty_merge.wait()
-	assert_that(result).is_null()
+	assert_object(result).is_null()
 
 
 func test_merge_empty_is_singleton() -> void:
@@ -106,5 +106,5 @@ func test_merge_empty_is_singleton() -> void:
 	var merge2 := Observable.merge([])
 	var empty := Observable.empty()
 	# All should return the same singleton instance
-	assert_that(merge1).is_same(empty)
-	assert_that(merge2).is_same(empty)
+	assert_object(merge1).is_same(empty)
+	assert_object(merge2).is_same(empty)

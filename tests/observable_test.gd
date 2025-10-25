@@ -145,24 +145,14 @@ func test_skip_chaining_optimization() -> void:
 
 func test_take_chaining_optimization() -> void:
 	# take を連続して呼び出すと最適化されることを確認
-	var subject := Subject.new()
-	var taken_values: Array = []
+	var result: Array = []
 
 	# take を2回連続で呼び出す (take(3) + take(2) = take(5))
 	# 注意: take の最適化は加算される
-	var observable := subject.take(3).take(2)
-
-	observable.subscribe(taken_values.push_back)
-
-	subject.on_next(1)
-	subject.on_next(2)
-	subject.on_next(3)
-	subject.on_next(4)
-	subject.on_next(5)
-	subject.on_next(6)
+	Observable.range(1, 6).take(3).take(2).subscribe(result.push_back)
 
 	# take(3+2=5) なので最初の5つが emit される
-	assert_array(taken_values).contains_exactly([1, 2, 3, 4, 5])
+	assert_array(result).contains_exactly([1, 2, 3, 4, 5])
 
 
 func test_sample_is_alias_for_throttle_last() -> void:

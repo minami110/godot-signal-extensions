@@ -311,7 +311,8 @@ func skip_while(predicate: Callable) -> Observable:
 func take(count: int) -> Observable:
 	if count < 0:
 		push_error("take count must be non-negative")
-		return null
+		return Observable.empty()
+
 	elif count == 0:
 		return Observable.empty()
 
