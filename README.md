@@ -57,6 +57,7 @@ Observable (abstract)
 ├── BehaviourSubject
 ├── ReadOnlyReactiveProperty (abstract)
 │   └── ReactiveProperty
+│       └── CustomReactiveProperty (abstract)
 └── Operator classes (Select, Where, Take, etc.)
 ```
 
@@ -159,6 +160,8 @@ health.dispose()
 - **Automatic notifications**: Subscribers are notified on value changes
 - **Initial value emission**: New subscribers immediately receive the current value
 - **Equality check**: By default, only emits when the new value differs from the old value
+
+**For advanced use cases** requiring value transformation or custom update logic, use [CustomReactiveProperty](#customizing-reactiveproperty-behavior) instead.
 
 ## Disposable Pattern
 
@@ -469,7 +472,7 @@ Both `throttle_last()` and `sample()` are aliases for the same functionality - e
 
 ### Customizing ReactiveProperty Behavior
 
-ReactiveProperty provides two virtual methods that can be overridden to customize its behavior:
+For advanced use cases requiring value transformation or custom update logic, use **CustomReactiveProperty** instead of ReactiveProperty. CustomReactiveProperty is an abstract base class that provides two virtual methods you can override:
 
 - **`_transform_value(input_value: Variant) -> Variant`**: Transforms values before they are stored and emitted. Useful for normalizing, clamping, or formatting input values.
 - **`_should_update(old_value: Variant, new_value: Variant) -> bool`**: Determines whether a value change should trigger an update. The default implementation performs equality checking.
@@ -484,7 +487,7 @@ The value update process follows this order:
 Use `_transform_value()` to automatically correct values to a valid range:
 
 ```gdscript
-class_name ClampedHP extends ReactiveProperty
+class_name ClampedHP extends CustomReactiveProperty
 
 var min_value: float
 var max_value: float
@@ -520,7 +523,7 @@ Health: 0.0
 Use `_should_update()` to control when updates should occur. This example always updates, even when values are equal:
 
 ```gdscript
-class_name AlwaysUpdateRP extends ReactiveProperty
+class_name AlwaysUpdateRP extends CustomReactiveProperty
 
 func _should_update(_old_value: Variant, _new_value: Variant) -> bool:
 	return true  # Always update, regardless of equality
