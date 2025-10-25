@@ -13,6 +13,8 @@ extends RefCounted
 # Factory and operator imports
 const FromSignal = preload("factories/from_signal.gd")
 const Merge = preload("factories/merge.gd")
+const Of = preload("factories/of.gd")
+const RangeFactory = preload("factories/range_factory.gd")
 const Debounce = preload("operators/debounce.gd")
 const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
@@ -117,6 +119,48 @@ static func merge(...sources: Array) -> Observable:
 			return null
 
 	return Merge.new(sources)
+
+
+## Creates an [Observable] that emits a sequence of values provided as arguments.
+##
+## This factory method creates a Cold Observable that emits the provided values
+## in sequence when subscribed to. Each subscription will re-emit all values.
+##
+## Usage:
+## [codeblock]
+## Observable.of(1, 2, 3, 4, 5).subscribe(print)
+## Observable.of("hello", "world").subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param values]: Variadic arguments of values to emit
+## [br][b]Returns:[/b] An [Observable] that emits the provided values in order
+static func of(...values: Array) -> Observable:
+	return Of.new(values)
+
+
+## Creates an [Observable] that emits a sequence of integers within a range.
+##
+## This factory method creates a Cold Observable that emits integers
+## from start to start + count - 1 (inclusive).
+##
+## Usage:
+## [codeblock]
+## Observable.range(1, 5).subscribe(print)
+## # Output: 1, 2, 3, 4, 5
+##
+## Observable.range(10, 3).select(func(x): return x * 2).subscribe(print)
+## # Output: 20, 22, 24
+## [/codeblock]
+##
+## [param start]: The starting value of the range
+## [param count]: The number of values to emit
+## [br][b]Returns:[/b] An [Observable] that emits integers in the specified range
+static func range(start: int, count: int) -> Observable:
+	if count < 0:
+		push_error("range count must be non-negative")
+		return null
+
+	return RangeFactory.new(start, count)
 
 
 ## Only emit an item if a particular time span has passed without it emitting another item.

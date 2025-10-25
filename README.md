@@ -286,6 +286,31 @@ func _ready() -> void:
 This pattern is particularly useful for game objects that need to expose their state to other systems while maintaining strict control over how that state can be modified.
 
 ## Factory Methods
+
+### of
+```gdscript
+Observable.of(1, 2, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of values provided as arguments. The values are emitted synchronously when subscribed. This is useful for creating simple test data or converting known values into an observable stream.
+
+### range
+```gdscript
+Observable.range(1, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of integers within a specified range. The first parameter is the start value, and the second is the count of values to emit.
+
 ### from_signal
 ```gdscript
 Observable \

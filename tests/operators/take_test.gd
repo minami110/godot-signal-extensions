@@ -4,14 +4,10 @@ extends GdUnitTestSuite
 
 func test_standard() -> void:
 	var result := []
-	var subject := Subject.new()
-	subject \
+	Observable.of(10, 20, 30) \
 	.take(2) \
 	.subscribe(result.push_back)
 
-	subject.on_next(10)
-	subject.on_next(20)
-	subject.on_next(30)
 	assert_array(result, true).contains_exactly([10, 20])
 
 

@@ -4,17 +4,11 @@ extends GdUnitTestSuite
 
 func test_standard() -> void:
 	var result := []
-	var subject := Subject.new()
-	var d1 := subject \
+	Observable.of(10, 20, 30) \
 	.skip(1) \
 	.subscribe(result.push_back)
 
-	subject.on_next(10)
-	subject.on_next(20)
-	subject.on_next(30)
-	d1.dispose()
-	subject.on_next(40)
-	assert_array(result, true).contains_exactly([20, 30])
+	assert_array(result, true).contains_exactly(20, 30)
 
 
 func test_two_subscribers() -> void:
@@ -32,7 +26,7 @@ func test_two_subscribers() -> void:
 	subject.on_next(1)
 	subject.on_next(2)
 
-	assert_array(result1, true).contains_exactly([2])
+	assert_array(result1, true).contains_exactly(2)
 	assert_array(result2, true).is_empty()
 	assert_array(result3, true).is_empty()
 
@@ -41,8 +35,8 @@ func test_two_subscribers() -> void:
 	subject.on_next(3)
 	subject.on_next(4)
 
-	assert_array(result1, true).contains_exactly([2, 3, 4])
-	assert_array(result2, true).contains_exactly([4])
+	assert_array(result1, true).contains_exactly(2, 3, 4)
+	assert_array(result2, true).contains_exactly(4)
 	assert_array(result3, true).is_empty()
 
 	skip2.subscribe(result3.push_back)
@@ -51,6 +45,6 @@ func test_two_subscribers() -> void:
 	subject.on_next(6)
 	subject.on_next(7)
 
-	assert_array(result1, true).contains_exactly([2, 3, 4, 5, 6, 7])
-	assert_array(result2, true).contains_exactly([4, 5, 6, 7])
-	assert_array(result3, true).contains_exactly([7])
+	assert_array(result1, true).contains_exactly(2, 3, 4, 5, 6, 7)
+	assert_array(result2, true).contains_exactly(4, 5, 6, 7)
+	assert_array(result3, true).contains_exactly(7)
