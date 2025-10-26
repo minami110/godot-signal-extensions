@@ -8,7 +8,7 @@ func test_standard() -> void:
 	.skip_while(func(x): return x <= 2) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([3, 1, 2])
+	assert_array(result, true).contains_exactly(3, 1, 2)
 
 
 func test_two_subscribers() -> void:

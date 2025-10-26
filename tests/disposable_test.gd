@@ -24,10 +24,10 @@ func test_add_to_node() -> void:
 	subject.subscribe(result.append.bind("called")).add_to(node)
 
 	subject.on_next()
-	assert_array(result).contains_exactly(["called"])
+	assert_array(result).contains_exactly("called")
 
 	node.queue_free()
 	await child_exiting_tree
 
 	subject.on_next()
-	assert_array(result).contains_exactly(["called"])
+	assert_array(result).contains_exactly("called")

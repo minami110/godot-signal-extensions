@@ -8,7 +8,7 @@ func test_standard() -> void:
 	.distinct() \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1, 2, 3])
+	assert_array(result, true).contains_exactly(1, 2, 3)
 
 
 func test_all_values_unique() -> void:
@@ -17,7 +17,7 @@ func test_all_values_unique() -> void:
 	.distinct() \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1, 2, 3, 4])
+	assert_array(result, true).contains_exactly(1, 2, 3, 4)
 
 
 func test_all_values_duplicate() -> void:
@@ -26,7 +26,7 @@ func test_all_values_duplicate() -> void:
 	.distinct() \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1])
+	assert_array(result, true).contains_exactly(1)
 
 
 func test_order_maintained() -> void:
@@ -35,7 +35,7 @@ func test_order_maintained() -> void:
 	.distinct() \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([3, 1, 2])
+	assert_array(result, true).contains_exactly(3, 1, 2)
 
 
 func test_two_subscribers() -> void:
@@ -62,8 +62,8 @@ func test_two_subscribers() -> void:
 
 	subject.on_next(2) # Already seen by distinct1, won't emit through distinct1
 	subject.on_next(3) # First time, will emit through distinct1
-	assert_array(result1, true).contains_exactly([1, 2, 3])
-	assert_array(result2, true).contains_exactly([1, 2, 3])
+	assert_array(result1, true).contains_exactly(1, 2, 3)
+	assert_array(result2, true).contains_exactly(1, 2, 3)
 
 	# distinct2 sees distinct1's values after subscribing (2 from on_next(2), 3 from on_next(3))
 	assert_array(result3).contains_exactly(2, 3)

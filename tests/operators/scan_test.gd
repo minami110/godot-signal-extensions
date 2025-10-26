@@ -9,7 +9,7 @@ func test_standard() -> void:
 	.scan(0, func(acc, x): return acc + x) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1, 3, 6])
+	assert_array(result, true).contains_exactly(1, 3, 6)
 
 
 func test_with_seed() -> void:
@@ -19,7 +19,7 @@ func test_with_seed() -> void:
 	.scan(10, func(acc, x): return acc + x) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([11, 13, 16])
+	assert_array(result, true).contains_exactly(11, 13, 16)
 
 
 func test_counter() -> void:
@@ -29,7 +29,7 @@ func test_counter() -> void:
 	.scan(0, func(acc, _val): return acc + 1) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1, 2, 3, 4])
+	assert_array(result, true).contains_exactly(1, 2, 3, 4)
 
 
 func test_string_concat() -> void:
@@ -39,7 +39,7 @@ func test_string_concat() -> void:
 	.scan("", func(acc, x): return acc + x) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly(["a", "ab", "abc"])
+	assert_array(result, true).contains_exactly("a", "ab", "abc")
 
 
 func test_with_complex_objects() -> void:
@@ -67,7 +67,7 @@ func test_single_emission() -> void:
 	.scan(5, func(acc, x): return acc * x) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([10])
+	assert_array(result, true).contains_exactly(10)
 
 
 func test_empty_observable() -> void:
@@ -89,7 +89,7 @@ func test_with_other_operators() -> void:
 	.select(func(x): return x * 2) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([2, 6, 12])
+	assert_array(result, true).contains_exactly(2, 6, 12)
 
 
 func test_two_subscribers() -> void:
@@ -108,8 +108,8 @@ func test_two_subscribers() -> void:
 	subject2.on_next(5)
 	subject2.on_next(3)
 
-	assert_array(result1, true).contains_exactly([1, 3])
-	assert_array(result2, true).contains_exactly([5, 8])
+	assert_array(result1, true).contains_exactly(1, 3)
+	assert_array(result2, true).contains_exactly(5, 8)
 
 
 func test_multiplication() -> void:
@@ -119,4 +119,4 @@ func test_multiplication() -> void:
 	.scan(1, func(acc, x): return acc * x) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([2, 6, 24])
+	assert_array(result, true).contains_exactly(2, 6, 24)

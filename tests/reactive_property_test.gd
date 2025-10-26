@@ -4,16 +4,16 @@ func test_standard1() -> void:
 	var result: Array[int] = []
 	var rp := ReactiveProperty.new(1)
 	rp.subscribe(result.append)
-	assert_array(result).contains_exactly([1])
+	assert_array(result).contains_exactly(1)
 	assert_int(rp.value).is_equal(1)
 
 	rp.value = 2
-	assert_array(result).contains_exactly([1, 2])
+	assert_array(result).contains_exactly(1, 2)
 	assert_int(rp.value).is_equal(2)
 
 	rp.dispose()
 	rp.value = 3
-	assert_array(result).contains_exactly([1, 2])
+	assert_array(result).contains_exactly(1, 2)
 	assert_int(rp.value).is_equal(3)
 
 
@@ -30,7 +30,7 @@ func test_standard2() -> void:
 	var n2: Node2D = auto_free(Node2D.new())
 	rp.value = n1
 	rp.value = n2
-	assert_array(result).contains_exactly([null, 1, "Foo", null, n1, n2])
+	assert_array(result).contains_exactly(null, 1, "Foo", null, n1, n2)
 
 
 func test_rp_equality() -> void:
@@ -91,17 +91,17 @@ func test_dispose() -> void:
 	rp = ReactiveProperty.new(2)
 
 	rp.value = 3
-	assert_array(result).contains_exactly([1])
+	assert_array(result).contains_exactly(1)
 
 	d.dispose()
 	d = rp.subscribe(result.append)
 	d.dispose()
 	d = null
-	assert_array(result).contains_exactly([1, 3])
+	assert_array(result).contains_exactly(1, 3)
 
 	rp.dispose()
 	rp.value = 4
-	assert_array(result).contains_exactly([1, 3])
+	assert_array(result).contains_exactly(1, 3)
 
 
 func test_read_only_reactive_property() -> void:
@@ -117,7 +117,7 @@ func test_read_only_reactive_property() -> void:
 	rp_source.value = 10
 
 	assert_int(rp.current_value).is_equal(10)
-	assert_array(result).contains_exactly([1, 10])
+	assert_array(result).contains_exactly(1, 10)
 
 
 func test_config_file_serialization() -> void:
@@ -142,11 +142,11 @@ func test_config_file_serialization() -> void:
 	loaded_rp.subscribe(result.push_back)
 
 	# 初期値がすぐに通知されることを確認
-	assert_array(result).contains_exactly([100])
+	assert_array(result).contains_exactly(100)
 
 	# 値を変更して正常に動作することを確認
 	loaded_rp.value = 75
-	assert_array(result).contains_exactly([100, 75])
+	assert_array(result).contains_exactly(100, 75)
 	assert_int(loaded_rp.value).is_equal(75)
 
 	loaded_rp.dispose()

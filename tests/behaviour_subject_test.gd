@@ -10,7 +10,7 @@ func test_standard() -> void:
 	subject.on_next(10)
 	subject.dispose()
 	subject.on_next(20)
-	assert_array(result).contains_exactly([5, 10, 10])
+	assert_array(result).contains_exactly(5, 10, 10)
 
 
 func test_behaviour_subject_wait() -> void:
@@ -45,11 +45,11 @@ func test_config_file_serialization() -> void:
 	loaded_subject.subscribe(result.push_back)
 
 	# 初期値（最新値）がすぐに通知されることを確認
-	assert_array(result).contains_exactly(["complete"])
+	assert_array(result).contains_exactly("complete")
 
 	# 新しい値を設定して正常に動作することを確認
 	loaded_subject.on_next("updated")
-	assert_array(result).contains_exactly(["complete", "updated"])
+	assert_array(result).contains_exactly("complete", "updated")
 	assert_str(loaded_subject.value).is_equal("updated")
 
 	loaded_subject.dispose()

@@ -8,7 +8,7 @@ func test_standard() -> void:
 	.take_while(func(x): return x <= 2) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([1, 2])
+	assert_array(result, true).contains_exactly(1, 2)
 
 
 func test_two_subscribers() -> void:
@@ -25,7 +25,7 @@ func test_two_subscribers() -> void:
 	subject.on_next(3)
 	subject.on_next(4)
 
-	assert_array(result1, true).contains_exactly([3])
+	assert_array(result1, true).contains_exactly(3)
 
 	take_while1.subscribe(result2.push_back)
 
@@ -33,8 +33,8 @@ func test_two_subscribers() -> void:
 	subject.on_next(1)
 	subject.on_next(4)
 
-	assert_array(result1, true).contains_exactly([3])
-	assert_array(result2, true).contains_exactly([3, 1])
+	assert_array(result1, true).contains_exactly(3)
+	assert_array(result2, true).contains_exactly(3, 1)
 
 	take_while2.subscribe(result3.push_back)
 
@@ -42,6 +42,6 @@ func test_two_subscribers() -> void:
 	subject.on_next(1)
 	subject.on_next(4)
 
-	assert_array(result1, true).contains_exactly([3])
-	assert_array(result2, true).contains_exactly([3, 1])
-	assert_array(result3, true).contains_exactly([3])
+	assert_array(result1, true).contains_exactly(3)
+	assert_array(result2, true).contains_exactly(3, 1)
+	assert_array(result3, true).contains_exactly(3)
