@@ -17,6 +17,8 @@ const Merge = preload("factories/merge.gd")
 const Of = preload("factories/of.gd")
 const RangeFactory = preload("factories/range.gd")
 const Debounce = preload("operators/debounce.gd")
+const Distinct = preload("operators/distinct.gd")
+const DistinctUntilChanged = preload("operators/distinct_until_changed.gd")
 const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
 const Skip = preload("operators/skip.gd")
@@ -399,6 +401,36 @@ func throttle_last(time_sec: float) -> Observable:
 ## [br][b]Returns:[/b] An [Observable] that emits sampled values
 func sample(time_sec: float) -> Observable:
 	return throttle_last(time_sec)
+
+
+## Emit only values that are distinct from all previously emitted values.
+##
+## This operator filters emitted values, only allowing through values that have
+## not been seen before. It tracks all emitted values to determine distinctness.
+##
+## Usage:
+## [codeblock]
+## subject.distinct().subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [br][b]Returns:[/b] An [Observable] that emits only unique values
+func distinct() -> Observable:
+	return Distinct.new(self)
+
+
+## Emit only values that differ from the immediately preceding value.
+##
+## This operator filters consecutive duplicate values, allowing only values that
+## are different from the previous emission. The first value is always emitted.
+##
+## Usage:
+## [codeblock]
+## subject.distinct_until_changed().subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [br][b]Returns:[/b] An [Observable] that emits only when value changes
+func distinct_until_changed() -> Observable:
+	return DistinctUntilChanged.new(self)
 
 
 ## Emit only values that pass a predicate test.

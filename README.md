@@ -406,6 +406,42 @@ subject.on_next(3)
 
 Filters emitted values, allowing only those that satisfy the predicate condition to pass through. Also known as "filter" in other reactive libraries. `filter()` is an alias for `where()`.
 
+#### distinct
+```gdscript
+subject \
+	.distinct() \
+	.subscribe(arr.push_back)
+
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(3)
+```
+```console
+[1, 2, 3]
+```
+
+Emits only values that have not been seen before. All previously emitted values are tracked, and duplicates are automatically filtered out.
+
+#### distinct_until_changed
+```gdscript
+subject \
+	.distinct_until_changed() \
+	.subscribe(arr.push_back)
+
+subject.on_next(1)
+subject.on_next(1)
+subject.on_next(2)
+subject.on_next(2)
+subject.on_next(1)
+```
+```console
+[1, 2, 1]
+```
+
+Emits only values that are different from the immediately preceding value. Consecutive duplicates are filtered out, but the same value can reappear after a different value has been emitted.
+
 ### Limiting Operators
 
 #### take
