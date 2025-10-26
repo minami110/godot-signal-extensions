@@ -205,6 +205,61 @@ func debounce(time_sec: float) -> Observable:
 	return Debounce.new(self, time_sec)
 
 
+## Emit only values that are distinct from all previously emitted values.
+##
+## This operator filters emitted values, only allowing through values that have
+## not been seen before. It tracks all emitted values to determine distinctness.
+##
+## Usage:
+## [codeblock]
+## subject.distinct().subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [br][b]Returns:[/b] An [Observable] that emits only unique values
+func distinct() -> Observable:
+	return Distinct.new(self)
+
+
+## Emit only values that differ from the immediately preceding value.
+##
+## This operator filters consecutive duplicate values, allowing only values that
+## are different from the previous emission. The first value is always emitted.
+##
+## Usage:
+## [codeblock]
+## subject.distinct_until_changed().subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [br][b]Returns:[/b] An [Observable] that emits only when value changes
+func distinct_until_changed() -> Observable:
+	return DistinctUntilChanged.new(self)
+
+
+## Accumulate items using an accumulator function.
+##
+## This operator applies an accumulator function to each emitted value,
+## starting with the provided initial value. Emits the accumulated result
+## for each source emission.
+##
+## Usage:
+## [codeblock]
+## # Sum all values: 1, 2, 3 -> 1, 3, 6
+## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
+##
+## # Count occurrences
+## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param initial_value]: The initial value for accumulation
+## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
+## [br][b]Returns:[/b] An [Observable] that emits accumulated values
+func scan(initial_value: Variant, accumulator: Callable) -> Observable:
+	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
+	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
+
+	return Scan.new(self, initial_value, accumulator)
+
+
 ## Transform items by applying a function to each emitted value.
 ##
 ## This operator applies a transformation function to each value emitted
@@ -231,31 +286,6 @@ func select(selector: Callable) -> Observable:
 ## [br][b]Returns:[/b] An [Observable] that emits transformed values
 func map(selector: Callable) -> Observable:
 	return select(selector)
-
-
-## Accumulate items using an accumulator function.
-##
-## This operator applies an accumulator function to each emitted value,
-## starting with the provided initial value. Emits the accumulated result
-## for each source emission.
-##
-## Usage:
-## [codeblock]
-## # Sum all values: 1, 2, 3 -> 1, 3, 6
-## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
-##
-## # Count occurrences
-## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
-## [/codeblock]
-##
-## [param initial_value]: The initial value for accumulation
-## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
-## [br][b]Returns:[/b] An [Observable] that emits accumulated values
-func scan(initial_value: Variant, accumulator: Callable) -> Observable:
-	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
-	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
-
-	return Scan.new(self, initial_value, accumulator)
 
 
 ## Suppress the first N items emitted by the observable.
@@ -401,36 +431,6 @@ func throttle_last(time_sec: float) -> Observable:
 ## [br][b]Returns:[/b] An [Observable] that emits sampled values
 func sample(time_sec: float) -> Observable:
 	return throttle_last(time_sec)
-
-
-## Emit only values that are distinct from all previously emitted values.
-##
-## This operator filters emitted values, only allowing through values that have
-## not been seen before. It tracks all emitted values to determine distinctness.
-##
-## Usage:
-## [codeblock]
-## subject.distinct().subscribe(func(x): print(x))
-## [/codeblock]
-##
-## [br][b]Returns:[/b] An [Observable] that emits only unique values
-func distinct() -> Observable:
-	return Distinct.new(self)
-
-
-## Emit only values that differ from the immediately preceding value.
-##
-## This operator filters consecutive duplicate values, allowing only values that
-## are different from the previous emission. The first value is always emitted.
-##
-## Usage:
-## [codeblock]
-## subject.distinct_until_changed().subscribe(func(x): print(x))
-## [/codeblock]
-##
-## [br][b]Returns:[/b] An [Observable] that emits only when value changes
-func distinct_until_changed() -> Observable:
-	return DistinctUntilChanged.new(self)
 
 
 ## Emit only values that pass a predicate test.
