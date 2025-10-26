@@ -287,30 +287,6 @@ This pattern is particularly useful for game objects that need to expose their s
 
 ## Factory Methods
 
-### of
-```gdscript
-Observable.of(1, 2, 3).subscribe(print)
-```
-```console
-1
-2
-3
-```
-
-Creates an Observable that emits a sequence of values provided as arguments. The values are emitted synchronously when subscribed. This is useful for creating simple test data or converting known values into an observable stream.
-
-### range
-```gdscript
-Observable.range(1, 3).subscribe(print)
-```
-```console
-1
-2
-3
-```
-
-Creates an Observable that emits a sequence of integers within a specified range. The first parameter is the start value, and the second is the count of values to emit.
-
 ### from_signal
 ```gdscript
 Observable \
@@ -351,36 +327,41 @@ s3.on_next("baz")
 
 Combines multiple Observable streams into a single stream that emits values as they arrive from any source.
 
+### of
+```gdscript
+Observable.of(1, 2, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of values provided as arguments. The values are emitted synchronously when subscribed. This is useful for creating simple test data or converting known values into an observable stream.
+
+### range
+```gdscript
+Observable.range(1, 3).subscribe(print)
+```
+```console
+1
+2
+3
+```
+
+Creates an Observable that emits a sequence of integers within a specified range. The first parameter is the start value, and the second is the count of values to emit.
+
 ## Operators
 
 Operators allow you to transform, filter, and control the flow of observable streams. Chain multiple operators together to create complex data processing pipelines.
 
 ### Transformation Operators
 
-#### select / map
-```gdscript
-subject \
-	.select(func(x): return x * 2) \
-	.subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-```
-```console
-[2, 4]
-```
-
-Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries. `map()` is an alias for `select()`.
-
 #### scan
 ```gdscript
-subject \
+Observable.of(1, 2, 3) \
 	.scan(0, func(acc, x): return acc + x) \
 	.subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(3)
 ```
 ```console
 [1, 3, 6]
@@ -388,17 +369,49 @@ subject.on_next(3)
 
 Accumulates values using an accumulator function starting with the provided initial value. Emits the accumulated result for each emission. Useful for calculating running totals, cumulative counters, or building up complex aggregated values.
 
+#### select / map
+```gdscript
+Observable.of(1, 2) \
+	.select(func(x): return x * 2) \
+	.subscribe(arr.push_back)
+```
+```console
+[2, 4]
+```
+
+Transforms each emitted value by applying a function. Also known as "map" in other reactive programming libraries. `map()` is an alias for `select()`.
+
 ### Filtering Operators
+
+#### distinct
+```gdscript
+Observable.of(1, 2, 1, 2, 3) \
+	.distinct() \
+	.subscribe(arr.push_back)
+```
+```console
+[1, 2, 3]
+```
+
+Emits only values that have not been seen before. All previously emitted values are tracked, and duplicates are automatically filtered out.
+
+#### distinct_until_changed
+```gdscript
+Observable.of(1, 1, 2, 2, 1) \
+	.distinct_until_changed() \
+	.subscribe(arr.push_back)
+```
+```console
+[1, 2, 1]
+```
+
+Emits only values that are different from the immediately preceding value. Consecutive duplicates are filtered out, but the same value can reappear after a different value has been emitted.
 
 #### where / filter
 ```gdscript
-subject \
+Observable.of(1, 2, 3) \
 	.where(func(x): return x >= 2) \
 	.subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(3)
 ```
 ```console
 [2, 3]
@@ -408,28 +421,11 @@ Filters emitted values, allowing only those that satisfy the predicate condition
 
 ### Limiting Operators
 
-#### take
-```gdscript
-subject.take(2).subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(3)
-```
-```console
-[1, 2]
-```
-
-Emits only the first N values from the source observable, then automatically completes the subscription.
-
 #### skip
 ```gdscript
-subject.skip(2).subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(3)
-subject.on_next(1)
+Observable.of(1, 2, 3, 1) \
+	.skip(2) \
+	.subscribe(arr.push_back)
 ```
 ```console
 [3, 1]
@@ -437,21 +433,29 @@ subject.on_next(1)
 
 Ignores the first N emissions and only starts emitting values after that count is reached.
 
-#### take_while
+#### skip_while
 ```gdscript
-subject \
-	.take_while(func(x): return x <= 1) \
+Observable.of(1, 2, 1) \
+	.skip_while(func(x): return x <= 1) \
 	.subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(1)
 ```
 ```console
-[1]
+[2, 1]
 ```
 
-Emits values as long as the predicate function returns true. Once the condition becomes false, the observable completes.
+Skips values while the predicate function returns true, then emits all subsequent values regardless of the condition.
+
+#### take
+```gdscript
+Observable.of(1, 2, 3) \
+	.take(2) \
+	.subscribe(arr.push_back)
+```
+```console
+[1, 2]
+```
+
+Emits only the first N values from the source observable, then automatically completes the subscription.
 
 #### take_until
 ```gdscript
@@ -473,21 +477,17 @@ source.on_next(3)
 
 Emits values until another observable emits. Once the provided observable emits any value, the source subscription completes. This is useful for combining multiple observables to control when a stream should stop.
 
-#### skip_while
+#### take_while
 ```gdscript
-subject \
-	.skip_while(func(x): return x <= 1) \
+Observable.of(1, 2, 1) \
+	.take_while(func(x): return x <= 1) \
 	.subscribe(arr.push_back)
-
-subject.on_next(1)
-subject.on_next(2)
-subject.on_next(1)
 ```
 ```console
-[2, 1]
+[1]
 ```
 
-Skips values while the predicate function returns true, then emits all subsequent values regardless of the condition.
+Emits values as long as the predicate function returns true. Once the condition becomes false, the observable completes.
 
 ### Time-based Operators
 

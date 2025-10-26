@@ -22,7 +22,7 @@ func test_subscribe_with_one_argument_callback() -> void:
 	subject.on_next(10)
 	subject.on_next(20)
 
-	assert_array(received_values).contains_exactly([10, 20])
+	assert_array(received_values).contains_exactly(10, 20)
 
 
 func test_subscribe_with_zero_argument_callback() -> void:
@@ -94,7 +94,7 @@ func test_where_chaining_optimization() -> void:
 	subject.on_next(20)
 
 	# 5 < x < 15 の値のみが emit される
-	assert_array(filtered_values).contains_exactly([7, 10])
+	assert_array(filtered_values).contains_exactly(7, 10)
 
 
 func test_take_while_chaining_optimization() -> void:
@@ -120,7 +120,7 @@ func test_take_while_chaining_optimization() -> void:
 	subject.on_next(25)
 
 	# 両方の条件を満たす値のみが emit される
-	assert_array(taken_values).contains_exactly([5, 10, 12])
+	assert_array(taken_values).contains_exactly(5, 10, 12)
 
 
 func test_skip_chaining_optimization() -> void:
@@ -140,7 +140,7 @@ func test_skip_chaining_optimization() -> void:
 	subject.on_next(5)
 
 	# 最初の3つがスキップされる
-	assert_array(skipped_values).contains_exactly([4, 5])
+	assert_array(skipped_values).contains_exactly(4, 5)
 
 
 func test_take_chaining_optimization() -> void:
@@ -152,7 +152,7 @@ func test_take_chaining_optimization() -> void:
 	Observable.range(1, 6).take(3).take(2).subscribe(result.push_back)
 
 	# take(min(3, 2) = 2) なので最初の2つが emit される
-	assert_array(result).contains_exactly([1, 2])
+	assert_array(result).contains_exactly(1, 2)
 
 
 func test_sample_is_alias_for_throttle_last() -> void:
@@ -197,7 +197,7 @@ func test_from_signal_with_one_arg() -> void:
 	test_signal_with_arg.emit(42)
 	test_signal_with_arg.emit(100)
 
-	assert_array(received_values).contains_exactly([42, 100])
+	assert_array(received_values).contains_exactly(42, 100)
 
 
 func test_merge_with_multiple_observables() -> void:
@@ -216,7 +216,7 @@ func test_merge_with_multiple_observables() -> void:
 	subject3.on_next(3)
 	subject1.on_next(4)
 
-	assert_array(merged_values).contains_exactly([1, 2, 3, 4])
+	assert_array(merged_values).contains_exactly(1, 2, 3, 4)
 
 
 func test_merge_with_array() -> void:
@@ -232,7 +232,7 @@ func test_merge_with_array() -> void:
 	subject1.on_next(10)
 	subject2.on_next(20)
 
-	assert_array(merged_values).contains_exactly([10, 20])
+	assert_array(merged_values).contains_exactly(10, 20)
 
 # =============================================================================
 # オペレーターのメソッドチェーンテスト
@@ -259,7 +259,7 @@ func test_complex_operator_chain() -> void:
 	subject.on_next(4) # 8
 	subject.on_next(5) # 10 だが take(3) で終了
 
-	assert_array(result_values).contains_exactly([4, 6, 8])
+	assert_array(result_values).contains_exactly(4, 6, 8)
 
 
 func test_take_skip() -> void:
@@ -270,10 +270,10 @@ func test_take_skip() -> void:
 	subject.on_next(10)
 	assert_array(result).is_empty()
 	subject.on_next(20)
-	assert_array(result).contains_exactly([20])
+	assert_array(result).contains_exactly(20)
 	d.dispose()
 	subject.on_next(30)
-	assert_array(result).contains_exactly([20])
+	assert_array(result).contains_exactly(20)
 
 
 func test_skip_take() -> void:
@@ -285,10 +285,10 @@ func test_skip_take() -> void:
 	rp.value = 20
 	assert_array(result).is_empty()
 	rp.value = 30
-	assert_array(result).contains_exactly([30])
+	assert_array(result).contains_exactly(30)
 	d.dispose()
 	rp.value = 40
-	assert_array(result).contains_exactly([30])
+	assert_array(result).contains_exactly(30)
 
 
 func test_where_skip() -> void:
@@ -306,7 +306,7 @@ func test_where_skip() -> void:
 	subject.on_next(10)
 	assert_array(result).is_empty()
 	subject.on_next(20)
-	assert_array(result).contains_exactly([20])
+	assert_array(result).contains_exactly(20)
 	d.dispose()
 	subject.on_next(30)
-	assert_array(result).contains_exactly([20])
+	assert_array(result).contains_exactly(20)

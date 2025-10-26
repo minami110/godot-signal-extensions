@@ -31,7 +31,7 @@ func test_subscribe_emits_current_value_immediately() -> void:
 	ro_rp.subscribe(received_values.push_back)
 
 	# subscribe 時に即座に現在の値が emit される
-	assert_array(received_values).contains_exactly(["initial"])
+	assert_array(received_values).contains_exactly("initial")
 
 
 func test_subscribe_receives_updates() -> void:
@@ -46,7 +46,7 @@ func test_subscribe_receives_updates() -> void:
 	rp_source.value = 2
 	rp_source.value = 3
 
-	assert_array(received_values).contains_exactly([1, 2, 3])
+	assert_array(received_values).contains_exactly(1, 2, 3)
 
 
 func test_multiple_subscribers() -> void:
@@ -68,15 +68,15 @@ func test_multiple_subscribers() -> void:
 	)
 
 	# 両方の subscriber に初期値が emit される
-	assert_array(subscriber1_values).contains_exactly(["A"])
-	assert_array(subscriber2_values).contains_exactly(["A"])
+	assert_array(subscriber1_values).contains_exactly("A")
+	assert_array(subscriber2_values).contains_exactly("A")
 
 	# 値を変更
 	rp_source.value = "B"
 
 	# 両方の subscriber が更新を受け取る
-	assert_array(subscriber1_values).contains_exactly(["A", "B"])
-	assert_array(subscriber2_values).contains_exactly(["A", "B"])
+	assert_array(subscriber1_values).contains_exactly("A", "B")
+	assert_array(subscriber2_values).contains_exactly("A", "B")
 
 
 func test_various_types() -> void:
@@ -124,4 +124,4 @@ func test_with_operators() -> void:
 	rp_source.value = 10
 
 	# フィルタリングされた値のみが emit される（初期値0は5以下なので無視）
-	assert_array(filtered_values).contains_exactly([7, 10])
+	assert_array(filtered_values).contains_exactly(7, 10)

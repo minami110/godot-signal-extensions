@@ -17,7 +17,7 @@ func standard() -> void:
 	subject.on_next(10)
 	subject.dispose()
 	subject.on_next(20)
-	assert_array(result).contains_exactly([10, 10])
+	assert_array(result).contains_exactly(10, 10)
 
 
 func standard_no_argument() -> void:
@@ -28,7 +28,7 @@ func standard_no_argument() -> void:
 
 	subject.on_next(10)
 	subject.on_next(20)
-	assert_array(result).contains_exactly(["called", "called"])
+	assert_array(result).contains_exactly("called", "called")
 
 
 func test_unit() -> void:
@@ -38,7 +38,7 @@ func test_unit() -> void:
 	assert_array(result).is_empty()
 
 	subject.on_next()
-	assert_array(result).contains_exactly(["called"])
+	assert_array(result).contains_exactly("called")
 
 
 func test_subject_await() -> void:
@@ -77,4 +77,4 @@ func test_static_method_bind() -> void:
 	var subject := Subject.new()
 	subject.subscribe(update_static_result_array)
 	subject.on_next(10)
-	assert_array(_result_static_array).contains_exactly([10])
+	assert_array(_result_static_array).contains_exactly(10)

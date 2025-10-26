@@ -30,6 +30,7 @@ enabled=PackedStringArray("res://addons/signal_extensions/plugin.cfg", "res://ad
 ui/toolbar/run_overall=true
 report/godot/push_error=true
 settings/test/test_lookup_folder="tests"
+ui/inspector/tree_sort_mode=1
 
 [rendering]
 

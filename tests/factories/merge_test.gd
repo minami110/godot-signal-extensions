@@ -30,7 +30,7 @@ func test_merge() -> void:
 
 	d.dispose()
 	s3.on_next(8)
-	assert_array(_list).contains_exactly([1, 2, 3, 4, 5, 6, 7])
+	assert_array(_list).contains_exactly(1, 2, 3, 4, 5, 6, 7)
 
 
 func test_merge_wait1() -> void:
@@ -85,7 +85,7 @@ func test_merge_with_array_argument() -> void:
 	s1.on_next(30)
 
 	d.dispose()
-	assert_array(_list).contains_exactly([10, 20, 30])
+	assert_array(_list).contains_exactly(10, 20, 30)
 
 
 func test_merge_array_argument_empty_returns_empty() -> void:

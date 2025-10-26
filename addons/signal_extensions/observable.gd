@@ -10,13 +10,17 @@ extends RefCounted
 ## All observables implement the [Disposable] pattern for automatic cleanup.
 ## Use [method add_to] to automatically dispose when a [Node] exits the tree.
 
-# Factory and operator imports
+#region Includes
+
 const Empty = preload("factories/empty.gd")
 const FromSignal = preload("factories/from_signal.gd")
 const Merge = preload("factories/merge.gd")
 const Of = preload("factories/of.gd")
-const RangeFactory = preload("factories/range.gd")
+const Range_ = preload("factories/range.gd")
+
 const Debounce = preload("operators/debounce.gd")
+const Distinct = preload("operators/distinct.gd")
+const DistinctUntilChanged = preload("operators/distinct_until_changed.gd")
 const Scan = preload("operators/scan.gd")
 const Select = preload("operators/select.gd")
 const Skip = preload("operators/skip.gd")
@@ -27,6 +31,9 @@ const TakeWhile = preload("operators/take_while.gd")
 const ThrottleLast = preload("operators/throttle_last.gd")
 const Where = preload("operators/where.gd")
 
+#endregion
+
+#region Core Methods
 
 ## Core subscription method for inheriting classes.
 ##
@@ -62,6 +69,9 @@ func subscribe(on_next: Callable) -> Disposable:
 	else:
 		return _subscribe_core(func(_x: Variant) -> void: on_next.call())
 
+#endregion
+
+#region Factory Methods
 
 ## Creates an [Observable] that completes immediately without emitting values.
 ##
@@ -181,26 +191,35 @@ static func range(start: int, count: int) -> Observable:
 	elif count == 0:
 		return empty()
 
-	return RangeFactory.new(start, count)
+	return Range_.new(start, count)
 
+#endregion
 
-## Only emit an item if a particular time span has passed without it emitting another item.
+#region Transformation Operators
+
+## Accumulate items using an accumulator function.
 ##
-## This operator delays emissions and only emits the most recent item
-## after the specified time period has elapsed without new emissions.
-## Useful for handling rapid successive events like user input.
+## This operator applies an accumulator function to each emitted value,
+## starting with the provided initial value. Emits the accumulated result
+## for each source emission.
 ##
 ## Usage:
 ## [codeblock]
-## subject.debounce(0.5).subscribe(func(x): print(x))
+## # Sum all values: 1, 2, 3 -> 1, 3, 6
+## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
+##
+## # Count occurrences
+## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
 ## [/codeblock]
 ##
-## [param time_sec]: Time in seconds to wait after the last emission
-## [br][b]Returns:[/b] An [Observable] that emits debounced values
-func debounce(time_sec: float) -> Observable:
-	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
+## [param initial_value]: The initial value for accumulation
+## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
+## [br][b]Returns:[/b] An [Observable] that emits accumulated values
+func scan(initial_value: Variant, accumulator: Callable) -> Observable:
+	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
+	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
 
-	return Debounce.new(self, time_sec)
+	return Scan.new(self, initial_value, accumulator)
 
 
 ## Transform items by applying a function to each emitted value.
@@ -230,31 +249,74 @@ func select(selector: Callable) -> Observable:
 func map(selector: Callable) -> Observable:
 	return select(selector)
 
+#endregion
 
-## Accumulate items using an accumulator function.
+#region Filtering Operators
+
+## Emit only values that are distinct from all previously emitted values.
 ##
-## This operator applies an accumulator function to each emitted value,
-## starting with the provided initial value. Emits the accumulated result
-## for each source emission.
+## This operator filters emitted values, only allowing through values that have
+## not been seen before. It tracks all emitted values to determine distinctness.
 ##
 ## Usage:
 ## [codeblock]
-## # Sum all values: 1, 2, 3 -> 1, 3, 6
-## subject.scan(0, func(acc, x): return acc + x).subscribe(func(x): print(x))
-##
-## # Count occurrences
-## subject.scan(0, func(acc, _): return acc + 1).subscribe(func(x): print(x))
+## subject.distinct().subscribe(func(x): print(x))
 ## [/codeblock]
 ##
-## [param initial_value]: The initial value for accumulation
-## [param accumulator]: Function that takes (accumulated_value, new_value) and returns new accumulated value
-## [br][b]Returns:[/b] An [Observable] that emits accumulated values
-func scan(initial_value: Variant, accumulator: Callable) -> Observable:
-	assert(accumulator.is_valid(), "scan.accumulator is not valid.")
-	assert(accumulator.get_argument_count() == 2, "scan.accumulator must have exactly two arguments")
+## [br][b]Returns:[/b] An [Observable] that emits only unique values
+func distinct() -> Observable:
+	if self is Distinct:
+		return self
+	return Distinct.new(self)
 
-	return Scan.new(self, initial_value, accumulator)
 
+## Emit only values that differ from the immediately preceding value.
+##
+## This operator filters consecutive duplicate values, allowing only values that
+## are different from the previous emission. The first value is always emitted.
+##
+## Usage:
+## [codeblock]
+## subject.distinct_until_changed().subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [br][b]Returns:[/b] An [Observable] that emits only when value changes
+func distinct_until_changed() -> Observable:
+	if self is DistinctUntilChanged:
+		return self
+	return DistinctUntilChanged.new(self)
+
+
+## Emit only values that pass a predicate test.
+##
+## This operator filters the emitted values, only allowing through
+## those that satisfy the given predicate condition. Also known as "filter".
+##
+## Usage:
+## [codeblock]
+## subject.where(func(x): return x > 0).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param predicate]: Function that returns boolean to test each value
+## [br][b]Returns:[/b] An [Observable] that emits only filtered values
+func where(predicate: Callable) -> Observable:
+	if self is Where:
+		var new_source: Observable = self._source
+		return Where.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
+	else:
+		return Where.new(self, predicate)
+
+
+## Alias for [method where].
+##
+## [param predicate]: Function that returns boolean to test each value
+## [br][b]Returns:[/b] An [Observable] that emits only filtered values
+func filter(predicate: Callable) -> Observable:
+	return where(predicate)
+
+#endregion
+
+#region Limiting Operators
 
 ## Suppress the first N items emitted by the observable.
 ##
@@ -364,6 +426,28 @@ func take_while(predicate: Callable) -> Observable:
 	else:
 		return TakeWhile.new(self, predicate)
 
+#endregion
+
+#region Time-based Operators
+
+## Only emit an item if a particular time span has passed without it emitting another item.
+##
+## This operator delays emissions and only emits the most recent item
+## after the specified time period has elapsed without new emissions.
+## Useful for handling rapid successive events like user input.
+##
+## Usage:
+## [codeblock]
+## subject.debounce(0.5).subscribe(func(x): print(x))
+## [/codeblock]
+##
+## [param time_sec]: Time in seconds to wait after the last emission
+## [br][b]Returns:[/b] An [Observable] that emits debounced values
+func debounce(time_sec: float) -> Observable:
+	assert(time_sec > 0.0, "time_sec must be greater than 0.0")
+
+	return Debounce.new(self, time_sec)
+
 
 ## Emit the most recent items within periodic time intervals.
 ##
@@ -400,30 +484,4 @@ func throttle_last(time_sec: float) -> Observable:
 func sample(time_sec: float) -> Observable:
 	return throttle_last(time_sec)
 
-
-## Emit only values that pass a predicate test.
-##
-## This operator filters the emitted values, only allowing through
-## those that satisfy the given predicate condition. Also known as "filter".
-##
-## Usage:
-## [codeblock]
-## subject.where(func(x): return x > 0).subscribe(func(x): print(x))
-## [/codeblock]
-##
-## [param predicate]: Function that returns boolean to test each value
-## [br][b]Returns:[/b] An [Observable] that emits only filtered values
-func where(predicate: Callable) -> Observable:
-	if self is Where:
-		var new_source: Observable = self._source
-		return Where.new(new_source, func(x: Variant) -> bool: return self._predicate.call(x) and predicate.call(x))
-	else:
-		return Where.new(self, predicate)
-
-
-## Alias for [method where].
-##
-## [param predicate]: Function that returns boolean to test each value
-## [br][b]Returns:[/b] An [Observable] that emits only filtered values
-func filter(predicate: Callable) -> Observable:
-	return where(predicate)
+#endregion

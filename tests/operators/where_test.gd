@@ -8,7 +8,7 @@ func test_standard() -> void:
 	.where(func(x): return x >= 20) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([20, 30])
+	assert_array(result, true).contains_exactly(20, 30)
 
 
 func test_merge_behaviour() -> void:
@@ -18,7 +18,7 @@ func test_merge_behaviour() -> void:
 	.where(func(x): return x < 30) \
 	.subscribe(result.push_back)
 
-	assert_array(result, true).contains_exactly([25])
+	assert_array(result, true).contains_exactly(25)
 
 
 func test_two_subscribers() -> void:
@@ -36,12 +36,12 @@ func test_two_subscribers() -> void:
 
 	subject.on_next(1)
 	subject.on_next(2)
-	assert_array(result1, true).contains_exactly([2])
-	assert_array(result2, true).contains_exactly([2])
+	assert_array(result1, true).contains_exactly(2)
+	assert_array(result2, true).contains_exactly(2)
 
 	where2.subscribe(result3.push_back)
 	subject.on_next(2)
 	subject.on_next(3)
-	assert_array(result1, true).contains_exactly([2, 2, 3])
-	assert_array(result2, true).contains_exactly([2, 2, 3])
-	assert_array(result3, true).contains_exactly([3])
+	assert_array(result1, true).contains_exactly(2, 2, 3)
+	assert_array(result2, true).contains_exactly(2, 2, 3)
+	assert_array(result3, true).contains_exactly(3)

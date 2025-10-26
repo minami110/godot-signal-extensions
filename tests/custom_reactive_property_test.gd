@@ -52,26 +52,26 @@ func test_transform_value_clamping() -> void:
 	rp.subscribe(result.push_back)
 
 	# Initial value should be 50.0
-	assert_array(result).contains_exactly([50.0])
+	assert_array(result).contains_exactly(50.0)
 
 	# Setting value within range
 	rp.value = 75.0
-	assert_array(result).contains_exactly([50.0, 75.0])
+	assert_array(result).contains_exactly(50.0, 75.0)
 	assert_float(rp.value).is_equal(75.0)
 
 	# Setting value above max should clamp to max
 	rp.value = 150.0
-	assert_array(result).contains_exactly([50.0, 75.0, 100.0])
+	assert_array(result).contains_exactly(50.0, 75.0, 100.0)
 	assert_float(rp.value).is_equal(100.0)
 
 	# Setting value below min should clamp to min
 	rp.value = -10.0
-	assert_array(result).contains_exactly([50.0, 75.0, 100.0, 0.0])
+	assert_array(result).contains_exactly(50.0, 75.0, 100.0, 0.0)
 	assert_float(rp.value).is_equal(0.0)
 
 	# Setting same value (after clamping) should not emit
 	rp.value = -5.0 # Clamped to 0.0, same as current
-	assert_array(result).contains_exactly([50.0, 75.0, 100.0, 0.0])
+	assert_array(result).contains_exactly(50.0, 75.0, 100.0, 0.0)
 	assert_float(rp.value).is_equal(0.0)
 
 	rp.dispose()
@@ -83,21 +83,21 @@ func test_transform_value_string_trim() -> void:
 	rp.subscribe(result.push_back)
 
 	# Initial value should be trimmed
-	assert_array(result).contains_exactly(["hello"])
+	assert_array(result).contains_exactly("hello")
 	assert_str(rp.value).is_equal("hello")
 
 	# Setting value with spaces should be trimmed
 	rp.value = "  world  "
-	assert_array(result).contains_exactly(["hello", "world"])
+	assert_array(result).contains_exactly("hello", "world")
 	assert_str(rp.value).is_equal("world")
 
 	# Setting same value after trimming should not emit
 	rp.value = "  world  "
-	assert_array(result).contains_exactly(["hello", "world"])
+	assert_array(result).contains_exactly("hello", "world")
 
 	# Non-string values should pass through unchanged
 	rp.value = 123
-	assert_array(result).contains_exactly(["hello", "world", 123])
+	assert_array(result).contains_exactly("hello", "world", 123)
 	assert_int(rp.value).is_equal(123)
 
 	rp.dispose()
@@ -111,15 +111,15 @@ func test_transform_and_should_update_combination() -> void:
 	rp.subscribe(result.push_back)
 
 	# Initial value
-	assert_array(result).contains_exactly([50.0])
+	assert_array(result).contains_exactly(50.0)
 
 	# Setting same value should emit (because always update)
 	rp.value = 50.0
-	assert_array(result).contains_exactly([50.0, 50.0])
+	assert_array(result).contains_exactly(50.0, 50.0)
 
 	# Setting value that clamps to same should still emit
 	rp.value = -10.0 # Clamped to 0.0
 	rp.value = -20.0 # Also clamped to 0.0, but still emits
-	assert_array(result).contains_exactly([50.0, 50.0, 0.0, 0.0])
+	assert_array(result).contains_exactly(50.0, 50.0, 0.0, 0.0)
 
 	rp.dispose()

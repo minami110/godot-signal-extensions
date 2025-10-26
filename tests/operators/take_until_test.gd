@@ -16,7 +16,7 @@ func test_standard() -> void:
 	stop.on_next() # Stop signal
 	subject.on_next(3) # Should not be emitted
 
-	assert_array(result, true).contains_exactly([1, 2])
+	assert_array(result, true).contains_exactly(1, 2)
 
 
 func test_stop_before_any_emission() -> void:
@@ -55,8 +55,8 @@ func test_two_subscribers() -> void:
 	subject.on_next(4)
 
 	# Both subscribers should get emissions up to the stop signal
-	assert_array(result1, true).contains_exactly([1, 2, 3])
-	assert_array(result2, true).contains_exactly([3])
+	assert_array(result1, true).contains_exactly(1, 2, 3)
+	assert_array(result2, true).contains_exactly(3)
 
 
 func test_multiple_stop_signals() -> void:
@@ -74,7 +74,7 @@ func test_multiple_stop_signals() -> void:
 	stop.on_next() # Second stop signal - should be ignored
 	subject.on_next(3) # Should not be emitted
 
-	assert_array(result, true).contains_exactly([1])
+	assert_array(result, true).contains_exactly(1)
 
 
 func test_chained_take_until() -> void:
@@ -94,7 +94,7 @@ func test_chained_take_until() -> void:
 	subject.on_next(3) # Should not be emitted
 	stop1.on_next() # Should be ignored (already completed)
 
-	assert_array(result, true).contains_exactly([1, 2])
+	assert_array(result, true).contains_exactly(1, 2)
 
 
 func test_take_until_with_other_operators() -> void:
@@ -114,7 +114,7 @@ func test_take_until_with_other_operators() -> void:
 	stop.on_next() # Stop signal
 	subject.on_next(3) # 3 > 0, but after stop
 
-	assert_array(result, true).contains_exactly([2, 4])
+	assert_array(result, true).contains_exactly(2, 4)
 
 
 func test_empty_observable() -> void:
@@ -145,4 +145,4 @@ func test_disposal() -> void:
 	subject.on_next(2) # Should not be emitted after dispose
 	stop.on_next()
 
-	assert_array(result, true).contains_exactly([1])
+	assert_array(result, true).contains_exactly(1)

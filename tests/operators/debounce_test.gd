@@ -29,13 +29,13 @@ func test_standard() -> void:
 
 	# t: 0.15
 	await _wait_time(0.05) # Timer: 0.05 => 0.1
-	assert_array(result, true).contains_exactly([4])
+	assert_array(result, true).contains_exactly(4)
 
 	# -----
 
 	pub.on_next(5)
 	await _wait_time(0.1)
-	assert_array(result, true).contains_exactly([4, 5])
+	assert_array(result, true).contains_exactly(4, 5)
 
 	# -----
 
@@ -44,8 +44,8 @@ func test_standard() -> void:
 	pub.on_next(6)
 	pub.dispose()
 
-	# assert_array(result, true).contains_exactly([4, 5, 6])
-	assert_array(result, true).contains_exactly([4, 5])
+	# assert_array(result, true).contains_exactly(4, 5, 6)
+	assert_array(result, true).contains_exactly(4, 5)
 
 	await _wait_time(0.12)
-	assert_array(result, true).contains_exactly([4, 5, 6])
+	assert_array(result, true).contains_exactly(4, 5, 6)
