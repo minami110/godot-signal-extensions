@@ -217,6 +217,8 @@ func debounce(time_sec: float) -> Observable:
 ##
 ## [br][b]Returns:[/b] An [Observable] that emits only unique values
 func distinct() -> Observable:
+	if self is Distinct:
+		return self
 	return Distinct.new(self)
 
 
@@ -232,6 +234,8 @@ func distinct() -> Observable:
 ##
 ## [br][b]Returns:[/b] An [Observable] that emits only when value changes
 func distinct_until_changed() -> Observable:
+	if self is DistinctUntilChanged:
+		return self
 	return DistinctUntilChanged.new(self)
 
 

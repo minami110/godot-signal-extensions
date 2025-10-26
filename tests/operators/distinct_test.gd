@@ -13,7 +13,7 @@ func test_standard() -> void:
 
 func test_all_values_unique() -> void:
 	var result := []
-	Observable.of(1, 2, 3, 4) \
+	Observable.range(1, 4) \
 	.distinct() \
 	.subscribe(result.push_back)
 
@@ -64,6 +64,4 @@ func test_two_subscribers() -> void:
 	subject.on_next(3) # First time, will emit through distinct1
 	assert_array(result1, true).contains_exactly(1, 2, 3)
 	assert_array(result2, true).contains_exactly(1, 2, 3)
-
-	# distinct2 sees distinct1's values after subscribing (2 from on_next(2), 3 from on_next(3))
 	assert_array(result3).contains_exactly(2, 3)
